@@ -1,31 +1,4 @@
-# Lobby (multi)
-## Start logic
-State machine
-```mermaid
-
-```
-
-```mermaid
-flowchart LR
-    start([Start])
-    teamFull{Team full} 
-    maxQueueTime{Reached max queue time} 
-    userClickedJustStart{User clicked 'Just Start'} 
-    allUsersAgree{All team members clicked 'Just Start'} 
-    startTheGame[Start the game]
-    finish([Finish])
-    
-    start-->userClickedJustStart
-    userClickedJustStart-- Yes -->allUsersAgree
-    userClickedJustStart-- No -->teamFull
-    allUsersAgree-- Yes -->startTheGame
-    allUsersAgree-- No -->teamFull
-    teamFull-- No -->maxQueueTime
-    teamFull-- Yes -->startTheGame
-    maxQueueTime-- Yes -->startTheGame
-    startTheGame-->finish
-```
-
+# Lobby (Multi player)
 ## Queue In
 ```mermaid
 sequenceDiagram
@@ -38,12 +11,40 @@ sequenceDiagram
     Backend ->> DB: *Update, commit and release lock
     Backend ->> Backend: *Broadcast team update
     Backend ->> Backend: Recived broadcast, check in memory team table
-    Backend ->> Frontend: *WS trigger update
+    Backend ->> Frontend: WS trigger update
+    Frontend ->> Frontend: Stores team info
+    Frontend ->> Backend: Get team status
+    Frontend ->> Frontend: Update UI
 ```
 ### Explanation
 - Update, commit and release lock: Updates team data in DB as well as in memory team table
-- Broadcast team update: Sends broadcast to all servers
-- WS trigger update: Triggers frontend to fetch updated team data from an API, this includes all users in the same team.
+- Broadcast team update: Sends broadcast to all servers, every server has a in memory team table
 
-## WS payload definition
-TABLE
+### Reload page
+
+## Start logic
+```mermaid
+flowchart TD
+    start([Start])
+    inQueue[In Queue]
+    teamFull{Team full} 
+    maxQueueTime{Reached max queue time} 
+    userClickedJustStart{User clicked 'Just Start'} 
+    allUsersAgree{All team members clicked 'Just Start'} 
+    startTheGame[Start the game]
+    finish([End])
+    
+    start-->inQueue
+    inQueue-->userClickedJustStart
+    userClickedJustStart-- Yes -->allUsersAgree
+    userClickedJustStart-- No -->userClickedJustStart
+    allUsersAgree-- Yes -->startTheGame
+    allUsersAgree-- No -->allUsersAgree
+    inQueue-->teamFull
+    teamFull-- No -->teamFull
+    teamFull-- Yes -->startTheGame
+    inQueue-->maxQueueTime
+    maxQueueTime-- Yes -->startTheGame
+    maxQueueTime-- No -->maxQueueTime
+    startTheGame-->finish
+```
