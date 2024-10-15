@@ -68,8 +68,9 @@ sequenceDiagram
 ## After page load
 - Listen to websocket event
 - Update count down timer for max queue time
-    - The client stores the creation timestamp for this team, and counts down by it self.
-    - This is only a visual representation
+    - The client fetches the current count down time from the server periodically (**Polling**)
+    - The server gets the team's create timestamp and calculates the current count down seconds
+        - This info will be included in the "in memory team table"
 
 ## On client disconnect
 ```mermaid
