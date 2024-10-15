@@ -49,8 +49,25 @@ XXX
 ## Member disconnect
 XXX
 
-## Ghost team
-XXX
+## After page load
+
+## Janitor
+A delayed signal is sent to the broker on team creation.
+When the "janitor" receives the signal, it will determine if the team should be deleted.
+```mermaid
+flowchart LR
+    start([Start])
+    gameStarted{"Game started"}
+    delete["Delete team"]
+    finish([Finish])
+    
+    start-- Recived signal -->gameStarted
+    gameStarted-- Yes -->finish
+    gameStarted-- No -->delete
+    delete-->finish
+```
+
+
 
 ## Start logic
 

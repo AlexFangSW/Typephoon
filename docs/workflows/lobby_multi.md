@@ -32,7 +32,6 @@ sequenceDiagram
     Backend ->> DB: Select and lock available teams 
     Backend ->> Backend: Do queuing logic
     Backend ->> DB: *Update, commit and release lock
-    Backend ->> Cache: Set team "start queue ts" of not set
     Backend ->> Broker: *Broadcast team update
     Backend ->> Frontend: WS trigger update
     Frontend ->> Frontend: Stores team info
@@ -54,7 +53,6 @@ sequenceDiagram
     Backend ->> Backend: Do queuing logic
     Backend -->> Frontend: Data irrelevent, END
     Backend ->> DB: (unlock) *Update, commit
-    Backend ->> Cache: Set team "start queue ts" of not set
     Backend ->> Broker: *Broadcast team update
     Backend ->> Frontend: WS trigger update
     Frontend ->> Backend: Get team status
@@ -69,7 +67,9 @@ sequenceDiagram
 
 ## After page load
 - Listen to websocket event
-- Update count down timer for max queue time by **polling**
+- Update count down timer for max queue time
+    - The client stores the creation timestamp for this team, and counts down by it self.
+    - This is only a visual representation
 
 ## On client disconnect
 ```mermaid
@@ -82,6 +82,7 @@ sequenceDiagram
 ```
 ## Ghost team
 If all team members are disconnected, the team is deleted.
+- This is performed by the server that removes the last team member
 
 ## Start logic
 The game will start if one of the requirements are met
