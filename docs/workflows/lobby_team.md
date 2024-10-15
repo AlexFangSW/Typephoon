@@ -1,48 +1,57 @@
 # Lobby (Team)
-## Leader creates team
-```mermaid
-sequenceDiagram
-    actor User
-    User ->> Frontend: Click 'Create Team'
-    Frontend ->> Backend: Create websocket connection 
-    Frontend ->> Backend: Send init signal through WS
-    Backend ->> DB: Create team
-    Backend ->> Backend: Update in memory team table
-    Backend ->> Frontend: WS trigger update
-    Frontend ->> Frontend: Stores team info
-    Frontend ->> Backend: Get team status
-    Frontend ->> Frontend: Update UI
-```
-
-## Join team via invite link
-```mermaid
-sequenceDiagram
-    actor User
-    User ->> Frontend: Opens invite link in browser
-    Frontend ->> Backend: Create websocket connection 
-    Frontend ->> Backend: Send init signal through WS
-    Backend ->> DB: Update team
-    Backend ->> Backend: Update in memory team table
-    Backend ->> Backend: *Broadcast team update
-    Backend ->> Backend: Recived broadcast, check in memory team table
-    Backend ->> Frontend: WS trigger update
-    Frontend ->> Frontend: Stores team info
-    Frontend ->> Backend: Get team status
-    Frontend ->> Frontend: Update UI
-```
-### Explanation
-- Broadcast team update: Sends broadcast to all servers, every server has a in memory team table
-
-## Start logic
+## On page load
 ```mermaid
 flowchart TD
     start([Start])
-    leaderClickStart{Leader start game} 
-    startGame[Start Game]
+    visitPage[Visit page] 
+    foundTeamData{Found team data} 
+    foundJoinToken{Found join token in url} 
+    createTeam{Create team} 
+    redirect[Redirect and clear token] 
+    joinTeamSequence[*Join team sequence] 
+    createTeamSequence[*Create team sequence] 
+    reloadSequence[*Reload sequence] 
+    renderPage[Render page]
     finish([Finish])
 
-    start-->leaderClickStart
-    leaderClickStart-- Yes -->startGame
-    leaderClickStart-- No -->leaderClickStart
-    startGame-->finish
+    start-->visitPage
+    visitPage-->foundJoinToken
+    foundJoinToken-- No -->foundTeamData
+    foundJoinToken-- Yes -->joinTeamSequence
+    joinTeamSequence-->renderPage
+    joinTeamSequence-- Join failed -->redirect
+    redirect-->renderPage
+    foundTeamData-- No -->createTeam
+    foundTeamData-- Yes -->reloadSequence
+    reloadSequence-- Team data irrelevant -->createTeam
+    reloadSequence-->renderPage
+    createTeam-- No -->renderPage
+    createTeam-- Yes -->createTeamSequence
+    createTeamSequence-->renderPage
+    renderPage-->finish
 ```
+> For actions with "*", please refer to sequence diagrams below
+
+## Create team sequence
+```mermaid
+```
+
+## (Leader) Reload sequence
+```mermaid
+```
+
+## Join team sequence
+```mermaid
+```
+
+## Leader disconnect
+XXX
+## Member disconnect
+XXX
+
+## Ghost team
+XXX
+
+## Start logic
+
+## Start logic detail

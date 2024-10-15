@@ -13,10 +13,10 @@ flowchart TD
 
     start-->visitPage
     visitPage-->foundTeamData
+    foundTeamData-- No -->queueIn
     foundTeamData-- Yes -->reloadSequence
     reloadSequence-- Team data irrelevant -->queueInSequence
     reloadSequence-->renderPage
-    foundTeamData-- No -->queueIn
     queueIn-- No -->renderPage
     queueIn-- Yes -->queueInSequence
     queueInSequence-->renderPage
@@ -61,7 +61,7 @@ sequenceDiagram
     Frontend ->> Frontend: Update UI
 ```
 ### Explanation
-- Send init signal through WS: This contains team data found on the client side
+- Send init signal through WS: This contains team data found on the client side, the client might be able to join the original team
 - Update, commit and release lock: Updates team data in DB as well as in memory team table
 - Broadcast team update: 
     - Sends broadcast to all servers
@@ -80,6 +80,8 @@ sequenceDiagram
     Backend ->> DB: (unlock) Commit
     Backend ->> Broker: Broadcast team update
 ```
+## Ghost team
+If all team members are disconnected, the team is deleted.
 
 ## Start logic
 The game will start if one of the requirements are met
