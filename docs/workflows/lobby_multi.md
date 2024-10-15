@@ -69,7 +69,7 @@ sequenceDiagram
 
 ## After page load
 - Listen to websocket event
-- Update count down timer for max queue time with **polling**
+- Update count down timer for max queue time by **polling**
 
 ## On client disconnect
 ```mermaid
@@ -87,7 +87,7 @@ The game will start if one of the requirements are met
 - Reached max queue time
 - All users clicked "Just start"
 
-## Start sequence
+## Start logic detail
 ### Team full
 When the **last** user is assigned to the team
 - The server that made that action will send a delayed signal to the broker
@@ -103,7 +103,19 @@ When the **first** user is assigned to the team
 - All cache related to "lobby" will be cleared
 
 ### All users clicked "Just start"
-On user click "Just start"
-- Add user to cache
-- If all members of the team is in the cache, start the game
-XXXXXX
+```mermaid
+flowchart TD
+    start([Start])
+    userClick["User clicked 'Just start'"]
+    addUserToCache["Add user to cache, remove extra"]
+    isAllTeamMembersIncluded{"Is all team members in cache?"}
+    sendSignal["Send start signal to broker for broadcast"]
+    finish([Finish])
+
+    start --> userClick 
+    userClick --> addUserToCache
+    addUserToCache --> isAllTeamMembersIncluded
+    isAllTeamMembersIncluded -- Yes --> sendSignal
+    isAllTeamMembersIncluded -- No --> finish
+    sendSignal --> finish
+```
