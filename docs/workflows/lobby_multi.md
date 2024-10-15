@@ -43,7 +43,7 @@ sequenceDiagram
 - Update, commit and release lock: Updates team data in DB as well as in memory team table
 - Broadcast team update: 
     - Sends broadcast to all servers
-    - Upon receiving broadcast, servers will than send a update trigger through WS to notify all team members found in the in memory team table
+    - Upon receiving broadcast, servers will then send a update trigger through WS to notify all team members found in the in memory team table
 
 ## Reload sequence
 ```mermaid
@@ -65,13 +65,14 @@ sequenceDiagram
 - Update, commit and release lock: Updates team data in DB as well as in memory team table
 - Broadcast team update: 
     - Sends broadcast to all servers
-    - Upon receiving broadcast, servers will than send a update trigger through WS to notify all team members found in the in memory team table
+    - Upon receiving broadcast, servers will then send a update trigger through WS to notify all team members found in the in memory team table
 
 ## After page load
 - Listen to websocket event
 - Update count down timer for max queue time
     - The client fetches the current count down time from the server periodically (**Polling**)
-    - The server gets the team's create timestamp and calculates the current count down seconds
+    - The server gets the team's create timestamp and returns the current count down seconds
+    - The client counts the delay, adjusts the timer then update locally
 
 ## On client disconnect
 ```mermaid
@@ -97,14 +98,14 @@ The game will start if one of the requirements are met
 When the **last** user is assigned to the team
 - The server that made that action will send a delayed signal to the broker
 - The broker then broadcasts to all the servers
-- Servers received the signal will than notify frontend to redirect users to the typing page where the game will take place.
+- Servers received the signal will then notify frontend to redirect users to the typing page where the game will take place.
 - All cache related to "lobby" will be cleared
 
 ### Reached max queue time
 When the **first** user is assigned to the team
 - The server that made that action will send a delayed signal to the broker (Wait for max queue time)
 - The broker then broadcasts to all the servers
-- Servers received the signal will than notify frontend to redirect users to the typing page where the game will take place.
+- Servers received the signal will then notify frontend to redirect users to the typing page where the game will take place.
 - All cache related to "lobby" will be cleared
 
 ### All users clicked "Just start"
