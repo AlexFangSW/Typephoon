@@ -32,6 +32,7 @@ sequenceDiagram
     Backend ->> DB: Select and lock available teams 
     Backend ->> Backend: Do queuing logic
     Backend ->> DB: *Update, commit and release lock
+    Backend ->> Cache: Set team "create ts" of not set
     Backend ->> Broker: *Broadcast team update
     Backend ->> Frontend: WS trigger update
     Frontend ->> Frontend: Stores team info
@@ -53,6 +54,7 @@ sequenceDiagram
     Backend ->> Backend: Do queuing logic
     Backend -->> Frontend: Data irrelevent, END
     Backend ->> DB: (unlock) *Update, commit
+    Backend ->> Cache: Set team "create ts" of not set
     Backend ->> Broker: *Broadcast team update
     Backend ->> Frontend: WS trigger update
     Frontend ->> Backend: Get team status
@@ -70,7 +72,6 @@ sequenceDiagram
 - Update count down timer for max queue time
     - The client fetches the current count down time from the server periodically (**Polling**)
     - The server gets the team's create timestamp and calculates the current count down seconds
-        - This info will be included in the "in memory team table"
 
 ## On client disconnect
 ```mermaid
