@@ -29,10 +29,12 @@ flowchart TD
 sequenceDiagram
     Frontend ->> Backend: Create websocket connection 
     Frontend ->> Backend: Send init signal through WS
-    Backend ->> DB: Select and lock available teams 
+    Backend ->> DB: (lock) Select available teams 
     Backend ->> Backend: Do queuing logic
-    Backend ->> DB: *Update, commit and release lock
-    Backend ->> Cache: Set team "create ts" of not set
+    Backend ->> DB: Update team (Create team if needed)
+    Backend -->> Broker: Send delayed signal
+    Backend ->> DB: (unlock) Commit
+    Backend ->> Backend: Update in memory team table
     Backend ->> Broker: *Broadcast team update
     Backend ->> Frontend: WS trigger update
     Frontend ->> Frontend: Stores team info
@@ -40,7 +42,6 @@ sequenceDiagram
     Frontend ->> Frontend: Update UI
 ```
 ### Explanation
-- Update, commit and release lock: Updates team data in DB as well as in memory team table
 - Broadcast team update: 
     - Sends broadcast to all servers
     - Upon receiving broadcast, servers will then send a update trigger through WS to notify all team members found in the in memory team table
@@ -50,11 +51,11 @@ sequenceDiagram
 sequenceDiagram
     Frontend ->> Backend: Create websocket connection 
     Frontend ->> Backend: *Send init signal through WS
-    Backend ->> DB: (lock) Select available teams 
-    Backend ->> Backend: Do queuing logic
-    Backend -->> Frontend: Data irrelevent, END
-    Backend ->> DB: (unlock) *Update, commit
-    Backend ->> Cache: Set team "create ts" of not set
+    Backend ->> DB: (lock) Select previus team 
+    Backend -->> Frontend: (unlock) Data irrelevent, END
+    Backend ->> DB: Update team (Create team if needed)
+    Backend ->> DB: (unlock) commit
+    Backend ->> Backend: Update in memory team table
     Backend ->> Broker: *Broadcast team update
     Backend ->> Frontend: WS trigger update
     Frontend ->> Backend: Get team status
@@ -62,7 +63,6 @@ sequenceDiagram
 ```
 ### Explanation
 - Send init signal through WS: This contains team data found on the client side, the client might be able to join the original team
-- Update, commit and release lock: Updates team data in DB as well as in memory team table
 - Broadcast team update: 
     - Sends broadcast to all servers
     - Upon receiving broadcast, servers will then send a update trigger through WS to notify all team members found in the in memory team table
@@ -72,6 +72,7 @@ sequenceDiagram
 - Update count down timer for max queue time
     - The client fetches the current count down time from the server periodically (**Polling**)
     - The server gets the team's create timestamp and returns the current count down seconds
+        - Create timestamp might be stored in a external cache
     - The client counts the delay, adjusts the timer then update locally
 
 ## On client disconnect
@@ -79,8 +80,8 @@ sequenceDiagram
 sequenceDiagram
     Frontend ->> Backend: Disconnect/Close window
     Backend ->> DB: (lock) Remove user from team
-    Backend ->> Backend: remove from in memory team table 
     Backend ->> DB: (unlock) Commit
+    Backend ->> Backend: Remove from in memory team table 
     Backend ->> Broker: Broadcast team update
 ```
 ## Ghost team
@@ -94,10 +95,12 @@ The game will start if one of the requirements are met
 - All users clicked "Just start"
 
 ## Start logic detail
+Setting team status to 'started' might be done by some other service
 ### Team full
 When the **last** user is assigned to the team
 - The server that made that action will send a delayed signal to the broker
 - The broker then broadcasts to all the servers
+- Update team status in DB to 'started'
 - Servers received the signal will then notify frontend to redirect users to the typing page where the game will take place.
 - All cache related to "lobby" will be cleared
 
@@ -105,23 +108,15 @@ When the **last** user is assigned to the team
 When the **first** user is assigned to the team
 - The server that made that action will send a delayed signal to the broker (Wait for max queue time)
 - The broker then broadcasts to all the servers
+- Update team status in DB to 'started'
 - Servers received the signal will then notify frontend to redirect users to the typing page where the game will take place.
 - All cache related to "lobby" will be cleared
 
 ### All users clicked "Just start"
-```mermaid
-flowchart TD
-    start([Start])
-    userClick["User clicked 'Just start'"]
-    addUserToCache["Add user to cache, remove extra"]
-    isAllTeamMembersIncluded{"Is all team members in cache?"}
-    sendSignal["Send start signal to broker for broadcast"]
-    finish([Finish])
-
-    start --> userClick 
-    userClick --> addUserToCache
-    addUserToCache --> isAllTeamMembersIncluded
-    isAllTeamMembersIncluded -- Yes --> sendSignal
-    isAllTeamMembersIncluded -- No --> finish
-    sendSignal --> finish
-```
+When a user clicks 'Just start'
+- The user is added to cache
+- If all team members are in included in the cache, a delayed signal is sent to to broker
+- The broker then broadcasts to all the servers
+- Update team status in DB to 'started'
+- Servers received the signal will then notify frontend to redirect users to the typing page where the game will take place.
+- All cache related to "lobby" will be cleared
