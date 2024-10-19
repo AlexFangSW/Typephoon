@@ -95,7 +95,9 @@ The game will start if one of the requirements are met
 - All users clicked "Just start"
 
 ## Start logic detail
-Setting team status to 'started' might be done by some other service
+Setting team status to 'started' will be done by some other service.
+It will also send a 'Start game' signal.
+
 ### Team full
 When the **last** user is assigned to the team
 - The server that made that action will send a delayed signal to the broker
