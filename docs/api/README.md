@@ -1,7 +1,7 @@
 # API documentation
 ## Auth
-| Method | Route                 | Link                           |
-|--------|-----------------------|--------------------------------|
+| Method | Route                   | Link                           |
+|--------|-------------------------|--------------------------------|
 | POST   | `/api/v1/auth/login`    | [link](./api/v1/auth/login.md) |
 | POST   | `/api/v1/auth/logout`   | [link](./api/v1/auth/login.md) |
 | POST   | `/api/v1/auth/register` | [link](./api/v1/auth/login.md) |
@@ -18,8 +18,8 @@
 | GET       | `/api/v1/game/{ID}/graph`              | Get playthrough progress graph (ex: WPM over time) | [link](./api/v1/auth/login.md) |
 | POST      | `/api/v1/game/{ID}/movements`          | Save player movements                              | [link](./api/v1/auth/login.md) |
 | GET       | `/api/v1/game/{ID}/movements`          | Get player movements (ex: For replay)              | [link](./api/v1/auth/login.md) |
-| POST      | `/api/v1/game/{ID}/match/random/start` | Send 'start' event for random match lobby          | [link](./api/v1/auth/login.md) |
-| POST      | `/api/v1/game/{ID}/match/team/start`   | Send 'start' event for team match lobby            | [link](./api/v1/auth/login.md) |
+| POST      | `/api/v1/game/{ID}/match/start`        | Send 'start' event for lobby                       | [link](./api/v1/auth/login.md) |
+| POST      | `/api/v1/game`                         | Create game                                        | [link](./api/v1/auth/login.md) |
 | WebSocket | `/api/v1/lobby`                        | Websocket connection for lobby                     | [link](./api/v1/auth/login.md) |
 | WebSocket | `/api/v1/in-game`                      | Websocket connection for in game                   | [link](./api/v1/auth/login.md) |
 
