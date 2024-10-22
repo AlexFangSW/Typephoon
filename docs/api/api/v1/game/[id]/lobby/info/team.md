@@ -63,7 +63,7 @@ status: 200
         {
             "id": "ann_JI321iJI",
             "name": "annonymous_123123",
-            "isLeader": true,
+            "isLeader": false,
             "status": "CONNECTED",
             "pb": null
         }
