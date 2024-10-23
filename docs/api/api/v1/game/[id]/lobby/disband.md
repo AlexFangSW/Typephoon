@@ -1,14 +1,14 @@
-# GET: Get words
-Get words for specified game.  
+# POST: Close the lobby (Limited to "Team" mode)
+Only team leaders can use this API.
 
 ## Path
 ```
-/api/v1/game/{ID}/words
+/api/v1/game/{ID}/lobby/disband
 ```
 
 ## Curl
 ```bash
-curl https://{DOMAIN}/api/v1/game/123/gen-word
+curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/disband
 ```
 
 ## Path Params
@@ -20,7 +20,10 @@ curl https://{DOMAIN}/api/v1/game/123/gen-word
 None
 
 ## Authorization
-None
+| Name          | Type   | Description | Example            |
+| ---           | ---    | ---         | ---                |
+| Authorization | string | JWT token   | Bearer xxx.xxx.xxx |
+
 
 ## Headers
 None
@@ -32,7 +35,7 @@ None
 | Key     | Type   | Nullable | Description                          |
 | ---     | ---    | ---      | ---                                  |
 | status  | string |          | Custom response status               |
-| message | string | v        | Words for this game                  |
+| message | string | v        | Success message                      |
 | error   | array  | v        | Contains a list of error description |
 | error[] | string |          | Error string explaining the error    |
 
@@ -41,7 +44,7 @@ None
 status: 200
 {
     "status": "OK",
-    "message": "A lot of words for typing...xxx",
+    "message": "good bye",
     "error": null
 }
 ```
@@ -53,6 +56,17 @@ status: 404
     "message": null,
     "error": [
         "game not found, id: abc123"
+    ]
+}
+```
+
+```json
+status: 401
+{
+    "status": "UNAUTHORIZED",
+    "message": null,
+    "error": [
+        "only team leaders can use this API"
     ]
 }
 ```

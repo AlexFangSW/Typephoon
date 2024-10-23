@@ -1,14 +1,14 @@
-# GET: Get words
-Get words for specified game.  
+# GET: Get countdown timer for in game
+Get in game count down timer in seconds
 
 ## Path
 ```
-/api/v1/game/{ID}/words
+/api/v1/game/{ID}/in-game/countdown
 ```
 
 ## Curl
 ```bash
-curl https://{DOMAIN}/api/v1/game/123/gen-word
+curl https://{DOMAIN}/api/v1/game/{ID}/in-game/countdown
 ```
 
 ## Path Params
@@ -32,7 +32,7 @@ None
 | Key     | Type   | Nullable | Description                          |
 | ---     | ---    | ---      | ---                                  |
 | status  | string |          | Custom response status               |
-| message | string | v        | Words for this game                  |
+| message | int    | v        | Countdown in seconds                 |
 | error   | array  | v        | Contains a list of error description |
 | error[] | string |          | Error string explaining the error    |
 
@@ -41,7 +41,7 @@ None
 status: 200
 {
     "status": "OK",
-    "message": "A lot of words for typing...xxx",
+    "message": 5,
     "error": null
 }
 ```
