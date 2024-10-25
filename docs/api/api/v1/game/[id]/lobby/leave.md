@@ -1,14 +1,14 @@
-# POST: Kick somone out of the lobby (Limited to "Team" mode)
-Only team leaders can use this API
+# POST: Leave the lobby 
+If a team leader uses this, the team is deleted.
 
 ## Path
 ```
-/api/v1/game/{ID}/lobby/kick
+/api/v1/game/{ID}/lobby/leave
 ```
 
 ## Curl
 ```bash
-curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/kick?target_user=abc123
+curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/leave
 ```
 
 ## Path Params
@@ -17,9 +17,7 @@ curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/kick?target_user=abc123
 | ID   | string | Game ID     | abc123  |
 
 ## Query Params
-| Name        | Type   | Required | Description                                       | Example |
-| ---         | ---    | ---      | ---                                               | ---     |
-| target_user | string | v        | User ID. The target user to remove from the lobby | abc123  |
+None
 
 ## Authorization
 | Name          | Type   | Description | Example            |
@@ -46,7 +44,7 @@ None
 status: 200
 {
     "status": "OK",
-    "message": "out of sight, out of mind",
+    "message": "good bye",
     "error": null
 }
 ```
@@ -68,7 +66,7 @@ status: 401
     "status": "UNAUTHORIZED",
     "message": null,
     "error": [
-        "only team leaders can use this API"
+        "who are you !? even annonymous users will have a temporary token"
     ]
 }
 ```
