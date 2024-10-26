@@ -20,9 +20,9 @@ curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/disband
 None
 
 ## Authorization
-| Name          | Type   | Description | Example            |
-| ---           | ---    | ---         | ---                |
-| Authorization | string | JWT token   | Bearer xxx.xxx.xxx |
+| Placement          | Name  | Description      | Example     |
+| ---                | ---   | ---              | ---         |
+| Cookie (HTTP Only) | TP_AT | JWT access token | xxx.xxx.xxx |
 
 
 ## Headers

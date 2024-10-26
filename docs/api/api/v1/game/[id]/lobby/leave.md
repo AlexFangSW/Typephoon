@@ -8,7 +8,7 @@ If a team leader uses this, the team is deleted.
 
 ## Curl
 ```bash
-curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/leave
+curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/leave 
 ```
 
 ## Path Params
@@ -20,9 +20,9 @@ curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/leave
 None
 
 ## Authorization
-| Name          | Type   | Description | Example            |
-| ---           | ---    | ---         | ---                |
-| Authorization | string | JWT token   | Bearer xxx.xxx.xxx |
+| Placement          | Name  | Description      | Example     |
+| ---                | ---   | ---              | ---         |
+| Cookie (HTTP Only) | TP_AT | JWT access token | xxx.xxx.xxx |
 
 
 ## Headers
@@ -66,7 +66,7 @@ status: 401
     "status": "UNAUTHORIZED",
     "message": null,
     "error": [
-        "who are you !? even annonymous users will have a temporary token"
+        "authorization failed"
     ]
 }
 ```

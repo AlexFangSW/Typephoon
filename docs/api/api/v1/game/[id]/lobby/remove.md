@@ -22,9 +22,9 @@ curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/lobby/remove?target_user=abc123
 | target_user | string | v        | User ID. The target user to remove from the lobby | abc123  |
 
 ## Authorization
-| Name          | Type   | Description | Example            |
-| ---           | ---    | ---         | ---                |
-| Authorization | string | JWT token   | Bearer xxx.xxx.xxx |
+| Placement          | Name  | Description      | Example     |
+| ---                | ---   | ---              | ---         |
+| Cookie (HTTP Only) | TP_AT | JWT access token | xxx.xxx.xxx |
 
 
 ## Headers

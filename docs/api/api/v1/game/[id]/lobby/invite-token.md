@@ -8,7 +8,7 @@ Only team leaders can use this API
 
 ## Curl
 ```bash
-curl https://{DOMAIN}/api/v1/game/{ID}/lobby/invite-token
+curl https://{DOMAIN}/api/v1/game/{ID}/lobby/invite-token 
 ```
 
 ## Path Params
@@ -20,9 +20,9 @@ curl https://{DOMAIN}/api/v1/game/{ID}/lobby/invite-token
 None
 
 ## Authorization
-| Name          | Type   | Description | Example            |
-| ---           | ---    | ---         | ---                |
-| Authorization | string | JWT token   | Bearer xxx.xxx.xxx |
+| Placement          | Name  | Description      | Example     |
+| ---                | ---   | ---              | ---         |
+| Cookie (HTTP Only) | TP_AT | JWT access token | xxx.xxx.xxx |
 
 
 ## Headers

@@ -9,7 +9,7 @@ The list might not be complete if some of the accouts are deleted.
 
 ## Curl
 ```bash
-curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/ranking
+curl https://{DOMAIN}/api/v1/game/{ID}/ranking
 ```
 
 ## Path Params
