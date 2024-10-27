@@ -1,10 +1,12 @@
 # API documentation
 ## Auth
-| Method | Path                    | Link                           |
-|--------|-------------------------|--------------------------------|
-| POST   | `/api/v1/auth/login`    | [link](./api/v1/auth/login.md) |
-| POST   | `/api/v1/auth/logout`   | [link]()                       |
-| POST   | `/api/v1/auth/register` | [link]()                       |
+| Method | Path                         | Link                           |
+|--------|------------------------------|--------------------------------|
+| POST   | `/api/v1/auth/login`         | [link](./api/v1/auth/login.md) |
+| POST   | `/api/v1/auth/logout`        | [link]()                       |
+| POST   | `/api/v1/auth/token/refresh` | [link]()                       |
+| POST   | `/api/v1/auth/register`      | [link]()                       |
+| POST   | `/api/v1/auth/ws/token`      | [link]()                       |
 
 ## Game
 | Method    | Path                                   | Description                                             | Link                                             |
