@@ -31,52 +31,55 @@ None
 None
 
 ## Response
-| Key               | Type    | Nullable | Description                                                          |
-| ---               | ---     | ---      | ---                                                                  |
-| status            | string  |          | Custom response status                                               |
-| message           | array   | v        | Array of users                                                       |
-| message[]         | object  |          | User info                                                            |
-| message[].id      | string  |          | User id                                                              |
-| message[].name    | string  |          | Username                                                             |
-| message[].ranking | integer | v        | User ranking. Defaults to `null` if the user didn't finish           |
-| message[].status  | string  |          | `DISCONNECTED`, `IN_GAME`, `FINISHED`...etc                          |
-| message[].wpm     | integer | v        | WPM for this game. Defaults to `null` if the user didn't finish      |
-| message[].acc     | integer | v        | Accuracy for this game. Defaults to `null` if the user didn't finish |
-| error             | array   | v        | Contains a list of error description                                 |
-| error[]           | string  |          | Error string explaining the error                                    |
+| Key                       | Type    | Nullable | Description                                                          |
+| ---                       | ---     | ---      | ---                                                                  |
+| status                    | string  |          | Custom response status                                               |
+| message                   | object  | v        |                                                                      |
+| message.players           | array   |          | Array of users                                                       |
+| message.players[]         | object  |          | User info                                                            |
+| message.players[].id      | string  |          | User id                                                              |
+| message.players[].name    | string  |          | Username                                                             |
+| message.players[].ranking | integer | v        | User ranking. Defaults to `null` if the user didn't finish           |
+| message.players[].status  | string  |          | `DISCONNECTED`, `IN_GAME`, `FINISHED`...etc                          |
+| message.players[].wpm     | integer | v        | WPM for this game. Defaults to `null` if the user didn't finish      |
+| message.players[].acc     | integer | v        | Accuracy for this game. Defaults to `null` if the user didn't finish |
+| error                     | array   | v        | Contains a list of error description                                 |
+| error[]                   | string  |          | Error string explaining the error                                    |
 
 ## Successful Response
 ```json
 status: 200
 {
     "status": "OK",
-    "message": [
-        {
-            "id": "aaabbbccc",
-            "name": "Alex Fang",
-            "ranking": 2,
-            "status": "FINISHED",
-            "wpm": 60,
-            "acc": 90
-        },
-        {
-            "id": "22222",
-            "name": "annonymous_123",
-            "ranking": 1,
-            "status": "FINISHED",
-            "wpm": 55,
-            "acc": 90
-        },
-        {
-            "id": "333333",
-            "name": "annonymous_222",
-            "ranking": null,
-            "status": "DISCONNECTED",
-            "wpm": null,
-            "acc": null
-        }
+    "message": {
+        "players": [
+            {
+                "id": "aaabbbccc",
+                "name": "Alex Fang",
+                "ranking": 2,
+                "status": "FINISHED",
+                "wpm": 60,
+                "acc": 90
+            },
+            {
+                "id": "22222",
+                "name": "annonymous_123",
+                "ranking": 1,
+                "status": "FINISHED",
+                "wpm": 55,
+                "acc": 90
+            },
+            {
+                "id": "333333",
+                "name": "annonymous_222",
+                "ranking": null,
+                "status": "DISCONNECTED",
+                "wpm": null,
+                "acc": null
+            }
 
-    ],
+        ]
+    },
     "error": null
 }
 ```

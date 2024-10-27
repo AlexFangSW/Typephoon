@@ -29,19 +29,22 @@ None
 None
 
 ## Response
-| Key     | Type   | Nullable | Description                          |
-| ---     | ---    | ---      | ---                                  |
-| status  | string |          | Custom response status               |
-| message | int    | v        | Countdown in seconds                 |
-| error   | array  | v        | Contains a list of error description |
-| error[] | string |          | Error string explaining the error    |
+| Key               | Type    | Nullable | Description                          |
+| ---               | ---     | ---      | ---                                  |
+| status            | string  |          | Custom response status               |
+| message           | object  | v        |                                      |
+| message.countdown | integer |          | Countdown in seconds                 |
+| error             | array   | v        | Contains a list of error description |
+| error[]           | string  |          | Error string explaining the error    |
 
 ## Successful Response
 ```json
 status: 200
 {
     "status": "OK",
-    "message": 5,
+    "message": {
+        "countdown": 5
+    },
     "error": null
 }
 ```

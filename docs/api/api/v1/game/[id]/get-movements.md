@@ -1,4 +1,4 @@
-# TODO.... GET: Get player movements
+# GET: Get player movements
 Get player movements for playback
 
 ## Path
@@ -8,18 +8,7 @@ Get player movements for playback
 
 ## Curl
 ```bash
-curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/movements \
-    -d '
-    [
-        {
-            "ts": "2024-10-26T11:24:47.123Z",
-            "key": "a"
-        },
-        {
-            "ts": "2024-10-26T11:24:47.200Z",
-            "key": "b"
-        }
-    ]'
+curl https://{DOMAIN}/api/v1/game/{ID}/movements
 ```
 
 ## Path Params
@@ -31,37 +20,47 @@ curl -XPOST https://{DOMAIN}/api/v1/game/{ID}/movements \
 None
 
 ## Authorization
-| Placement          | Name         | Description      | Example     |
-| ---                | ---          | ---              | ---         |
-| Cookie (HTTP Only) | access_token | JWT access token | xxx.xxx.xxx |
+| Placement          | Name  | Description      | Example     |
+| ---                | ---   | ---              | ---         |
+| Cookie (HTTP Only) | TP_AT | JWT access token | xxx.xxx.xxx |
 
 
 ## Headers
 None
 
 ## Body
-| Key    | Type   | Nullable | Description                          |
-| ---    | ---    | ---      | ---                                  |
-|        | array  |          | A list of movements                  |
-| []     | object |          | Movement object                      |
-| [].ts  | string |          | ISO timestamp (UTC) of the key press |
-| [].key | string |          | The key pressed                      |
+None
 
 
 ## Response
-| Key     | Type   | Nullable | Description                          |
-| ---     | ---    | ---      | ---                                  |
-| status  | string |          | Custom response status               |
-| message | string | v        | Success message                        |
-| error   | array  | v        | Contains a list of error description |
-| error[] | string |          | Error string explaining the error    |
+| Key                     | Type   | Nullable | Description                          |
+| ---                     | ---    | ---      | ---                                  |
+| status                  | string |          | Custom response status               |
+| message                 | object | v        |                                      |
+| message.movements       | array  |          | A list of movements                  |
+| message.movements[]     | object |          | Movement object                      |
+| message.movements[].ts  | string |          | ISO timestamp (UTC) of the key press |
+| message.movements[].key | string |          | The key pressed                      |
+| error                   | array  | v        | Contains a list of error description |
+| error[]                 | string |          | Error string explaining the error    |
 
 ## Successful Response
 ```json
 status: 200
 {
     "status": "OK",
-    "message": "success",
+    "message": {
+        "movements": [
+            {
+                "ts": "2024-10-27T07:27:54.145Z",
+                "key": "a",
+            },
+            {
+                "ts": "2024-10-27T07:27:54.245Z",
+                "key": "b",
+            }
+        ]
+    },
     "error": null
 }
 ```

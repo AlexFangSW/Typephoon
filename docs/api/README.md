@@ -18,16 +18,16 @@
 | GET       | `/api/v1/game/{ID}/lobby/countdown`    | Get lobby count down timer in seconds                   | [link](./api/v1/game/[id]/lobby/countdown.md)    |
 | GET       | `/api/v1/game/{ID}/in-game/countdown`  | Get in game count down timer in seconds                 | [link](./api/v1/game/[id]/in-game/countdown.md)  |
 | GET       | `/api/v1/game/{ID}/ranking`            | Get ranking for multi player game                       | [link](./api/v1/game/[id]/ranking.md)            |
-| POST      | `/api/v1/game/{ID}/movements`          | Save player movements                                   | [link](./api/v1/auth/login.md)                   |
-| GET       | `/api/v1/game/{ID}/movements`          | Get player movements (ex: For replay)                   | [link](./api/v1/auth/login.md)                   |
-| POST      | `/api/v1/game/{ID}/match/start`        | Send 'start' event for lobby                            | [link](./api/v1/auth/login.md)                   |
-| POST      | `/api/v1/game`                         | Create game                                             | [link](./api/v1/auth/login.md)                   |
-| WebSocket | `/api/v1/lobby`                        | Websocket connection for lobby                          | [link](./api/v1/auth/login.md)                   |
-| WebSocket | `/api/v1/in-game`                      | Websocket connection for in game                        | [link](./api/v1/auth/login.md)                   |
+| POST      | `/api/v1/game/{ID}/movements`          | Save player movements                                   | [link]()                                         |
+| GET       | `/api/v1/game/{ID}/movements`          | Get player movements (ex: For replay)                   | [link]()                                         |
+| POST      | `/api/v1/game/{ID}/match/start`        | Send 'start' event for lobby                            | [link]()                                         |
+| POST      | `/api/v1/game`                         | Create game (Limited to "Team" mode)                    | [link]()                                         |
+| WebSocket | `/api/v1/lobby`                        | Websocket connection for lobby                          | [link]()                                         |
+| WebSocket | `/api/v1/in-game`                      | Websocket connection for in game                        | [link]()                                         |
 
 ## User
-| Method | Path                                 | Description                              | Link                           |
-|--------|--------------------------------------|------------------------------------------|--------------------------------|
-| GET    | `/api/v1/user/me/personal-page`      | Default data for rendering personal page | [link](./api/v1/auth/login.md) |
-| GET    | `/api/v1/user/me/progress-over-time` | Graph data for progress over time        | [link](./api/v1/auth/login.md) |
-| GET    | `/api/v1/user/me/history`            | Get gameplay history                     | [link](./api/v1/auth/login.md) |
+| Method | Path                                 | Description                              | Link     |
+|--------|--------------------------------------|------------------------------------------|----------|
+| GET    | `/api/v1/user/me/personal-page`      | Initial data for rendering personal page | [link]() |
+| GET    | `/api/v1/user/me/progress-over-time` | Graph data for progress over time        | [link]() |
+| GET    | `/api/v1/user/me/history`            | Get gameplay history                     | [link]() |
