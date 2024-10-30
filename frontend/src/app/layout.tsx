@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${sourceCodeProRegular.className}`}
+        className={`p-2 ${sourceCodeProRegular.className}`}
       >
         <Navbar />
         {children}

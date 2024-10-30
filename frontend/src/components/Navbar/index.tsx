@@ -18,11 +18,11 @@ export default async function Navbar() {
             width={35}
             height={35}
           />
-          <p className="text-[2rem]">Typephoon</p>
+          <p >Typephoon</p>
         </Link>
 
         {/* game modes */}
-        <div className="">
+        <div className="flex flex-row justify-between justify-center items-center">
           <Link href={"/"}>
             Solo
           </Link>
