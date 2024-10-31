@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import styles from "./app.module.scss";
 import Footer from "@/components/Footer"
 import Navbar from "@/components/Navbar";
 const sourceCodeProRegular = localFont({
@@ -20,11 +21,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`p-2 ${sourceCodeProRegular.className}`}
+        className={`${styles.bg_color} ${sourceCodeProRegular.className}`}
       >
-        <Navbar />
-        {children}
-        {/*  <Footer /> */}
+        <div className={styles.container}>
+          <Navbar />
+          {children}
+          {/*  <Footer /> */}
+        </div>
       </body>
     </html>
   );

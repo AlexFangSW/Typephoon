@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import Image from 'next/image'
 import Link from "next/link"
+import styles from "./Navbar.module.scss"
 
 export default async function Navbar() {
   const cookieStore = await cookies()
@@ -9,21 +10,21 @@ export default async function Navbar() {
 
   return (
     <>
-      <div className="flex flex-row justify-between justify-center items-center text-[1.5rem]">
+      <div className={styles.container}>
         {/* icon */}
-        <Link href={"/"} className="flex flex-row justify-center items-center gap-x-1">
+        <Link href={"/"} className={styles.icon}>
           <Image
             src="/typephoonIcon.png"
             alt="Icon"
             width={35}
             height={35}
           />
-          <p >Typephoon</p>
+          <div >Typephoon</div>
         </Link>
 
         {/* game modes */}
-        <div className="flex flex-row justify-between justify-center items-center">
-          <Link href={"/"}>
+        <div className={styles.game_modes}>
+          <Link href={"/"} className={styles.selected}>
             Solo
           </Link>
           <Link href={"/"}>
@@ -35,9 +36,16 @@ export default async function Navbar() {
         </div>
 
         {/* user profile */}
-        <div>
+        <div className={styles.profile}>
           <Link href={"/"}>
-            {isLoggedIn ? "Profile" : "Login"}
+            {isLoggedIn ? "Profile" :
+              <Image
+                src="/profile.svg"
+                alt="Profile"
+                width={35}
+                height={35}
+              />
+            }
           </Link>
         </div>
       </div>
