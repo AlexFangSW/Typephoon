@@ -11,23 +11,26 @@
     - `pushWord`
     - `popWord`
 
-- HistoryManager
+- HistoryStore
     - Append only list of movements
     - `push`
+    - `currentState`
 
 - HistoryData
     - wordIndex: int
     - charIndex: int
     - key: str
     - ts: iso ts
-    - correct: bool
+    - status: correct, wrong, n/a
 
-- TextManager
-    - 2D array that contains each charactor which is also reponsible of updating the UI.
+- TextStore
+    - 2D array that contains each charactor
     - `pushChar`
     - `popChar`
     - `pushWord`
     - `popWord`
+
+- Validator
     - `validate`
 
 - TextData
@@ -35,9 +38,17 @@
     - key 
     - extra: bool
 
-- CursorManager
+- TextRenderer
+    - responsible for updating the UI
+    - `pushChar(TextData)`
+    - `popChar(TextData)`
+    - `pushWord(TextData[])`
+    - `popWord(TextData[])`
+
+- CursorRenderer
     - Moves the cursor to the correct position
     - current state
     - `move`
+
 
 - The game ands once the wordIndex and charIndex is at the last postion
