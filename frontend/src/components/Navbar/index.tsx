@@ -3,6 +3,23 @@ import Image from 'next/image'
 import Link from "next/link"
 import styles from "./Navbar.module.scss"
 
+function GameModes() {
+  // check the path to see which game mode should be highlighted
+  return <div className={styles.game_modes}>
+    <Link href={"/"} className={styles.selected}>
+      Solo
+    </Link>
+    <Link href={"/"}>
+      Random
+    </Link>
+    <Link href={"/"}>
+      Team
+    </Link>
+  </div>
+}
+
+
+
 export default async function Navbar() {
   const cookieStore = await cookies()
   console.log("cookieStore: ", cookieStore.getAll())
@@ -23,17 +40,7 @@ export default async function Navbar() {
         </Link>
 
         {/* game modes */}
-        <div className={styles.game_modes}>
-          <Link href={"/"} className={styles.selected}>
-            Solo
-          </Link>
-          <Link href={"/"}>
-            Random
-          </Link>
-          <Link href={"/"}>
-            Team
-          </Link>
-        </div>
+        <GameModes />
 
         {/* user profile */}
         <div className={styles.profile}>
