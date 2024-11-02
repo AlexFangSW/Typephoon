@@ -5,6 +5,8 @@
 :root {
   --highlight: #0EB99B;
   --primary-words: #9BA4B5;
+  --untyped-words: #5D626C;
+  --yellow: #ebe002;
 }
 
 * {
@@ -16,4 +18,13 @@
 a {
   text-decoration: none;
   color: inherit;
+}
+
+.base_button {
+  background-color: transparent;
+  padding: 0.5rem;
+  border-style: solid;
+  border-radius: 0.5rem;
+  font-size: 2rem;
+  cursor: pointer;
 }

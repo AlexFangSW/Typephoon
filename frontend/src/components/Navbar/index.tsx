@@ -7,13 +7,13 @@ function GameModes() {
   // check the path to see which game mode should be highlighted
   return <div className={styles.game_modes}>
     <Link href={"/"} className={styles.selected}>
-      Solo
+      SOLO
     </Link>
     <Link href={"/"}>
-      Random
+      RANDOM
     </Link>
     <Link href={"/"}>
-      Team
+      TEAM
     </Link>
   </div>
 }
@@ -36,7 +36,7 @@ export default async function Navbar() {
             width={35}
             height={35}
           />
-          <div >Typephoon</div>
+          <div>TYPEPHOON</div>
         </Link>
 
         {/* game modes */}
@@ -44,7 +44,7 @@ export default async function Navbar() {
 
         {/* user profile */}
         <div className={styles.profile}>
-          <Link href={"/"}>
+          <Link href={"/login"}>
             {isLoggedIn ? "Profile" :
               <Image
                 src="/profile.svg"
