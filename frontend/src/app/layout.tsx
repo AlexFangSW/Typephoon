@@ -5,7 +5,7 @@ import styles from "./app.module.scss";
 import Footer from "@/components/Footer"
 import Navbar from "@/components/Navbar";
 const sourceCodeProRegular = localFont({
-  src: "./fonts/SourceCodePro-Regular.ttf",
+  src: "../fonts/SourceCodePro-Regular.ttf",
 });
 
 export const metadata: Metadata = {
@@ -23,10 +23,16 @@ export default function RootLayout({
       <body
         className={`${styles.bg_color} ${sourceCodeProRegular.className}`}
       >
-        <div className={styles.container}>
-          <Navbar />
-          {children}
-          <Footer />
+        <div className={`${styles.container}`}>
+          <div className={styles.nav_container}>
+            <Navbar />
+          </div>
+          <div className={styles.content_container}>
+            {children}
+          </div>
+          <div className={styles.footer_container}>
+            <Footer />
+          </div>
         </div>
       </body>
     </html>

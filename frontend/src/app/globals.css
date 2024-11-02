@@ -7,6 +7,11 @@
   --primary-words: #9BA4B5;
   --untyped-words: #5D626C;
   --yellow: #ebe002;
+  --background-color: #20262E;
+  --nav-height: 15vh;
+  --content-height: 70vh;
+  --content-padding: 10vh;
+  --footer-height: 5vh;
 }
 
 * {

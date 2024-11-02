@@ -5,8 +5,6 @@ export default function Attribution() {
   return (
     <div className={styles.container} >
       <div className={styles.attribution_container}>
-        <h1 className={styles.title}>ATRRIBUTIONS</h1>
-
         {/* main icon */}
         <div className={styles.attribution}>
           <Image
