@@ -9,12 +9,12 @@ export default function Words({ num }: { num: number }) {
   }
 
   return <div className={styles.word_box}>
-    <div className={styles.container}>
+    <div className={`${styles.container}`}>
       {words.map((word, index) => {
         if (index < 2) {
-          return <div className={index.toString()}>{word}</div>
+          return <div key={index.toString()}>{word}</div>
         }
-        return <div className={index.toString() + " " + styles.words}>{word}</div>
+        return <div className={styles.words} key={index.toString()}>{word}</div>
       })}
     </div>
   </div>

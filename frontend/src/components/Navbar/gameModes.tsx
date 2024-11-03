@@ -10,7 +10,7 @@ export default function GameModes() {
     <Link href={"/"} className={pathname == "/" || pathname == "/result" ? styles.selected : ""}>
       SOLO
     </Link>
-    <Link href={"/random"} className={pathname.startsWith("/random") ? styles.selected : ""}>
+    <Link href={"/random/lobby"} className={pathname.startsWith("/random") ? styles.selected : ""}>
       RANDOM
     </Link>
     <Link href={"/team"} className={pathname.startsWith("/team") ? styles.selected : ""}>

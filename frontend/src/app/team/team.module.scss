@@ -1,0 +1,39 @@
+.container {
+  width: 30%;
+  min-height: var(--content-height);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 2rem;
+
+  hr {
+    width: 100%;
+    border-style: solid;
+    border-color: var(--primary-word);
+  }
+}
+
+.button_fit {
+  width: 100%
+}
+
+.invite_token_container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
+  font-size: 2rem;
+  text-align: center;
+
+  input {
+    height: 2rem;
+    padding: 0.5rem;
+    background-color: transparent;
+    border-color: var(--primary-word);
+    border-style: solid;
+    border-radius: 0.3rem;
+    font-size: 2rem;
+  }
+}
