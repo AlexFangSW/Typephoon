@@ -1,3 +1,4 @@
+'use client'
 import Title from "@/components/Title";
 import Words from "@/components/Words";
 

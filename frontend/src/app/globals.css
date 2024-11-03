@@ -12,6 +12,7 @@
   --content-height: 70vh;
   --content-padding: 10vh;
   --footer-height: 5vh;
+  --content-width: 80%;
 }
 
 * {

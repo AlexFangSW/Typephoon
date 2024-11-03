@@ -1,7 +1,7 @@
 'use client'
-import styles from "./YellowButton.module.scss"
+import styles from "./PerpleButton.module.scss"
 
-export default function YellowButton(
+export default function PerpleButton(
   {
     text,
     action = () => { },

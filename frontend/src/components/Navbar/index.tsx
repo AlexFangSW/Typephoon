@@ -2,22 +2,7 @@ import { cookies } from "next/headers"
 import Image from 'next/image'
 import Link from "next/link"
 import styles from "./Navbar.module.scss"
-
-function GameModes() {
-  // check the path to see which game mode should be highlighted
-  return <div className={styles.game_modes}>
-    <Link href={"/"} className={styles.selected}>
-      SOLO
-    </Link>
-    <Link href={"/"}>
-      RANDOM
-    </Link>
-    <Link href={"/"}>
-      TEAM
-    </Link>
-  </div>
-}
-
+import GameModes from "./gameModes"
 
 
 export default async function Navbar() {
