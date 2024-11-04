@@ -3,6 +3,6 @@ import styles from "./login.module.scss"
 
 export default function Page() {
   return <div className={styles.container}>
-    <PrimaryButton text="Login with Google" />
+    <PrimaryButton>LOGIN WITH GOOGLE</PrimaryButton>
   </div>
 }

@@ -13,6 +13,16 @@
   font-size: 1.5rem;
   column-gap: 1rem;
   justify-content: center;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+
+    path {
+      stroke: var(--highlight);
+      stroke-width: 2px;
+    }
+  }
 }
 
 .token_label {
@@ -42,6 +52,17 @@
 
     button {
       font-size: 1rem;
+    }
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+
+      * {
+        fill: var(--highlight);
+        stroke: var(--highlight);
+        stroke-width: 2px;
+      }
     }
   }
 

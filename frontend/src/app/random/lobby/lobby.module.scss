@@ -40,8 +40,14 @@
     text-align: left;
     padding-inline: 1rem;
 
-    button {
-      font-size: 1rem;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+
+      path {
+        stroke: var(--highlight);
+        stroke-width: 2px;
+      }
     }
   }
 

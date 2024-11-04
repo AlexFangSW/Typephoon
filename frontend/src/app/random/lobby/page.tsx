@@ -1,16 +1,8 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton"
 import styles from "./lobby.module.scss"
 import RedButton from "@/components/Buttons/RedButton"
-
-function InviteToken({ token }: { token: string }) {
-  return <div className={styles.token_container}>
-    <div className={styles.token_label} >INVITE TOKEN:</div>
-    <div className={styles.token}>
-      <div >{token}</div>
-      <PrimaryButton text="🗐" />
-    </div>
-  </div >
-}
+import CheckIcon from "@/components/Icons/CheckIcon"
+import StarsIcon from "@/components/Icons/StarsIcon"
 
 function PlayerListItem(
   {
@@ -27,10 +19,10 @@ function PlayerListItem(
     }) {
 
   return <tr>
-    <td>{isUser ? "⦾" : ""}</td>
+    <td>{isUser ? <StarsIcon /> : ""}</td>
     <td>{username}</td>
     <td>{pb}</td>
-    <td>{justStart ? "✓" : ""}</td>
+    <td>{justStart ? <CheckIcon /> : ""}</td>
   </tr>
 
 }
@@ -63,8 +55,8 @@ export default function Page() {
     <div>{"[ The game will start in 30 seconds ]"}</div>
     {/* buttons */}
     <div className={styles.button_container}>
-      <RedButton text="LEAVE" />
-      <PrimaryButton text="READY" />
+      <RedButton >LEAVE</RedButton >
+      <PrimaryButton >READY</PrimaryButton>
     </div>
-  </div>
+  </div >
 }

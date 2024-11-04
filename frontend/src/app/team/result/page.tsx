@@ -13,8 +13,8 @@ export default function Page() {
     <RankingGraph />
     {/* buttons */}
     <div className={styles.button_container} >
-      <PerpleButton text="REPLAY" />
-      <PrimaryButton text="NEXT GAME" />
+      <PerpleButton >REPLAY</PerpleButton>
+      <PrimaryButton >NEXT GAME</PrimaryButton>
     </div>
     {/* wpm graph */}
     <GraphDummy />

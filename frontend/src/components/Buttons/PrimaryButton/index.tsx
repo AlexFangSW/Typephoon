@@ -1,18 +1,21 @@
 'use client'
+import { ReactNode } from "react"
 import styles from "./PrimaryButton.module.scss"
 
 export default function PrimaryButton(
   {
-    text,
+    children,
     action = () => { },
     className = ""
   }:
     {
-      text: string,
+      children?: ReactNode,
       action?: Function,
       className?: string
     }) {
   return <>
-    <button className={`${styles.color} base_button ${className}`} onClick={() => { action() }}>{text}</button>
+    <button className={`${styles.color} base_button ${className}`} onClick={() => { action() }}>
+      {children}
+    </button>
   </>
 }

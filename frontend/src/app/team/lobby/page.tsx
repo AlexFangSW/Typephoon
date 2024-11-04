@@ -1,13 +1,17 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton"
 import styles from "./lobby.module.scss"
 import RedButton from "@/components/Buttons/RedButton"
+import CopyIcon from "@/components/Icons/CopyIcon"
+import CrownIcon from "@/components/Icons/CrownIcon"
 
 function InviteToken({ token }: { token: string }) {
   return <div className={styles.token_container}>
     <div className={styles.token_label} >INVITE TOKEN:</div>
     <div className={styles.token}>
       <div >{token}</div>
-      <PrimaryButton text="🗐" />
+      <PrimaryButton >
+        <CopyIcon />
+      </PrimaryButton>
     </div>
   </div >
 }
@@ -27,10 +31,10 @@ function PlayerListItem(
     }) {
 
   return <tr>
-    <td>{isLeader ? "👑" : ""}</td>
+    <td>{isLeader ? <CrownIcon /> : ""}</td>
     <td>{username}</td>
     <td>{pb}</td>
-    <td>{isLeader ? "" : <RedButton text="REMOVE" />}</td>
+    <td>{isLeader ? "" : <RedButton>REMOVE</RedButton>}</td>
   </tr>
 
 }
@@ -66,8 +70,8 @@ export default function Page() {
     <PlayerList />
     {/* buttons */}
     <div className={styles.button_container}>
-      <RedButton text="LEAVE" />
-      <PrimaryButton text="START" />
+      <RedButton>LEAVE</RedButton>
+      <PrimaryButton>START</PrimaryButton>
     </div>
   </div>
 }

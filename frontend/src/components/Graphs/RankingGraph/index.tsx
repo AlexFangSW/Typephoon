@@ -1,8 +1,11 @@
 import styles from "./RankingGraph.module.scss"
 import YellowButton from "@/components/Buttons/YellowButton"
+import RefreshIcon from "@/components/Icons/RefreshIcon"
 
 function RefreshRanking() {
-  return <YellowButton text="⟳" className={styles.refresh_button} />
+  return <YellowButton className={styles.refresh_button}>
+    <RefreshIcon />
+  </YellowButton>
 }
 
 function RankingRow(

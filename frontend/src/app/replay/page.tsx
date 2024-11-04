@@ -13,7 +13,7 @@ export default function Page() {
       <Words num={40} />
       {/* playback button */}
       <div className={styles.playback_buttin_container} >
-        <RedButton text="EXIT" />
+        <RedButton>EXIT</RedButton>
       </div>
     </div>
   );

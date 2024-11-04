@@ -12,8 +12,8 @@ export default function Page() {
     <GraphDummy />
     {/* buttons */}
     <div className={styles.button_container} >
-      <PerpleButton text="REPLAY" />
-      <PrimaryButton text="NEXT GAME" />
+      <PerpleButton >REPLAY</PerpleButton>
+      <PrimaryButton >NEXT GAME</PrimaryButton>
     </div>
   </div>
 }
