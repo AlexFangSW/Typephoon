@@ -1,13 +1,12 @@
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./Navbar.module.scss";
 import GameModes from "./gameModes";
+import { verifyLogin } from "@/middleware";
+import LogoutButton from "../Buttons/LogoutButton";
 
 export default async function Navbar() {
-  const cookieStore = await cookies();
-  console.log("cookieStore: ", cookieStore.getAll());
-  const isLoggedIn = false;
+  const isLoggedIn = await verifyLogin();
 
   return (
     <>
@@ -23,15 +22,16 @@ export default async function Navbar() {
 
         {/* user profile */}
         <div className={styles.profile}>
-          <Link href={"/profile"}>
-            {isLoggedIn ? (
-              "Profile"
-            ) : (
-              <Image src="/profile.svg" alt="Profile" width={35} height={35} />
-            )}
-          </Link>
+          {isLoggedIn ? <Link href={"/profile"}>Profile |</Link> : ""}
+
+          {isLoggedIn ? (
+            <LogoutButton />
+          ) : (
+            <a href="/login">Login</a>
+          )}
         </div>
-      </div>
+
+      </div >
     </>
   );
 }

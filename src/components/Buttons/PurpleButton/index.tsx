@@ -4,7 +4,7 @@ import styles from "./PurpleButton.module.scss";
 
 export default function PurpleButton({
   children,
-  action = () => {},
+  action = () => { },
   className = "",
 }: {
   children?: ReactNode;

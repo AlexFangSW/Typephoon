@@ -1,8 +1,9 @@
-import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import styles from "./login.module.scss"
+import GoogleLoginButton from "@/components/Buttons/GoogleLogin";
+import { redirectToLogin } from "./actions";
 
 export default function Page() {
   return <div className={styles.container}>
-    <PrimaryButton>LOGIN WITH GOOGLE</PrimaryButton>
+    <GoogleLoginButton action={redirectToLogin} />
   </div>
 }

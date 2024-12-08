@@ -39,9 +39,15 @@
 }
 
 .profile {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
   a {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-inline: 0.5rem;
   }
 }

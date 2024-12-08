@@ -4,6 +4,8 @@ import "./globals.css";
 import styles from "./app.module.scss";
 import Footer from "@/components/Footer"
 import Navbar from "@/components/Navbar";
+
+
 const sourceCodeProRegular = localFont({
   src: "../fonts/SourceCodePro-Regular.ttf",
 });

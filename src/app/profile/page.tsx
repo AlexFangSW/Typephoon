@@ -1,3 +1,5 @@
+'use client'
+
 import GraphDummy from "@/components/Graphs/GraphDummy";
 import styles from "./profile.module.scss";
 import PurpleButton from "@/components/Buttons/PurpleButton";
@@ -48,7 +50,7 @@ function Summary({
   );
 }
 
-async function ProgressOverTime() {
+function ProgressOverTime() {
   return (
     <div className={styles.progress_over_time}>
       <div>PROGRESS OVER TIME</div>
