@@ -1,7 +1,7 @@
 "use client";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import styles from "./lobby.module.scss";
-import RedButton from "@/components/Buttons/RedButton";
+import { useQuery } from "@tanstack/react-query";
 
 function PlayerListItem({
   isUser,
@@ -44,6 +44,12 @@ function CountdownText() {
 }
 
 export default function Page() {
+  // Click new game, start WS connection, fetch lobby info on each WS trigger
+  // Leave game when LEAVE button is clicked or when user closes tab, send disconnect message, close WS connection
+  // Pool countdown every second, consider network latency
+  // When countdown reaches 0, WS will send start game message, frontend will redirect to game page
+  // If WS send reconect message, reconnect WS.
+
   return (
     <div className={styles.container}>
       {/* title */}
