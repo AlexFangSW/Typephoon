@@ -32,29 +32,26 @@
 }
 
 .table {
-  width: 100%;
-  min-width: 100%;
+  min-width: 80%;
+
+  border-radius: 1rem;
+  border-style: solid;
+  border-width: 2px;
 
   th,
   td {
-    text-align: left;
+    text-align: center;
     padding-inline: 1rem;
-
-    svg {
-      width: 1.5rem;
-      height: 1.5rem;
-
-      path {
-        stroke: var(--highlight);
-        stroke-width: 2px;
-      }
-    }
   }
 
   tr {
     box-shadow: 0px 1px 0px 0px var(--primary-words);
     height: 1.5lh;
     font-size: 1.5rem;
+
+    &:last-child {
+      box-shadow: none;
+    }
   }
 }
 
@@ -62,4 +59,31 @@
   display: flex;
   padding-top: 1rem;
   column-gap: 10rem;
+}
+
+.me {
+  font-weight: bold;
+  color: var(--highlight);
+}
+
+
+.lobby_title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary-words);
+}
+
+.players_header {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-words);
+}
+
+.countdown {
+  font-size: 1.5rem;
+}
+
+.highlight {
+  color: var(--highlight);
+  font-weight: bold;
 }
