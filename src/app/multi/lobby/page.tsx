@@ -54,7 +54,7 @@ export default function Page() {
       <CountdownText />
       {/* buttons */}
       <div className={styles.button_container}>
-        <RedButton>LEAVE</RedButton>
+        {/* <RedButton>LEAVE</RedButton> */}
         <PrimaryButton>New Game</PrimaryButton>
       </div>
     </div>
