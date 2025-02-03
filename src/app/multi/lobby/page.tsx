@@ -77,17 +77,46 @@ export default function Page() {
   const [players, setPlayers] = useState<LobbyPlayersResponse | undefined>()
   const [isQueuedIn, setIsQueuedIn] = useState(false)
   const [countdown, setCountdown] = useState(-1)
+  const [gameID, setGameID] = useState("")
 
   useEffect(() => {
-    if (!!isQueuedIn) {
+    if (!isQueuedIn) {
       return
     }
-    ws.current = new WebSocket(`${process.env.BACKEND_WS_HOST}/lobby/queue-in/ws`)
+    console.log("Is queued in", isQueuedIn)
+    ws.current = new WebSocket(`/api/v1/lobby/queue-in/ws`)
+
+    // nothing to do here
     ws.current.onopen = () => { console.log("websocket opened") }
-    ws.current.onmessage = (ev) => { console.log("websocket got message: ", ev.data) }
+
+    // receive update event and fetch new player list
+    ws.current.onmessage = async (ev) => {
+      // got message
+      const raw_data = await ev.data
+      const data = JSON.parse(raw_data)
+      console.log("websocket got message: ", data)
+      if (data?.event === "INIT") {
+        console.log("set game id", data.game_id)
+        setGameID(data.game_id)
+      }
+
+      // send message
+      const textMsg = JSON.stringify({ event: 'PONG' })
+      console.log("Sending ", textMsg)
+      ws.current?.send(textMsg)
+
+      await fetch(`/api/v1/lobby/players?game_id=${data.game_id}`)
+        .then((data) => data.json())
+        .then((data) => console.log("players: ", data))
+        .catch((error) => { console.log("fetch error~~", error) })
+    }
+
+    // Implement reconnect (with prev-game-id)
     ws.current.onclose = () => { console.log("websocket closed") }
 
-    return () => { ws.current ? ws.current.close() : "" }
+    return () => {
+      ws.current ? ws.current.close(1000, "user left") : ""
+    }
   }, [isQueuedIn])
 
   return (

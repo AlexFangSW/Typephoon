@@ -1,0 +1,20 @@
+http:
+  services:
+    frontend:
+      loadBalancer:
+        servers:
+          - url: http://{{ env "FRONTEND_HOST"}}
+
+    backend:
+      loadBalancer:
+        servers:
+          - url: http://{{ env "BACKEND_HOST"}}
+
+  routers:
+    frontend:
+      rule: "PathPrefix(`/`)"
+      service: "frontend"
+
+    backend:
+      rule: "PathPrefix(`/api/v1`)"
+      service: "backend"
