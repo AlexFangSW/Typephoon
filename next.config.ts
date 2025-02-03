@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { env } from "process";
+// import { env } from "process";
 
 
 const nextConfig: NextConfig = {
@@ -7,12 +7,12 @@ const nextConfig: NextConfig = {
   sassOptions: {
     silenceDeprecations: ["legacy-js-api"],
   },
-  rewrites: async () => [
-    {
-      source: '/api/v1/:path*',
-      destination: `${env.BACKEND_URL}/api/v1/:path*`,
-    }
-  ]
+  // rewrites: async () => [
+  //   {
+  //     source: '/api/v1/:path*',
+  //     destination: `${env.BACKEND_URL}/api/v1/:path*`,
+  //   }
+  // ]
 };
 
 export default nextConfig;

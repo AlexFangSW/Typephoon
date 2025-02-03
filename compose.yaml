@@ -1,0 +1,8 @@
+services:
+  traefik:
+    container_name: typephoon-traefik
+    image: traefik:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./traefik.yaml:/etc/traefik/traefik.yml
