@@ -2,8 +2,29 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import styles from "./lobby.module.scss";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import RedButton from "@/components/Buttons/RedButton";
+import { SessionStoreKeys } from "@/utils/constants";
+import { useRouter } from "next/navigation";
+
+enum LobbyBGMsgEvent {
+  PING = "PING",
+  PONG = "PONG",
+  RECONNECT = "RECONNECT",
+
+  INIT = "INIT",
+  USER_JOINED = "USER_JOINED",
+  USER_LEFT = "USER_LEFT",
+  GET_TOKEN = "GET_TOKEN",
+  GAME_START = "GAME_START",
+}
+
+type LobbyBGMsg = {
+  event: LobbyBGMsgEvent
+  guest_token_key?: string
+  user_id?: string
+  game_id?: number
+}
 
 type LobbyUserInfo = {
   id: string
@@ -13,6 +34,10 @@ type LobbyUserInfo = {
 type LobbyPlayersResponse = {
   me: LobbyUserInfo
   others: LobbyUserInfo[]
+}
+
+type LobbyCountdownResponse = {
+  seconds_left: number
 }
 
 function PlayerListItem({
@@ -29,8 +54,8 @@ function PlayerListItem({
   );
 }
 
-function PlayerList({ players }: { players: LobbyPlayersResponse | undefined }) {
-  let me: LobbyUserInfo | undefined = undefined
+function PlayerList({ players }: { players?: LobbyPlayersResponse }) {
+  let me: LobbyUserInfo | null = null
   let others: LobbyUserInfo[] = []
 
   if (players) {
@@ -38,7 +63,7 @@ function PlayerList({ players }: { players: LobbyPlayersResponse | undefined }) 
     others = players.others
   }
 
-  const placeholderCount = (4 - others.length)
+  const placeholderCount = (4 - others?.length)
   for (let i = 0; i < placeholderCount; i++) {
     others.push({ id: "", name: "" })
   }
@@ -65,22 +90,74 @@ function CountdownText({ countdown }: { countdown: number }) {
   );
 }
 
+async function updatePlayerList({ gameID, setPLayers }: {
+  gameID: number,
+  setPLayers: Dispatch<SetStateAction<LobbyPlayersResponse | undefined>>
+}) {
+  const resp = await fetch(`/api/v1/lobby/players?game_id=${gameID}`)
+  const data: LobbyPlayersResponse = await resp.json()
+  console.log("players: ", data)
+  setPLayers(data)
+}
+
+async function updateCountdown({ gameID, setCountdown }: {
+  gameID: number,
+  setCountdown: Dispatch<SetStateAction<number | undefined>>
+}) {
+  const resp = await fetch(`/api/v1/lobby/countdown?game_id=${gameID}`)
+  const data: LobbyCountdownResponse = await resp.json()
+  console.log("got countdown: ", data.seconds_left)
+  // TODO, floor number 
+  setCountdown(data.seconds_left)
+}
+
 
 export default function Page() {
-  // Click new game, start WS connection, fetch lobby info on each WS trigger
-  // Leave game when LEAVE button is clicked or when user closes tab, send disconnect message, close WS connection
-  // Pool countdown every second, consider network latency
-  // When countdown reaches 0, WS will send start game message, frontend will redirect to game page
-  // If WS send reconect message, reconnect WS.
+  const router = useRouter()
+  const ws = useRef<WebSocket>(null)
+  const [countdownBGID, setCountdownBGID] = useState<NodeJS.Timeout>()
+  const [players, setPlayers] = useState<LobbyPlayersResponse>()
+  const [isQueuedIn, setIsQueuedIn] = useState<boolean>(false)
+  const [countdown, setCountdown] = useState<number>()
+  const [gameID, setGameID] = useState<number>()
+  const [tokenKey, setTokenKey] = useState<string>()
+  const [triggerPlayerUpdate, setTriggerPlayerUpdate] = useState<number>(0)
 
-  const ws = useRef<WebSocket | null>(null)
-  const [players, setPlayers] = useState<LobbyPlayersResponse | undefined>()
-  const [isQueuedIn, setIsQueuedIn] = useState(false)
-  const [countdown, setCountdown] = useState(-1)
-  const [gameID, setGameID] = useState("")
+  // countdown background task
+  useEffect(() => {
+    if (!isQueuedIn || gameID === undefined) {
+      return
+    }
 
+    let intervalID = setInterval(updateCountdown, 1000, { gameID: gameID, setCountdown: setCountdown })
+    setCountdownBGID(intervalID)
+
+  }, [isQueuedIn, gameID])
+
+  // get guest access token
+  useEffect(() => {
+    if (gameID === undefined || tokenKey === undefined) {
+      console.warn(`ignore get token, gameID: ${gameID}, tokenKey: ${tokenKey}`)
+      return
+    }
+    // access token will be set as cookie
+    fetch(`/api/v1/auth/guest-token?key=${tokenKey}`)
+  }, [tokenKey, gameID])
+
+  // update player list
+  useEffect(() => {
+    if (gameID === undefined) {
+      console.warn("ignore update player list, game id not set")
+      return
+    }
+    updatePlayerList({ gameID: gameID, setPLayers: setPlayers })
+  }, [triggerPlayerUpdate, gameID])
+
+
+  // queue in event
   useEffect(() => {
     if (!isQueuedIn) {
+      clearInterval(countdownBGID)
       return
     }
     console.log("Is queued in", isQueuedIn)
@@ -93,26 +170,55 @@ export default function Page() {
     ws.current.onmessage = async (ev) => {
       // got message
       const raw_data = await ev.data
-      const data = JSON.parse(raw_data)
+      const data: LobbyBGMsg = JSON.parse(raw_data)
       console.log("websocket got message: ", data)
-      if (data?.event === "INIT") {
-        console.log("set game id", data.game_id)
-        setGameID(data.game_id)
+
+      switch (data.event) {
+        case LobbyBGMsgEvent.INIT:
+          if (!!data.game_id) {
+            console.log("set game id", data.game_id)
+            window.sessionStorage.setItem(SessionStoreKeys.GAME_ID, data.game_id.toString())
+            setGameID(data.game_id)
+          } else {
+            console.error("Did not get game id from WS init message")
+          }
+          break
+
+        case LobbyBGMsgEvent.USER_JOINED:
+          setTriggerPlayerUpdate(triggerPlayerUpdate + 1)
+          break
+
+        case LobbyBGMsgEvent.USER_LEFT:
+          setTriggerPlayerUpdate(triggerPlayerUpdate + 1)
+          break
+
+        case LobbyBGMsgEvent.GET_TOKEN:
+          if (!!data.guest_token_key) {
+            setTokenKey(data.guest_token_key)
+          } else {
+            console.error("get token without giving token key !!")
+          }
+          break
+
+        case LobbyBGMsgEvent.GAME_START:
+          // redirect and start the game
+          // TODO: game start not sent ??
+          router.push("/multi/game")
+          break
+
+        default:
+          console.log("unknown ws event", data.event)
+          break
       }
 
-      // send message
-      const textMsg = JSON.stringify({ event: 'PONG' })
-      console.log("Sending ", textMsg)
-      ws.current?.send(textMsg)
-
-      await fetch(`/api/v1/lobby/players?game_id=${data.game_id}`)
-        .then((data) => data.json())
-        .then((data) => console.log("players: ", data))
-        .catch((error) => { console.log("fetch error~~", error) })
     }
 
-    // Implement reconnect (with prev-game-id)
-    ws.current.onclose = () => { console.log("websocket closed") }
+    ws.current.onclose = async () => {
+      console.log("websocket closed")
+      if (isQueuedIn) {
+        // TODO Implement reconnect (with prev-game-id)
+      }
+    }
 
     return () => {
       ws.current ? ws.current.close(1000, "user left") : ""
@@ -128,7 +234,7 @@ export default function Page() {
       <PlayerList players={players} />
 
       {/* countdown */}
-      {isQueuedIn ? <CountdownText countdown={countdown} /> : ""}
+      {isQueuedIn && !!countdown ? <CountdownText countdown={countdown} /> : ""}
 
       {/* buttons */}
       <div className={styles.button_container}>

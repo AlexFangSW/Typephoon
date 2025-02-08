@@ -1,3 +1,9 @@
-export const ACCESS_TOKEN = "TP_AT"
-export const REFRESH_TOKEN = "TP_RT"
-export const USERNAME = "USERNAME"
+export enum CookieNames {
+  ACCESS_TOKEN = "TP_AT",
+  REFRESH_TOKEN = "TP_RT",
+  USERNAME = "USERNAME"
+}
+
+export enum SessionStoreKeys {
+  GAME_ID = "GAME_ID"
+}

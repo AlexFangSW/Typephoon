@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 import { cookies } from "next/headers";
-import { ACCESS_TOKEN, USERNAME } from './utils/constants';
+import { CookieNames } from './utils/constants';
 
 export async function verifyLogin() {
   // If the user is not logged in, redirect to login page
   const cookieStore = await cookies()
-  const access_token = cookieStore.get(ACCESS_TOKEN)
-  if (access_token == null) {
+  const username = cookieStore.get(CookieNames.USERNAME)
+  if (username == null) {
     return false
   }
   return true
@@ -16,7 +16,7 @@ export async function verifyLogin() {
 
 export async function getUsername() {
   const cookieStore = await cookies()
-  const username = cookieStore.get(USERNAME)
+  const username = cookieStore.get(CookieNames.USERNAME)
   return username?.value ?? ""
 }
 
