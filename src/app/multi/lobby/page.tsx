@@ -1,7 +1,6 @@
 "use client";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import styles from "./lobby.module.scss";
-import { useQuery } from "@tanstack/react-query";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import RedButton from "@/components/Buttons/RedButton";
 import { SessionStoreKeys } from "@/utils/constants";
@@ -9,8 +8,6 @@ import { useRouter } from "next/navigation";
 
 enum LobbyBGMsgEvent {
   PING = "PING",
-  PONG = "PONG",
-  RECONNECT = "RECONNECT",
 
   INIT = "INIT",
   USER_JOINED = "USER_JOINED",
@@ -90,88 +87,48 @@ function CountdownText({ countdown }: { countdown: number }) {
   );
 }
 
-async function updatePlayerList({ gameID, setPLayers }: {
+async function updatePlayerList({ gameID, setPlayers }: {
   gameID: number,
-  setPLayers: Dispatch<SetStateAction<LobbyPlayersResponse | undefined>>
+  setPlayers: Dispatch<SetStateAction<LobbyPlayersResponse | undefined>>
 }) {
-  const resp = await fetch(`/api/v1/lobby/players?game_id=${gameID}`)
+  const resp = await fetch(`/api/v1/lobby/players?game_id=${gameID}`, { cache: 'no-store' })
   const data: LobbyPlayersResponse = await resp.json()
   console.log("players: ", data)
-  setPLayers(data)
+  setPlayers(data)
 }
 
 async function updateCountdown({ gameID, setCountdown }: {
   gameID: number,
   setCountdown: Dispatch<SetStateAction<number | undefined>>
 }) {
-  const resp = await fetch(`/api/v1/lobby/countdown?game_id=${gameID}`)
+  const resp = await fetch(`/api/v1/lobby/countdown?game_id=${gameID}`, { cache: 'no-store' })
   const data: LobbyCountdownResponse = await resp.json()
-  console.log("got countdown: ", data.seconds_left)
-  // TODO, floor number 
-  setCountdown(data.seconds_left)
+  // console.log("got countdown: ", data.seconds_left)
+  setCountdown(Number(data.seconds_left.toFixed(0)))
 }
 
-
 export default function Page() {
-  const router = useRouter()
   const ws = useRef<WebSocket>(null)
   const [countdownBGID, setCountdownBGID] = useState<NodeJS.Timeout>()
+  const [playersBGID, setPlayersBGID] = useState<NodeJS.Timeout>()
   const [players, setPlayers] = useState<LobbyPlayersResponse>()
   const [isQueuedIn, setIsQueuedIn] = useState<boolean>(false)
   const [countdown, setCountdown] = useState<number>()
   const [gameID, setGameID] = useState<number>()
   const [tokenKey, setTokenKey] = useState<string>()
-  const [triggerPlayerUpdate, setTriggerPlayerUpdate] = useState<number>(0)
 
-  // countdown background task
-  useEffect(() => {
-    if (!isQueuedIn || gameID === undefined) {
-      return
-    }
-
-    let intervalID = setInterval(updateCountdown, 1000, { gameID: gameID, setCountdown: setCountdown })
-    setCountdownBGID(intervalID)
-
-  }, [isQueuedIn, gameID])
-
-  // get guest access token
-  useEffect(() => {
-    if (gameID === undefined || tokenKey === undefined) {
-      console.warn(`ignore get token, gameID: ${gameID}, tokenKey: ${tokenKey}`)
-      return
-    }
-    // access token will be set as cookie
-    fetch(`/api/v1/auth/guest-token?key=${tokenKey}`)
-  }, [tokenKey, gameID])
-
-  // update player list
-  useEffect(() => {
-    if (gameID === undefined) {
-      console.warn("ignore update player list, game id not set")
-      return
-    }
-    updatePlayerList({ gameID: gameID, setPLayers: setPlayers })
-  }, [triggerPlayerUpdate, gameID])
-
-
-  // queue in event
-  useEffect(() => {
-    if (!isQueuedIn) {
-      clearInterval(countdownBGID)
-      return
-    }
-    console.log("Is queued in", isQueuedIn)
-    ws.current = new WebSocket(`/api/v1/lobby/queue-in/ws`)
+  const wsConnect = (): WebSocket => {
+    const ws = new WebSocket(`/api/v1/lobby/queue-in/ws`)
 
     // nothing to do here
-    ws.current.onopen = () => { console.log("websocket opened") }
+    ws.onopen = () => { console.log("websocket opened") }
 
     // receive update event and fetch new player list
-    ws.current.onmessage = async (ev) => {
+    ws.onmessage = async (ev) => {
       // got message
       const raw_data = await ev.data
       const data: LobbyBGMsg = JSON.parse(raw_data)
-      console.log("websocket got message: ", data)
+      // console.log("websocket got message: ", data)
 
       switch (data.event) {
         case LobbyBGMsgEvent.INIT:
@@ -179,17 +136,24 @@ export default function Page() {
             console.log("set game id", data.game_id)
             window.sessionStorage.setItem(SessionStoreKeys.GAME_ID, data.game_id.toString())
             setGameID(data.game_id)
+            updatePlayerList({ gameID: data.game_id, setPlayers: setPlayers })
           } else {
             console.error("Did not get game id from WS init message")
           }
           break
 
         case LobbyBGMsgEvent.USER_JOINED:
-          setTriggerPlayerUpdate(triggerPlayerUpdate + 1)
+          console.log("USER_JOINED")
+          // TODO: the event message sould contain game id so we could just update it
+          //       backend souldn't block it as well
+          // updatePlayerList({ gameID: gameID, setPlayers: setPlayers })
           break
 
         case LobbyBGMsgEvent.USER_LEFT:
-          setTriggerPlayerUpdate(triggerPlayerUpdate + 1)
+          console.log("USER_LEFT")
+          // TODO: the event message sould contain game id so we could just update it
+          //       backend souldn't block it as well
+          // updatePlayerList({ gameID: gameID, setPlayers: setPlayers })
           break
 
         case LobbyBGMsgEvent.GET_TOKEN:
@@ -202,8 +166,9 @@ export default function Page() {
 
         case LobbyBGMsgEvent.GAME_START:
           // redirect and start the game
-          // TODO: game start not sent ??
-          router.push("/multi/game")
+          window.location.href = "/multi/game"
+
+        case LobbyBGMsgEvent.PING:
           break
 
         default:
@@ -213,12 +178,65 @@ export default function Page() {
 
     }
 
-    ws.current.onclose = async () => {
+    ws.onclose = async () => {
       console.log("websocket closed")
       if (isQueuedIn) {
-        // TODO Implement reconnect (with prev-game-id)
+        // reconnect
+        console.log("try ws reconnect")
+        wsConnect()
       }
     }
+
+    ws.onerror = () => {
+      console.error("ws connection error, closing.")
+      ws.close(1000, "unexpected error")
+    }
+
+    return ws
+  }
+
+
+  // countdown background task
+  useEffect(() => {
+    if (!isQueuedIn || gameID === undefined) {
+      return
+    }
+
+    // TODO: remove this player interval...
+    let countdownIntervalID = setInterval(updateCountdown, 1000, { gameID: gameID, setCountdown: setCountdown })
+    let playersIntervalID = setInterval(updatePlayerList, 1000, { gameID: gameID, setPlayers: setPlayers })
+
+    setCountdownBGID(countdownIntervalID)
+    setPlayersBGID(playersIntervalID)
+
+  }, [isQueuedIn, gameID])
+
+  // get guest access token
+  useEffect(() => {
+    if (gameID === undefined || tokenKey === undefined) {
+      console.warn(`ignore get token, gameID: ${gameID}, tokenKey: ${tokenKey}`)
+      return
+    }
+    // access token will be set as cookie
+    fetch(`/api/v1/auth/guest-token?key=${tokenKey}`, { cache: "no-store" })
+  }, [tokenKey, gameID])
+
+
+  // queue in event
+  useEffect(() => {
+    if (!isQueuedIn) {
+      clearInterval(countdownBGID)
+      clearInterval(playersBGID)
+      setPlayers(undefined)
+      setTokenKey(undefined)
+      if (typeof gameID === "number") {
+        window.location.reload()
+      }
+
+      return
+    }
+    console.log("Is queued in", isQueuedIn)
+    ws.current = wsConnect()
 
     return () => {
       ws.current ? ws.current.close(1000, "user left") : ""
@@ -234,7 +252,7 @@ export default function Page() {
       <PlayerList players={players} />
 
       {/* countdown */}
-      {isQueuedIn && !!countdown ? <CountdownText countdown={countdown} /> : ""}
+      {isQueuedIn && typeof countdown === "number" ? <CountdownText countdown={countdown} /> : ""}
 
       {/* buttons */}
       <div className={styles.button_container}>
