@@ -4,7 +4,6 @@ import styles from "./lobby.module.scss";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import RedButton from "@/components/Buttons/RedButton";
 import { SessionStoreKeys } from "@/utils/constants";
-import { useRouter } from "next/navigation";
 
 enum LobbyBGMsgEvent {
   PING = "PING",
@@ -18,9 +17,9 @@ enum LobbyBGMsgEvent {
 
 type LobbyBGMsg = {
   event: LobbyBGMsgEvent
+  game_id: number
   guest_token_key?: string
   user_id?: string
-  game_id?: number
 }
 
 type LobbyUserInfo = {
@@ -93,7 +92,7 @@ async function updatePlayerList({ gameID, setPlayers }: {
 }) {
   const resp = await fetch(`/api/v1/lobby/players?game_id=${gameID}`, { cache: 'no-store' })
   const data: LobbyPlayersResponse = await resp.json()
-  console.log("players: ", data)
+  // console.log("players: ", data)
   setPlayers(data)
 }
 
@@ -110,7 +109,6 @@ async function updateCountdown({ gameID, setCountdown }: {
 export default function Page() {
   const ws = useRef<WebSocket>(null)
   const [countdownBGID, setCountdownBGID] = useState<NodeJS.Timeout>()
-  const [playersBGID, setPlayersBGID] = useState<NodeJS.Timeout>()
   const [players, setPlayers] = useState<LobbyPlayersResponse>()
   const [isQueuedIn, setIsQueuedIn] = useState<boolean>(false)
   const [countdown, setCountdown] = useState<number>()
@@ -132,28 +130,20 @@ export default function Page() {
 
       switch (data.event) {
         case LobbyBGMsgEvent.INIT:
-          if (!!data.game_id) {
-            console.log("set game id", data.game_id)
-            window.sessionStorage.setItem(SessionStoreKeys.GAME_ID, data.game_id.toString())
-            setGameID(data.game_id)
-            updatePlayerList({ gameID: data.game_id, setPlayers: setPlayers })
-          } else {
-            console.error("Did not get game id from WS init message")
-          }
+          // console.log("set game id", data.game_id)
+          window.sessionStorage.setItem(SessionStoreKeys.GAME_ID, data.game_id.toString())
+          setGameID(data.game_id)
+          updatePlayerList({ gameID: data.game_id, setPlayers: setPlayers })
           break
 
         case LobbyBGMsgEvent.USER_JOINED:
-          console.log("USER_JOINED")
-          // TODO: the event message sould contain game id so we could just update it
-          //       backend souldn't block it as well
-          // updatePlayerList({ gameID: gameID, setPlayers: setPlayers })
+          // console.log("USER_JOINED")
+          updatePlayerList({ gameID: data.game_id, setPlayers: setPlayers })
           break
 
         case LobbyBGMsgEvent.USER_LEFT:
-          console.log("USER_LEFT")
-          // TODO: the event message sould contain game id so we could just update it
-          //       backend souldn't block it as well
-          // updatePlayerList({ gameID: gameID, setPlayers: setPlayers })
+          // console.log("USER_LEFT")
+          updatePlayerList({ gameID: data.game_id, setPlayers: setPlayers })
           break
 
         case LobbyBGMsgEvent.GET_TOKEN:
@@ -202,13 +192,13 @@ export default function Page() {
       return
     }
 
-    // TODO: remove this player interval...
-    let countdownIntervalID = setInterval(updateCountdown, 1000, { gameID: gameID, setCountdown: setCountdown })
-    let playersIntervalID = setInterval(updatePlayerList, 1000, { gameID: gameID, setPlayers: setPlayers })
+    const startCountdownInterval = () => {
+      updateCountdown({ gameID: gameID, setCountdown: setCountdown })
+      return setInterval(updateCountdown, 1000, { gameID: gameID, setCountdown: setCountdown })
+    };
+    let countdownIntervalID = startCountdownInterval()
 
     setCountdownBGID(countdownIntervalID)
-    setPlayersBGID(playersIntervalID)
-
   }, [isQueuedIn, gameID])
 
   // get guest access token
@@ -226,7 +216,6 @@ export default function Page() {
   useEffect(() => {
     if (!isQueuedIn) {
       clearInterval(countdownBGID)
-      clearInterval(playersBGID)
       setPlayers(undefined)
       setTokenKey(undefined)
       if (typeof gameID === "number") {
