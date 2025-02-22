@@ -7,6 +7,17 @@ const TypingGame = ({
 }: {
   target: string;
 }) => {
+  // TODO:
+  // - Only set event listener when start event is triggered (from server)
+  // - Save all key strokes for statistics
+  // - Process all other player positions (extra args ?)
+  //
+  // PS: things done outside of this component
+  // - Countdown
+  // - Get player list
+  // - WS connection
+  // - Get target from server
+
   const [currentInput, setCurrentInput] = useState("");
   const [isComplete, setIsComplete] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -15,6 +26,7 @@ const TypingGame = ({
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isComplete) return;
 
+    // BUG: can't delete the first word if we haven't typed anything in the first word
     if (e.key === "Backspace" && e.ctrlKey) {
       e.preventDefault();
       const lastNonSpaceIndex = currentInput.trimEnd().length - 1;
@@ -66,8 +78,6 @@ const TypingGame = ({
   }
 
   const renderText = (): Array<JSX.Element> => {
-    // TODO: render cursor on space !!! and first word
-
     const renderResult: Array<JSX.Element> = [];
 
     const currWords = currentInput.split(" ");
@@ -81,45 +91,56 @@ const TypingGame = ({
       const currWordRender: Array<JSX.Element> = [];
 
       targetChars.forEach((char, charIndex) => {
+        const isFirstChar = currentCharIndex === -1;
         const isCurrent =
-          wordIndex === currentWordIndex && charIndex === currentCharIndex;
+          wordIndex === currentWordIndex &&
+          (charIndex === currentCharIndex || (charIndex === 0 && isFirstChar));
+        const isBehindCursor =
+          wordIndex === currentWordIndex &&
+          (charIndex === currentCharIndex + 1 ||
+            (charIndex === 0 && isFirstChar));
         const isCurrect = char === currChars[charIndex];
 
         currWordRender.push(
           <Fragment key={`char-${wordIndex}-${charIndex}`}>
+            {isCurrent && isFirstChar ? <span className={styles.cursor} /> : ""}
             <span
-              className={
+              className={`${
                 currChars[charIndex]
                   ? isCurrect
                     ? styles.correct
                     : styles.incorrect
                   : ""
-              }
+              } ${styles.target_text} ${
+                isBehindCursor ? styles.behind_cursor : ""
+              }`}
             >
               {char}
             </span>
-            {isCurrent ? <span className={styles.cursor} /> : ""}
+            {isCurrent && !isFirstChar ? (
+              <span className={styles.cursor} />
+            ) : (
+              ""
+            )}
           </Fragment>
         );
       });
 
       // Over type
       if (currChars.length > targetChars.length) {
-        currChars
-          .slice(targetChars.length, currChars.length - 1)
-          .forEach((char, charIndex) => {
-            const realCharIndex = charIndex + targetChars.length;
-            const isCurrent =
-              wordIndex === currentWordIndex &&
-              realCharIndex === currentCharIndex;
+        currChars.slice(targetChars.length).forEach((char, charIndex) => {
+          const realCharIndex = charIndex + targetChars.length;
+          const isCurrent =
+            wordIndex === currentWordIndex &&
+            realCharIndex === currentCharIndex;
 
-            currWordRender.push(
-              <Fragment key={`char-${wordIndex}-${realCharIndex}`}>
-                <span className={styles.incorrect}>{char}</span>
-                {isCurrent ? <span className={styles.cursor} /> : ""}
-              </Fragment>
-            );
-          });
+          currWordRender.push(
+            <Fragment key={`char-${wordIndex}-${realCharIndex}`}>
+              <span className={styles.incorrect}>{char}</span>
+              {isCurrent ? <span className={styles.cursor} /> : ""}
+            </Fragment>
+          );
+        });
       }
 
       renderResult.push(

@@ -4,15 +4,22 @@
     padding: 20px;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 20px;
-    background-color: #252526;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    // background-color: #252526;
+    // border-radius: 8px;
+    // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .target_text {
     color: #808080;
     margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.behind_cursor{
+    color: var(--background-color) ;
 }
 
 .user_input {
@@ -26,14 +33,14 @@
 
 .incorrect {
     color: #f14c4c;
-    background-color: rgba(255, 0, 0, 0.2);
+    // background-color: rgba(255, 0, 0, 0.2);
 }
 
 .cursor {
     font-weight: bold;
     display: inline-block;
     position: absolute;
-    width: 0.5rem;
+    width: 0.8rem;
     height: 1.2em;
     background-color: #d4d4d4;
     margin-left: 1px;
