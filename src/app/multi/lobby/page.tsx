@@ -7,8 +7,6 @@ import { SessionStoreKeys } from "@/utils/constants";
 import { debounce } from "@/utils/common";
 
 enum LobbyBGMsgEvent {
-  PING = "PING",
-
   INIT = "INIT",
   USER_JOINED = "USER_JOINED",
   USER_LEFT = "USER_LEFT",
@@ -199,9 +197,6 @@ export default function Page() {
         case LobbyBGMsgEvent.GAME_START:
           // redirect and start the game
           window.location.href = "/multi/game";
-
-        case LobbyBGMsgEvent.PING:
-          break;
 
         default:
           console.log("unknown ws event", data.event);

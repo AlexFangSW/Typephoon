@@ -4,6 +4,19 @@ import Words from "@/components/Words";
 import { SessionStoreKeys } from "@/utils/constants";
 import { useEffect, Dispatch, SetStateAction, useRef, useState } from "react";
 
+enum GameBGMsgEvent {
+  KEY_STOKE = "KEY_STOKE",
+  START = "START"
+}
+
+type GameBGMsg = {
+  event: GameBGMsgEvent
+  game_id: number
+  user_id?: string
+  word_index?: number
+  char_index?: number
+}
+
 type CountdownResponse = {
   seconds_left: number;
 };
@@ -45,13 +58,15 @@ async function updateCountdown({
 }: {
   gameID: number;
   setCountdown: Dispatch<SetStateAction<number | undefined>>;
-}) {
+}): Promise<number> {
   const resp = await fetch(`/api/v1/game/countdown?game_id=${gameID}`, {
     cache: "no-store",
   });
   const data: CountdownResponse = await resp.json();
   console.log("got countdown: ", data.seconds_left);
-  setCountdown(Number(data.seconds_left.toFixed(0)));
+  const seconds_left = Number(data.seconds_left.toFixed(0))
+  setCountdown(seconds_left);
+  return seconds_left
 }
 
 /*
@@ -59,10 +74,11 @@ Page load:
 - [OK] Get gameID from session storage
 
 After gameID is set:
-- Connect to WebSocket
+- [OK] Connect to WebSocket
 - Get words
 - [OK] Get countdown every second, stop when countdown is 0
 - [OK] Get player list
+- Game Start
 
 In Game:
 - Local keystroke detection
@@ -75,38 +91,64 @@ Finish:
 - Redirect to result page
 */
 export default function Page() {
-  // const ws = useRef<WebSocket>(null);
+  const ws = useRef<WebSocket>(null);
   const [players, setPlayers] = useState<GamePlayersResponse>();
   const [countdown, setCountdown] = useState<number>();
-  const [countdownBGID, setCountdownBGID] = useState<NodeJS.Timeout>();
+  const [start, setStart] = useState<boolean>();
 
-  // TODO: handle error when gameID is not set
+  // TODO: define structure
+  // Hmmm.... useState is async, that will cause some truble...
+  const [words, setWords] = useState<string>();
+  const [currentInput, setCurrentInput] = useState<string>();
+
   const gameID = window.sessionStorage.getItem(SessionStoreKeys.GAME_ID);
+  if (!gameID) {
+    // redirect back to lobby if game id is not found
+    window.location.href = "/multi/lobby";
+  }
 
-  useEffect(() => {
-    if (!gameID) return;
-    updatePlayerList({ gameID: Number(gameID), setPlayers: setPlayers });
+  updatePlayerList({ gameID: Number(gameID), setPlayers: setPlayers })
+  updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
 
-    const startCountdownInterval = () => {
-      updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown });
-      return setInterval(updateCountdown, 1000, {
-        gameID: Number(gameID),
-        setCountdown: setCountdown,
-      });
+  // update countdown every second
+  const updateCountdownBG = async () => {
+    setTimeout(() => {
+      updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
+        .then((seconds_left) => { seconds_left > 0 ? updateCountdownBG() : null })
+    }, 1000)
+  }
+  updateCountdownBG()
+
+  const wsConnect = ({ gameID }: { gameID: number }): WebSocket => {
+    const ws = new WebSocket(`/api/v1/game/ws?game_id=${gameID}`);
+
+    // nothing to do here
+    ws.onopen = () => {
+      console.log("websocket opened");
     };
-    let countdownIntervalID = startCountdownInterval();
-    setCountdownBGID(countdownIntervalID);
-  }, [gameID]);
 
-  useEffect(() => {
-    if (!countdown || countdown > 0) {
-      return;
+
+    // recive keystroke event
+    ws.onmessage = async (ev) => {
+      const raw_data = await ev.data;
+      const data: GameBGMsg = JSON.parse(raw_data);
+      console.log("websocket got message: ", data)
     }
 
-    if (countdown === 0) {
-      clearInterval(countdownBGID);
-    }
-  }, [countdown]);
+    ws.onclose = async () => {
+      console.log("websocket closed");
+      wsConnect({ gameID: Number(gameID) });
+    };
+
+    ws.onerror = () => {
+      console.error("ws connection error, closing.");
+      ws.close(1000, "unexpected error");
+    };
+
+    return ws;
+  };
+
+  ws.current = wsConnect({ gameID: Number(gameID) });
 
   return (
     <>
