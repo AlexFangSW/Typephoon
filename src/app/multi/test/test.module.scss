@@ -31,6 +31,13 @@
 
 .cursor {
     font-weight: bold;
+    display: inline-block;
+    position: absolute;
+    width: 0.5rem;
+    height: 1.2em;
+    background-color: #d4d4d4;
+    margin-left: 1px;
+    vertical-align: middle;
 }
 
 .results {
@@ -43,15 +50,6 @@
     margin-bottom: 20px;
 }
 
-.cursor_blink {
-    display: inline-block;
-    position: absolute;
-    width: 0.5rem;
-    height: 1.2em;
-    background-color: #d4d4d4;
-    margin-left: 1px;
-    vertical-align: middle;
-}
 
 /* h1 { */
 /*     color: #4ec9b0; */
