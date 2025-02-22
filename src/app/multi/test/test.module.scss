@@ -1,16 +1,9 @@
-body {
-    background-color: #1e1e1e;
-    color: #d4d4d4;
-    margin: 0;
-    padding: 20px;
-}
-
 .typing_container {
     font-family: monospace;
     font-size: 24px;
     padding: 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 20px;
     background-color: #252526;
     border-radius: 8px;
@@ -37,7 +30,6 @@ body {
 }
 
 .cursor {
-    /* animation: blink 1s infinite; */
     font-weight: bold;
 }
 
@@ -53,11 +45,11 @@ body {
 
 .cursor_blink {
     display: inline-block;
+    position: absolute;
     width: 0.5rem;
     height: 1.2em;
     background-color: #d4d4d4;
     margin-left: 1px;
-    /* animation: blink 1s infinite; */
     vertical-align: middle;
 }
 
