@@ -18,8 +18,8 @@
     z-index: 1;
 }
 
-.behind_cursor{
-    color: var(--background-color) ;
+.behind_cursor {
+    color: var(--background-color);
 }
 
 .user_input {
@@ -42,7 +42,7 @@
     position: absolute;
     width: 0.8rem;
     height: 1.2em;
-    background-color: #d4d4d4;
+    background-color: var(--primary-words);
     margin-left: 1px;
     vertical-align: middle;
 }
