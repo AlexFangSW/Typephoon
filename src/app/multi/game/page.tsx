@@ -116,11 +116,14 @@ export default function Page() {
   const [players, setPlayers] = useState<GamePlayersResponse>();
   const [countdown, setCountdown] = useState<number>();
   const [words, setWords] = useState<string>();
-  const [start, setStart] = useState<boolean>();
+  const [start, setStart] = useState<boolean>(false);
+  const [finish, setFinish] = useState<boolean>(false);
+  const startTime = useRef<Date>(null);
 
-  // TODO: Add state
-  // - statistics
-  // - finish
+  // TODO: set type
+  const [otherPlayersPosition, setOtherPlayersPosition] = useState<Map<string, any>>();
+  const keystrokes = useRef<Array<any>>([]);
+  const currentPosition = useState<any>();
 
   const wsConnect = ({ gameID }: { gameID: number }): WebSocket => {
     const ws = new WebSocket(`/api/v1/game/ws?game_id=${gameID}`);
@@ -130,11 +133,14 @@ export default function Page() {
       console.log("websocket opened");
     };
 
-    // recive keystroke event
+    // recive event
     ws.onmessage = async (ev) => {
       const raw_data = await ev.data;
       const data: GameBGMsg = JSON.parse(raw_data);
       console.log("websocket got message: ", data)
+      // TODO: process events
+      // - Start ( set start time, set start)
+      // - Keystrokes  (update otherPlayerPositions)
     }
 
     ws.onclose = async () => {
@@ -149,6 +155,39 @@ export default function Page() {
 
     return ws;
   };
+
+  // On keystroke
+  useEffect(() => {
+    if (typeof ws.current === null) {
+      return
+    }
+    // TODO: 
+    // - send keystroke
+
+  }, [currentPosition])
+
+  // Init player positions
+  useEffect(() => {
+    if (typeof players === undefined) {
+      return
+    }
+    // TODO
+
+  }, [players])
+
+  // On finish
+  useEffect(() => {
+    if (!finish) {
+      return
+    }
+    // TODO: 
+    // - process keystokes, generate statistics
+    // - generate finish time
+    // - save to storage
+    // - send to server
+    // - redirect to result page
+
+  }, [finish])
 
   // Init
   useEffect(() => {
@@ -191,7 +230,14 @@ export default function Page() {
       <Title
         title={countdown && countdown > 0 ? countdown.toString() : "Start"}
       />
-      <TypingGame target={words} />
+      <TypingGame
+        target={words}
+        start={start}
+        finish={finish}
+        setFinish={setFinish}
+        otherPlayersPosition={otherPlayersPosition}
+        keystrokes={keystrokes.current}
+      />
     </>
   );
 }

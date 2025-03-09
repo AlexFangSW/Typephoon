@@ -1,32 +1,34 @@
 "use client";
-import { useState, useEffect, JSX, Fragment } from "react";
+import { useState, useEffect, JSX, Fragment, RefObject } from "react";
 import styles from "./TypingContainer.module.scss";
+import { Dispatch, SetStateAction } from "react";
 
 const TypingGame = ({
   target = "The quick brown fox jumps over the lazy dog",
+  start,
+  finish,
+  setFinish,
+  otherPlayersPosition,
+  keystrokes,
 }: {
   target?: string;
+  start: boolean;
+  finish: boolean;
+  setFinish: Dispatch<SetStateAction<boolean>>;
+  // of course it's not any, I just haven't decided what type it sould be
+  otherPlayersPosition: any;
+  keystrokes: Array<any>;
 }) => {
   // TODO:
   // - Only set event listener when start event is triggered (from server)
   // - Save all key strokes for statistics
-  // - Process all other player positions (extra args ?)
-  //
-  // PS: things done outside of this component
-  // - Countdown
-  // - Get player list
-  // - WS connection
-  // - Get target words from server
-  //
-  // TODO: Move some state outside (start, statistics, finish)
-
+  // - Render all player positions
   const [currentInput, setCurrentInput] = useState("");
-  const [isComplete, setIsComplete] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (isComplete) return;
+    if (finish) return;
 
     if (e.key === "Backspace" && e.ctrlKey) {
       e.preventDefault();
@@ -51,7 +53,7 @@ const TypingGame = ({
     // Check completion and set current index
     // NOTE: set finish when the last word is correct instead of the entire input ?
     if (currentInput === target) {
-      setIsComplete(true);
+      setFinish(true);
     }
 
     const currWords = currentInput.split(" ");
@@ -60,6 +62,7 @@ const TypingGame = ({
 
     setCurrentWordIndex(currWordIndex);
     setCurrentCharIndex(currCharIndex);
+    // TODO: update statistics
   }, [currentInput]);
 
   useEffect(() => {
@@ -68,9 +71,9 @@ const TypingGame = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentInput, isComplete]);
+  }, [currentInput, finish]);
 
-  if (isComplete) {
+  if (finish) {
     return (
       <div>
         <h1>Finish !!!</h1>
