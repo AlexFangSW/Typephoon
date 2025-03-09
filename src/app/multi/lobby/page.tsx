@@ -133,6 +133,7 @@ async function updateCountdown({
 
 export default function Page() {
   const ws = useRef<WebSocket>(null);
+  const redirect_triggered = useRef<boolean>(false);
   const [countdownBGID, setCountdownBGID] = useState<NodeJS.Timeout>();
   const [players, setPlayers] = useState<LobbyPlayersResponse>();
   const [isQueuedIn, setIsQueuedIn] = useState<boolean>(false);
@@ -153,18 +154,17 @@ export default function Page() {
 
     // receive update event and fetch new player list
     ws.onmessage = async (ev) => {
-      if (!isQueuedIn) {
+      if (!isQueuedIn || redirect_triggered.current) {
         return;
       }
 
       // got message
       const raw_data = await ev.data;
       const data: LobbyBGMsg = JSON.parse(raw_data);
-      // console.log("websocket got message: ", data)
+      console.log("got message:", data)
 
       switch (data.event) {
         case LobbyBGMsgEvent.INIT:
-          // console.log("set game id", data.game_id)
           window.sessionStorage.setItem(
             SessionStoreKeys.GAME_ID,
             data.game_id.toString()
@@ -197,6 +197,7 @@ export default function Page() {
         case LobbyBGMsgEvent.GAME_START:
           // redirect and start the game
           window.location.href = "/multi/game";
+          redirect_triggered.current = true
 
         default:
           console.log("unknown ws event", data.event);

@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect, JSX, Fragment } from "react";
-import styles from "./test.module.scss";
+import styles from "./TypingContainer.module.scss";
 
 const TypingGame = ({
   target = "The quick brown fox jumps over the lazy dog",
 }: {
-  target: string;
+  target?: string;
 }) => {
   // TODO:
   // - Only set event listener when start event is triggered (from server)
@@ -17,6 +17,8 @@ const TypingGame = ({
   // - Get player list
   // - WS connection
   // - Get target words from server
+  //
+  // TODO: Move some state outside (start, statistics, finish)
 
   const [currentInput, setCurrentInput] = useState("");
   const [isComplete, setIsComplete] = useState(false);

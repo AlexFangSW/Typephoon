@@ -1,6 +1,6 @@
 "use client";
 import Title from "@/components/Title";
-import Words from "@/components/Words";
+import TypingGame from "@/components/TypingContainer";
 import { SessionStoreKeys } from "@/utils/constants";
 import { useEffect, Dispatch, SetStateAction, useRef, useState } from "react";
 
@@ -36,6 +36,25 @@ type GamePlayersResponse = {
   me: GameUserInfo;
   others: Map<string, GameUserInfo>;
 };
+
+type GameWordsResponse = {
+  words: string
+}
+
+async function updateWords({
+  gameID,
+  setWords,
+}: {
+  gameID: number;
+  setWords: Dispatch<SetStateAction<string | undefined>>;
+}) {
+  const resp = await fetch(`/api/v1/game/words?game_id=${gameID}`, {
+    cache: "no-store",
+  });
+  const data: GameWordsResponse = await resp.json();
+  console.log("words: ", data.words);
+  setWords(data.words);
+}
 
 async function updatePlayerList({
   gameID,
@@ -75,13 +94,13 @@ Page load:
 
 After gameID is set:
 - [OK] Connect to WebSocket
-- Get words
+- [OK] Get words
 - [OK] Get countdown every second, stop when countdown is 0
 - [OK] Get player list
 - Game Start
 
 In Game:
-- Local keystroke detection
+- [OK] Local keystroke detection
 - WS:
   - Send keystroke
   - Receive keystroke from others
@@ -90,34 +109,18 @@ Finish:
 - Send statistics to server
 - Redirect to result page
 */
+
 export default function Page() {
   const ws = useRef<WebSocket>(null);
+
   const [players, setPlayers] = useState<GamePlayersResponse>();
   const [countdown, setCountdown] = useState<number>();
+  const [words, setWords] = useState<string>();
   const [start, setStart] = useState<boolean>();
 
-  // TODO: define structure
-  // Hmmm.... useState is async, that will cause some truble...
-  const [words, setWords] = useState<string>();
-  const [currentInput, setCurrentInput] = useState<string>();
-
-  const gameID = window.sessionStorage.getItem(SessionStoreKeys.GAME_ID);
-  if (!gameID) {
-    // redirect back to lobby if game id is not found
-    window.location.href = "/multi/lobby";
-  }
-
-  updatePlayerList({ gameID: Number(gameID), setPlayers: setPlayers })
-  updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
-
-  // update countdown every second
-  const updateCountdownBG = async () => {
-    setTimeout(() => {
-      updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
-        .then((seconds_left) => { seconds_left > 0 ? updateCountdownBG() : null })
-    }, 1000)
-  }
-  updateCountdownBG()
+  // TODO: Add state
+  // - statistics
+  // - finish
 
   const wsConnect = ({ gameID }: { gameID: number }): WebSocket => {
     const ws = new WebSocket(`/api/v1/game/ws?game_id=${gameID}`);
@@ -126,7 +129,6 @@ export default function Page() {
     ws.onopen = () => {
       console.log("websocket opened");
     };
-
 
     // recive keystroke event
     ws.onmessage = async (ev) => {
@@ -148,16 +150,48 @@ export default function Page() {
     return ws;
   };
 
-  ws.current = wsConnect({ gameID: Number(gameID) });
+  // Init
+  useEffect(() => {
+    if (start) {
+      return
+    }
+
+    const gameID = window.sessionStorage.getItem(SessionStoreKeys.GAME_ID);
+    if (!gameID) {
+      // redirect back to lobby if game id is not found
+      console.log("got game id:", gameID)
+      window.location.href = "/multi/lobby";
+    }
+
+    updatePlayerList({ gameID: Number(gameID), setPlayers: setPlayers })
+    updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
+    updateWords({ gameID: Number(gameID), setWords: setWords })
+
+    // update countdown every second
+    const updateCountdownBG = async () => {
+      setTimeout(() => {
+        updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
+          .then((seconds_left) => {
+            seconds_left > 0.0 ? updateCountdownBG() : null
+          })
+      }, 1000)
+    }
+    updateCountdownBG()
+
+    ws.current = wsConnect({ gameID: Number(gameID) });
+
+    return () => {
+      ws.current ? ws.current.close(1000, "user left") : "";
+    };
+  }, [start])
+
 
   return (
     <>
-      {/* spacing */}
       <Title
         title={countdown && countdown > 0 ? countdown.toString() : "Start"}
       />
-      {/* words xxx */}
-      <Words num={40} />
+      <TypingGame target={words} />
     </>
   );
 }

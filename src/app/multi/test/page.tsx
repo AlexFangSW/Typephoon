@@ -1,5 +1,5 @@
 "use client";
-import TypingGame from "./lib";
+import TypingGame from "@/components/TypingContainer";
 export default function Page() {
   return (
     <>
