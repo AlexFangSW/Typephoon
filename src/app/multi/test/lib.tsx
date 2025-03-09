@@ -16,7 +16,7 @@ const TypingGame = ({
   // - Countdown
   // - Get player list
   // - WS connection
-  // - Get target from server
+  // - Get target words from server
 
   const [currentInput, setCurrentInput] = useState("");
   const [isComplete, setIsComplete] = useState(false);
@@ -26,14 +26,12 @@ const TypingGame = ({
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isComplete) return;
 
-    // BUG: can't delete the first word if we haven't typed anything in the first word
     if (e.key === "Backspace" && e.ctrlKey) {
       e.preventDefault();
       const lastNonSpaceIndex = currentInput.trimEnd().length - 1;
-      const lastSpaceIndex = currentInput.lastIndexOf(
+      const lastSpaceIndex = lastNonSpaceIndex !== -1 ? currentInput.lastIndexOf(
         " ",
-        lastNonSpaceIndex - 1
-      );
+        lastNonSpaceIndex) : -1
       setCurrentInput(
         lastSpaceIndex === -1
           ? ""
@@ -49,6 +47,7 @@ const TypingGame = ({
 
   useEffect(() => {
     // Check completion and set current index
+    // NOTE: set finish when the last word is correct instead of the entire input ?
     if (currentInput === target) {
       setIsComplete(true);
     }
@@ -105,15 +104,13 @@ const TypingGame = ({
           <Fragment key={`char-${wordIndex}-${charIndex}`}>
             {isCurrent && isFirstChar ? <span className={styles.cursor} /> : ""}
             <span
-              className={`${
-                currChars[charIndex]
-                  ? isCurrect
-                    ? styles.correct
-                    : styles.incorrect
-                  : ""
-              } ${styles.target_text} ${
-                isBehindCursor ? styles.behind_cursor : ""
-              }`}
+              className={`${currChars[charIndex]
+                ? isCurrect
+                  ? styles.correct
+                  : styles.incorrect
+                : ""
+                } ${styles.target_text} ${isBehindCursor ? styles.behind_cursor : ""
+                }`}
             >
               {char}
             </span>
