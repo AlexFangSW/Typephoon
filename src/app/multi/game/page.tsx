@@ -3,43 +3,16 @@ import Title from "@/components/Title";
 import TypingGame from "@/components/TypingContainer";
 import { SessionStoreKeys } from "@/utils/constants";
 import { useEffect, Dispatch, SetStateAction, useRef, useState } from "react";
+import {
+  GameWordsResponse,
+  GameInfo,
+  GameBGMsg,
+  GamePlayersResponse,
+  CountdownResponse,
+  Keystroke,
+  Position
+} from "@/types";
 
-enum GameBGMsgEvent {
-  KEY_STOKE = "KEY_STOKE",
-  START = "START"
-}
-
-type GameBGMsg = {
-  event: GameBGMsgEvent
-  game_id: number
-  user_id?: string
-  word_index?: number
-  char_index?: number
-}
-
-type CountdownResponse = {
-  seconds_left: number;
-};
-
-type GameUserInfo = {
-  id: string;
-  name: string;
-
-  finished?: string;
-  rank: number;
-  wpm?: number;
-  wpm_raw?: number;
-  acc?: number;
-};
-
-type GamePlayersResponse = {
-  me: GameUserInfo;
-  others: Map<string, GameUserInfo>;
-};
-
-type GameWordsResponse = {
-  words: string
-}
 
 async function updateWords({
   gameID,
@@ -56,19 +29,30 @@ async function updateWords({
   setWords(data.words);
 }
 
-async function updatePlayerList({
+async function updateOtherPlayers({
   gameID,
-  setPlayers,
+  setOtherPlayers,
 }: {
   gameID: number;
-  setPlayers: Dispatch<SetStateAction<GamePlayersResponse | undefined>>;
+  setOtherPlayers: Dispatch<SetStateAction<Map<string, GameInfo>>>;
 }) {
   const resp = await fetch(`/api/v1/game/players?game_id=${gameID}`, {
     cache: "no-store",
   });
   const data: GamePlayersResponse = await resp.json();
   console.log("players: ", data);
-  setPlayers(data);
+
+  let otherPlayers: Map<string, GameInfo> = new Map()
+  for (const [key, value] of data.others) {
+    otherPlayers.set(key, {
+      ...value,
+      wordIndex: 0,
+      charIndex: 0
+    })
+  }
+
+  console.log("set other players", otherPlayers)
+  setOtherPlayers(otherPlayers);
 }
 
 async function updateCountdown({
@@ -112,18 +96,16 @@ Finish:
 
 export default function Page() {
   const ws = useRef<WebSocket>(null);
-
-  const [players, setPlayers] = useState<GamePlayersResponse>();
   const [countdown, setCountdown] = useState<number>();
   const [words, setWords] = useState<string>();
-  const [start, setStart] = useState<boolean>(false);
-  const [finish, setFinish] = useState<boolean>(false);
-  const startTime = useRef<Date>(null);
+  const [otherPlayers, setOtherPlayers] = useState<Map<string, GameInfo>>(new Map<string, GameInfo>());
 
-  // TODO: set type
-  const [otherPlayersPosition, setOtherPlayersPosition] = useState<Map<string, any>>();
-  const keystrokes = useRef<Array<any>>([]);
-  const currentPosition = useState<any>();
+  const [start, setStart] = useState<boolean>(false);
+  const startTime = useRef<Date>(null);
+  const [finish, setFinish] = useState<boolean>(false);
+
+  const keystrokes = useRef<Array<Keystroke>>([]);
+  const [currentPosition, setCurrentPosition] = useState<Position>({ wordIndex: 0, charIndex: 0 });
 
   const wsConnect = ({ gameID }: { gameID: number }): WebSocket => {
     const ws = new WebSocket(`/api/v1/game/ws?game_id=${gameID}`);
@@ -166,15 +148,6 @@ export default function Page() {
 
   }, [currentPosition])
 
-  // Init player positions
-  useEffect(() => {
-    if (typeof players === undefined) {
-      return
-    }
-    // TODO
-
-  }, [players])
-
   // On finish
   useEffect(() => {
     if (!finish) {
@@ -202,7 +175,7 @@ export default function Page() {
       window.location.href = "/multi/lobby";
     }
 
-    updatePlayerList({ gameID: Number(gameID), setPlayers: setPlayers })
+    updateOtherPlayers({ gameID: Number(gameID), setOtherPlayers: setOtherPlayers })
     updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
     updateWords({ gameID: Number(gameID), setWords: setWords })
 
@@ -235,8 +208,9 @@ export default function Page() {
         start={start}
         finish={finish}
         setFinish={setFinish}
-        otherPlayersPosition={otherPlayersPosition}
+        otherPlayers={otherPlayers}
         keystrokes={keystrokes.current}
+        setCurrentPosition={setCurrentPosition}
       />
     </>
   );

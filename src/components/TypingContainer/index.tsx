@@ -2,27 +2,31 @@
 import { useState, useEffect, JSX, Fragment, RefObject } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
+import { GameInfo, Keystroke, Position } from "@/types";
 
 const TypingGame = ({
   target = "The quick brown fox jumps over the lazy dog",
   start,
   finish,
   setFinish,
-  otherPlayersPosition,
+  otherPlayers,
   keystrokes,
+  setCurrentPosition,
 }: {
   target?: string;
   start: boolean;
   finish: boolean;
   setFinish: Dispatch<SetStateAction<boolean>>;
-  // of course it's not any, I just haven't decided what type it sould be
-  otherPlayersPosition: any;
-  keystrokes: Array<any>;
+  otherPlayers: Map<string, GameInfo>;
+  keystrokes: Array<Keystroke>;
+  setCurrentPosition: Dispatch<SetStateAction<Position>>;
 }) => {
   // TODO:
   // - Only set event listener when start event is triggered (from server)
   // - Save all key strokes for statistics
+  // - Set currentPosition on every keystroke
   // - Render all player positions
+  // - setFinish on finish
   const [currentInput, setCurrentInput] = useState("");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
