@@ -14,6 +14,12 @@ enum LobbyBGMsgEvent {
   GAME_START = "GAME_START",
 }
 
+
+enum QueueInType {
+  RECONNECT = "reconnect",
+  NEW = "new",
+}
+
 type LobbyBGMsg = {
   event: LobbyBGMsgEvent;
   game_id: number;
@@ -145,15 +151,19 @@ export default function Page() {
   const debouncedUpdateCountdown = debounce(updateCountdown, 100);
 
   const wsConnect = (): WebSocket => {
-    const ws = new WebSocket(`/api/v1/lobby/queue-in/ws`);
+    if (gameID) {
+      ws.current = new WebSocket(`/api/v1/lobby/queue-in/ws?prev_game_id=${gameID}&queue_in_type=${QueueInType.RECONNECT}`);
+    } else {
+      ws.current = new WebSocket(`/api/v1/lobby/queue-in/ws`);
+    }
 
     // nothing to do here
-    ws.onopen = () => {
+    ws.current.onopen = () => {
       console.log("websocket opened");
     };
 
     // receive update event and fetch new player list
-    ws.onmessage = async (ev) => {
+    ws.current.onmessage = async (ev) => {
       if (!isQueuedIn || redirect_triggered.current) {
         return;
       }
@@ -205,21 +215,21 @@ export default function Page() {
       }
     };
 
-    ws.onclose = async () => {
+    ws.current.onclose = async () => {
       console.log("websocket closed");
       if (isQueuedIn) {
         // reconnect
         console.log("try ws reconnect");
-        wsConnect();
+        ws.current = wsConnect();
       }
     };
 
-    ws.onerror = () => {
+    ws.current.onerror = () => {
       console.error("ws connection error, closing.");
-      ws.close(1000, "unexpected error");
+      ws?.current?.close(1000, "unexpected error");
     };
 
-    return ws;
+    return ws.current;
   };
 
   // countdown background task
