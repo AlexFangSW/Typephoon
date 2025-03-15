@@ -29,6 +29,9 @@ async function updateWords({
   const data: GameWordsResponse = await resp.json();
   if (!data.ok) {
     console.error("error: ", data.error);
+    if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
+      window.location.href = "/multi/lobby";
+    }
     return;
   }
   console.log("words: ", data.words);
@@ -48,6 +51,9 @@ async function updateOtherPlayers({
   const data: GamePlayersResponse = await resp.json();
   if (!data.ok) {
     console.error("error: ", data.error);
+    if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
+      window.location.href = "/multi/lobby";
+    }
     return;
   }
 
@@ -130,16 +136,16 @@ export default function Page() {
     charIndex: 0,
   });
 
-  const wsConnect = ({ gameID }: { gameID: number }): WebSocket => {
-    const ws = new WebSocket(`/api/v1/game/ws?game_id=${gameID}`);
+  const wsConnect = ({ gameID }: { gameID: number }) => {
+    ws.current = new WebSocket(`/api/v1/game/ws?game_id=${gameID}`);
 
     // nothing to do here
-    ws.onopen = () => {
+    ws.current.onopen = () => {
       console.log("websocket opened");
     };
 
     // recive event
-    ws.onmessage = async (ev) => {
+    ws.current.onmessage = async (ev) => {
       const raw_data = await ev.data;
       const data: IncommingGameBGMsg = JSON.parse(raw_data);
       console.log("websocket got message: ", data);
@@ -171,17 +177,15 @@ export default function Page() {
       }
     };
 
-    ws.onclose = async () => {
+    ws.current.onclose = async () => {
       console.log("websocket closed");
       wsConnect({ gameID: Number(gameID) });
     };
 
-    ws.onerror = () => {
+    ws.current.onerror = () => {
       console.error("ws connection error, closing.");
-      ws.close(1000, "unexpected error");
+      ws?.current?.close(1000, "unexpected error");
     };
-
-    return ws;
   };
 
   // On keystroke
@@ -222,6 +226,9 @@ export default function Page() {
       console.log("got game id:", gameID);
       window.location.href = "/multi/lobby";
     }
+    // clear game id after first use
+    window.sessionStorage.removeItem(SessionStoreKeys.GAME_ID)
+
     updateOtherPlayers({
       gameID: Number(gameID),
       setOtherPlayers: setOtherPlayers,
@@ -241,8 +248,7 @@ export default function Page() {
       }, 1000);
     };
     updateCountdownBG();
-
-    ws.current = wsConnect({ gameID: Number(gameID) });
+    wsConnect({ gameID: Number(gameID) });
 
     return () => {
       ws.current ? ws.current.close(1000, "user left") : "";
