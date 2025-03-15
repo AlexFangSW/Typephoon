@@ -6,13 +6,15 @@ import { useEffect, Dispatch, SetStateAction, useRef, useState } from "react";
 import {
   GameWordsResponse,
   GameInfo,
-  GameBGMsg,
+  IncommingGameBGMsg,
+  OutgoingGameBGMsg,
   GamePlayersResponse,
   CountdownResponse,
   Keystroke,
-  Position
+  Position,
+  GameBGMsgEvent,
+  ErrorCode,
 } from "@/types";
-
 
 async function updateWords({
   gameID,
@@ -25,6 +27,10 @@ async function updateWords({
     cache: "no-store",
   });
   const data: GameWordsResponse = await resp.json();
+  if (!data.ok) {
+    console.error("error: ", data.error);
+    return;
+  }
   console.log("words: ", data.words);
   setWords(data.words);
 }
@@ -40,18 +46,23 @@ async function updateOtherPlayers({
     cache: "no-store",
   });
   const data: GamePlayersResponse = await resp.json();
+  if (!data.ok) {
+    console.error("error: ", data.error);
+    return;
+  }
+
   console.log("players: ", data);
 
-  let otherPlayers: Map<string, GameInfo> = new Map()
+  let otherPlayers: Map<string, GameInfo> = new Map();
   for (const [key, value] of data.others) {
     otherPlayers.set(key, {
       ...value,
       wordIndex: 0,
-      charIndex: 0
-    })
+      charIndex: 0,
+    });
   }
 
-  console.log("set other players", otherPlayers)
+  console.log("set other players", otherPlayers);
   setOtherPlayers(otherPlayers);
 }
 
@@ -66,10 +77,17 @@ async function updateCountdown({
     cache: "no-store",
   });
   const data: CountdownResponse = await resp.json();
+  if (!data.ok) {
+    console.error("error: ", data.error);
+    if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
+      window.location.href = "/multi/lobby";
+    }
+    return 0;
+  }
   console.log("got countdown: ", data.seconds_left);
-  const seconds_left = Number(data.seconds_left.toFixed(0))
+  const seconds_left = Number(data.seconds_left.toFixed(0));
   setCountdown(seconds_left);
-  return seconds_left
+  return seconds_left;
 }
 
 /*
@@ -98,14 +116,19 @@ export default function Page() {
   const ws = useRef<WebSocket>(null);
   const [countdown, setCountdown] = useState<number>();
   const [words, setWords] = useState<string>();
-  const [otherPlayers, setOtherPlayers] = useState<Map<string, GameInfo>>(new Map<string, GameInfo>());
+  const [otherPlayers, setOtherPlayers] = useState<Map<string, GameInfo>>(
+    new Map<string, GameInfo>()
+  );
 
   const [start, setStart] = useState<boolean>(false);
-  const startTime = useRef<Date>(null);
+  let startTime = useRef<Date>(null);
   const [finish, setFinish] = useState<boolean>(false);
 
   const keystrokes = useRef<Array<Keystroke>>([]);
-  const [currentPosition, setCurrentPosition] = useState<Position>({ wordIndex: 0, charIndex: 0 });
+  const [currentPosition, setCurrentPosition] = useState<Position>({
+    wordIndex: 0,
+    charIndex: 0,
+  });
 
   const wsConnect = ({ gameID }: { gameID: number }): WebSocket => {
     const ws = new WebSocket(`/api/v1/game/ws?game_id=${gameID}`);
@@ -118,12 +141,35 @@ export default function Page() {
     // recive event
     ws.onmessage = async (ev) => {
       const raw_data = await ev.data;
-      const data: GameBGMsg = JSON.parse(raw_data);
-      console.log("websocket got message: ", data)
-      // TODO: process events
-      // - Start ( set start time, set start)
-      // - Keystrokes  (update otherPlayerPositions)
-    }
+      const data: IncommingGameBGMsg = JSON.parse(raw_data);
+      console.log("websocket got message: ", data);
+      switch (data.event) {
+        case GameBGMsgEvent.START:
+          setStart(true);
+          startTime.current = new Date();
+          break;
+        case GameBGMsgEvent.KEY_STOKE:
+          if (data.user_id) {
+            let player = otherPlayers.get(data.user_id);
+            if (!player) {
+              return;
+            }
+            player.charIndex = data.char_index
+              ? data.char_index
+              : player.charIndex;
+            player.wordIndex = data.word_index
+              ? data.word_index
+              : player.wordIndex;
+
+            otherPlayers.set(data.user_id, player);
+            setOtherPlayers(otherPlayers);
+          }
+          break;
+        default:
+          console.log("unknown event", data.event);
+          break;
+      }
+    };
 
     ws.onclose = async () => {
       console.log("websocket closed");
@@ -141,62 +187,67 @@ export default function Page() {
   // On keystroke
   useEffect(() => {
     if (typeof ws.current === null) {
-      return
+      return;
     }
-    // TODO: 
-    // - send keystroke
-
-  }, [currentPosition])
+    const msg: OutgoingGameBGMsg = {
+      event: GameBGMsgEvent.KEY_STOKE,
+      word_index: currentPosition.wordIndex,
+      char_index: currentPosition.charIndex,
+    };
+    ws.current?.send(JSON.stringify(msg));
+  }, [currentPosition]);
 
   // On finish
   useEffect(() => {
     if (!finish) {
-      return
+      return;
     }
-    // TODO: 
+    // TODO:
     // - process keystokes, generate statistics
     // - generate finish time
     // - save to storage
     // - send to server
     // - redirect to result page
-
-  }, [finish])
+  }, [finish]);
 
   // Init
   useEffect(() => {
     if (start) {
-      return
+      return;
     }
 
     const gameID = window.sessionStorage.getItem(SessionStoreKeys.GAME_ID);
     if (!gameID) {
       // redirect back to lobby if game id is not found
-      console.log("got game id:", gameID)
+      console.log("got game id:", gameID);
       window.location.href = "/multi/lobby";
     }
-
-    updateOtherPlayers({ gameID: Number(gameID), setOtherPlayers: setOtherPlayers })
-    updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
-    updateWords({ gameID: Number(gameID), setWords: setWords })
+    updateOtherPlayers({
+      gameID: Number(gameID),
+      setOtherPlayers: setOtherPlayers,
+    });
+    updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown });
+    updateWords({ gameID: Number(gameID), setWords: setWords });
 
     // update countdown every second
     const updateCountdownBG = async () => {
       setTimeout(() => {
-        updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown })
-          .then((seconds_left) => {
-            seconds_left > 0.0 ? updateCountdownBG() : null
-          })
-      }, 1000)
-    }
-    updateCountdownBG()
+        updateCountdown({
+          gameID: Number(gameID),
+          setCountdown: setCountdown,
+        }).then((seconds_left) => {
+          seconds_left > 0.0 ? updateCountdownBG() : null;
+        });
+      }, 1000);
+    };
+    updateCountdownBG();
 
     ws.current = wsConnect({ gameID: Number(gameID) });
 
     return () => {
       ws.current ? ws.current.close(1000, "user left") : "";
     };
-  }, [start])
-
+  }, [start]);
 
   return (
     <>
