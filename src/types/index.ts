@@ -3,7 +3,7 @@ export enum GameBGMsgEvent {
   START = "START"
 }
 
-export type GameBGMsg = {
+export type IncommingGameBGMsg = {
   event: GameBGMsgEvent
   game_id: number
   user_id?: string
@@ -11,9 +11,47 @@ export type GameBGMsg = {
   char_index?: number
 }
 
-export type CountdownResponse = {
+export type OutgoingGameBGMsg = {
+  event: GameBGMsgEvent
+  game_id?: number
+  user_id?: string
+  word_index?: number
+  char_index?: number
+}
+
+
+export enum ErrorCode {
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+  KEY_NOT_FOUND = "KEY_NOT_FOUND",
+  REFRESH_TOKEN_MISSMATCH = "REFRESH_TOKEN_MISSMATCH",
+  INVALID_TOKEN = "INVALID_TOKEN",
+  GAME_NOT_FOUND = "GAME_NOT_FOUND",
+  USER_NOT_FOUND = "USER_NOT_FOUND",
+  WORDS_NOT_FOUND = "WORDS_NOT_FOUND",
+  NOT_A_PARTICIPANT = "NOT_A_PARTICIPANT",
+}
+
+type SuccessResponse<T> = {
+  ok: true
+} & T
+
+type ErrorContext = {
+  code: ErrorCode
+  message: string
+}
+
+type ErrorResponse = {
+  ok: false
+  error: ErrorContext
+}
+
+export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse
+
+
+export type CountdownResponse = ApiResponse<{
   seconds_left: number;
-};
+}>
+
 
 export type GameUserInfo = {
   id: string;
@@ -26,14 +64,14 @@ export type GameUserInfo = {
   acc?: number;
 };
 
-export type GamePlayersResponse = {
+export type GamePlayersResponse = ApiResponse<{
   me: GameUserInfo;
   others: Map<string, GameUserInfo>;
-};
+}>
 
-export type GameWordsResponse = {
+export type GameWordsResponse = ApiResponse<{
   words: string
-}
+}>
 
 export type Position = {
   wordIndex: number
