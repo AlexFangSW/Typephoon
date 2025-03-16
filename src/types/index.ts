@@ -92,3 +92,5 @@ export type GameStatistics = {
   wpm_raw: number
   acc: number
 }
+
+export type GameResultResponse = ApiResponse<{ result: GameUserInfo[] }>

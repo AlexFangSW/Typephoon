@@ -1,14 +1,5 @@
 import styles from "./RankingGraph.module.scss";
-import YellowButton from "@/components/Buttons/YellowButton";
-import RefreshIcon from "@/components/Icons/RefreshIcon";
-
-function RefreshRanking() {
-  return (
-    <YellowButton className={styles.refresh_button}>
-      <RefreshIcon />
-    </YellowButton>
-  );
-}
+import { GameUserInfo } from "@/types";
 
 function RankingRow({
   rank,
@@ -36,12 +27,13 @@ function RankingRow({
   );
 }
 
-// TODO: Get Data from Server
-export default function RankingGraph() {
+export default function RankingGraph({
+  gameResult,
+}: {
+  gameResult: GameUserInfo[];
+}) {
   return (
     <div className={styles.graph_container}>
-      {/* table */}
-      <RefreshRanking />
       <table className={styles.table}>
         <tbody>
           <tr>
@@ -51,32 +43,18 @@ export default function RankingGraph() {
             <th>ACC</th>
             <th>Status</th>
           </tr>
-          <RankingRow
-            rank={1}
-            username={"AlexFangSW"}
-            wpm={90}
-            acc={95}
-            status={"FINISHED"}
-          />
-          <RankingRow
-            rank={2}
-            username={"AlexFangSW"}
-            wpm={90}
-            acc={95}
-            status={"FINISHED"}
-          />
-          <RankingRow
-            rank={3}
-            username={"AlexFangSW"}
-            wpm={90}
-            acc={95}
-            status={"FINISHED"}
-          />
-          <RankingRow username={"AlexFangSW"} status={"DISCONNECTED"} />
-          <RankingRow username={"AlexFangSW"} status={"DISCONNECTED"} />
+          {gameResult.map((user, index) => (
+            <RankingRow
+              key={index}
+              rank={user.rank}
+              username={user.name}
+              wpm={user.wpm}
+              acc={user.acc}
+              status={user.finished ? "FINISHED" : "IN PROGRESS"}
+            />
+          ))}
         </tbody>
       </table>
-      {/* data */}
     </div>
   );
 }
