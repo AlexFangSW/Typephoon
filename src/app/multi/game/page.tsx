@@ -15,7 +15,6 @@ import {
   GameBGMsgEvent,
   ErrorCode,
   GameStatistics,
-  SuccessResponse,
   ApiResponse,
 } from "@/types";
 
@@ -99,28 +98,6 @@ async function updateCountdown({
   return seconds_left;
 }
 
-/*
-Page load:
-- [OK] Get gameID from session storage
-
-After gameID is set:
-- [OK] Connect to WebSocket
-- [OK] Get words
-- [OK] Get countdown every second, stop when countdown is 0
-- [OK] Get player list
-- Game Start
-
-In Game:
-- [OK] Local keystroke detection
-- WS:
-  - Send keystroke
-  - Receive keystroke from others
-
-Finish:
-- Send statistics to server
-- Redirect to result page
-*/
-
 export default function Page() {
   const ws = useRef<WebSocket>(null);
   const [countdown, setCountdown] = useState<number>();
@@ -132,6 +109,7 @@ export default function Page() {
   const [start, setStart] = useState<boolean>(false);
   let startTime = useRef<Date>(null);
   const [finish, setFinish] = useState<boolean>(false);
+  const [currentInput, setCurrentInput] = useState<string>("");
 
   const keystrokes = useRef<Array<Keystroke>>([]);
   const [currentPosition, setCurrentPosition] = useState<Position>({
@@ -206,32 +184,53 @@ export default function Page() {
 
   // On finish
   useEffect(() => {
-    if (!finish || !gameIDRef.current || !startTime.current) {
+    if (!finish || !gameIDRef.current || !startTime.current || !words) {
       console.log(
         "missing data to calculate statistics, finish:",
         finish,
         "gameID:",
         gameIDRef.current,
         "startTime:",
-        startTime.current
+        startTime.current,
+        "words:",
+        words
       );
       return;
     }
     // Process keystokes, generate statistics
     const finish_time = new Date();
-    const total_time =
-      (finish_time.getTime() - startTime.current.getTime()) / 1000;
-    let total_keystrokes = keystrokes.current.length;
-    let correct_keystrokes = 0;
-    for (const keystroke of keystrokes.current) {
-      if (keystroke.currect) {
-        correct_keystrokes += 1;
+    const total_minutes =
+      (finish_time.getTime() - startTime.current.getTime()) / 1000 / 60;
+    const total_keystrokes = keystrokes.current.length;
+    const correct_keystrokes = keystrokes.current.filter(
+      (keystroke) => keystroke.currect
+    ).length;
+
+    // Get uncorrected mistakes
+    let uncorrected_mistakes = 0;
+    const input_words = currentInput.split(" ");
+    const target_words = words.split(" ");
+
+    for (let i = 0; i < target_words.length; i++) {
+      // skip if the word is correct
+      if (input_words[i] === target_words[i]) {
+        continue;
+      }
+
+      // count uncorrected mistakes, including extra characters
+      for (let j = 0; j < input_words[i].length; j++) {
+        if (input_words[i][j] === target_words[i][j]) {
+          continue;
+        }
+        uncorrected_mistakes += 1;
       }
     }
+
+    // Equation From: https://www.speedtypingonline.com/typing-equations
     const statistics: GameStatistics = {
       game_id: gameIDRef.current,
-      wpm: correct_keystrokes / total_time,
-      wpm_raw: total_keystrokes / total_time,
+      wpm: (total_keystrokes / 5 - uncorrected_mistakes) / total_minutes,
+      wpm_raw: total_keystrokes / 5 / total_minutes,
       acc: (correct_keystrokes / total_keystrokes) * 100,
     };
 
@@ -239,10 +238,6 @@ export default function Page() {
     window.sessionStorage.setItem(
       SessionStoreKeys.GAME_STATISTICS,
       JSON.stringify(statistics)
-    );
-    window.sessionStorage.setItem(
-      SessionStoreKeys.GAME_STATISTICS_KEYSTROKES,
-      JSON.stringify(keystrokes.current)
     );
 
     // Send to server
@@ -320,6 +315,8 @@ export default function Page() {
       />
       <TypingGame
         target={words}
+        currentInput={currentInput}
+        setCurrentInput={setCurrentInput}
         start={start}
         finish={finish}
         setFinish={setFinish}

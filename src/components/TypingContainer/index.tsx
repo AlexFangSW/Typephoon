@@ -6,6 +6,8 @@ import { GameInfo, Keystroke, Position } from "@/types";
 
 const TypingGame = ({
   target = "The quick brown fox jumps over the lazy dog",
+  currentInput,
+  setCurrentInput,
   start,
   finish,
   setFinish,
@@ -15,6 +17,8 @@ const TypingGame = ({
   setCurrentPosition,
 }: {
   target?: string;
+  currentInput: string;
+  setCurrentInput: Dispatch<SetStateAction<string>>;
   start: boolean;
   finish: boolean;
   setFinish: Dispatch<SetStateAction<boolean>>;
@@ -23,21 +27,10 @@ const TypingGame = ({
   currentPosition: Position;
   setCurrentPosition: Dispatch<SetStateAction<Position>>;
 }) => {
-  const [currentInput, setCurrentInput] = useState("");
   const targetWords = useRef(target.split(" "));
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (finish) return;
-
-    keystrokes.push({
-      ts: new Date().getTime(),
-      char: e.key,
-      currect:
-        e.key ===
-        targetWords.current[currentPosition.wordIndex][
-          currentPosition.charIndex
-        ],
-    });
 
     if (e.key === "Backspace" && e.ctrlKey) {
       e.preventDefault();
@@ -54,6 +47,16 @@ const TypingGame = ({
     } else if (e.key === "Backspace") {
       setCurrentInput((prev) => prev.slice(0, -1));
     } else if (e.key.length === 1) {
+      keystrokes.push({
+        ts: new Date().getTime(),
+        char: e.key,
+        currect:
+          e.key ===
+          targetWords.current[currentPosition.wordIndex][
+            currentPosition.charIndex
+          ],
+      });
+
       const newInput = currentInput + e.key;
       setCurrentInput(newInput);
     }
