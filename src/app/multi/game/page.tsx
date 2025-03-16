@@ -279,6 +279,7 @@ export default function Page() {
       window.location.href = "/multi/lobby";
     }
     // clear game id after first use
+    // NOTE: not sure if this will cause any issues
     gameIDRef.current = Number(tmpGameID);
     window.sessionStorage.removeItem(SessionStoreKeys.GAME_ID);
 
