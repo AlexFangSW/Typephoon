@@ -235,7 +235,7 @@ export default function Page() {
       acc: (correct_keystrokes / total_keystrokes) * 100,
     };
 
-    // - save to storage
+    // Save to storage
     window.sessionStorage.setItem(
       SessionStoreKeys.GAME_STATISTICS,
       JSON.stringify(statistics)
@@ -245,7 +245,7 @@ export default function Page() {
       JSON.stringify(keystrokes.current)
     );
 
-    // - send to server
+    // Send to server
     const sendStatistics = async () => {
       await fetch(`/api/v1/game/statistics`, {
         method: "POST",

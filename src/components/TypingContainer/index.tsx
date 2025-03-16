@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, JSX, Fragment, RefObject, useRef } from "react";
+import { useState, useEffect, JSX, Fragment, useRef } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
@@ -23,8 +23,6 @@ const TypingGame = ({
   currentPosition: Position;
   setCurrentPosition: Dispatch<SetStateAction<Position>>;
 }) => {
-  // TODO:
-  // - Render all player positions
   const [currentInput, setCurrentInput] = useState("");
   const targetWords = useRef(target.split(" "));
 
@@ -116,6 +114,9 @@ const TypingGame = ({
         const isCurrect = char === currChars[charIndex];
 
         // TODO: Render cursors of other players
+        //       - We already have the position of other players
+        //       - Just add a new span with the cursor class
+        //        - color needs to be different, less prminent
         currWordRender.push(
           <Fragment key={`char-${wordIndex}-${charIndex}`}>
             {isCurrentChar && isFirstChar ? (
@@ -139,6 +140,24 @@ const TypingGame = ({
             ) : (
               ""
             )}
+            {Array.from(otherPlayers.entries()).map(([playerID, player]) => {
+              // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
+              const isCurrentPosition =
+                wordIndex === player.wordIndex &&
+                (charIndex === player.charIndex + 1 ||
+                  (charIndex === word.length - 1 &&
+                    player.charIndex + 1 >= word.length));
+
+              if (isCurrentPosition) {
+                return (
+                  <Fragment key={`apponent-${playerID}`}>
+                    <span className={styles.cursor} />
+                  </Fragment>
+                );
+              } else {
+                return;
+              }
+            })}
           </Fragment>
         );
       });
