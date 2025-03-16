@@ -14,6 +14,9 @@ import {
   Position,
   GameBGMsgEvent,
   ErrorCode,
+  GameStatistics,
+  SuccessResponse,
+  ApiResponse,
 } from "@/types";
 
 async function updateWords({
@@ -125,7 +128,7 @@ export default function Page() {
   const [otherPlayers, setOtherPlayers] = useState<Map<string, GameInfo>>(
     new Map<string, GameInfo>()
   );
-
+  let gameIDRef = useRef<number>(null);
   const [start, setStart] = useState<boolean>(false);
   let startTime = useRef<Date>(null);
   const [finish, setFinish] = useState<boolean>(false);
@@ -179,7 +182,7 @@ export default function Page() {
 
     ws.current.onclose = async () => {
       console.log("websocket closed");
-      wsConnect({ gameID: Number(gameID) });
+      wsConnect({ gameID: gameID });
     };
 
     ws.current.onerror = () => {
@@ -203,15 +206,68 @@ export default function Page() {
 
   // On finish
   useEffect(() => {
-    if (!finish) {
+    if (!finish || !gameIDRef.current || !startTime.current) {
+      console.log(
+        "missing data to calculate statistics, finish:",
+        finish,
+        "gameID:",
+        gameIDRef.current,
+        "startTime:",
+        startTime.current
+      );
       return;
     }
-    // TODO:
-    // - process keystokes, generate statistics
-    // - generate finish time
+    // Process keystokes, generate statistics
+    const finish_time = new Date();
+    const total_time =
+      (finish_time.getTime() - startTime.current.getTime()) / 1000;
+    let total_keystrokes = keystrokes.current.length;
+    let correct_keystrokes = 0;
+    for (const keystroke of keystrokes.current) {
+      if (keystroke.currect) {
+        correct_keystrokes += 1;
+      }
+    }
+    const statistics: GameStatistics = {
+      game_id: gameIDRef.current,
+      wpm: correct_keystrokes / total_time,
+      wpm_raw: total_keystrokes / total_time,
+      acc: (correct_keystrokes / total_keystrokes) * 100,
+    };
+
     // - save to storage
+    window.sessionStorage.setItem(
+      SessionStoreKeys.GAME_STATISTICS,
+      JSON.stringify(statistics)
+    );
+    window.sessionStorage.setItem(
+      SessionStoreKeys.GAME_STATISTICS_KEYSTROKES,
+      JSON.stringify(keystrokes.current)
+    );
+
     // - send to server
-    // - redirect to result page
+    const sendStatistics = async () => {
+      await fetch(`/api/v1/game/statistics`, {
+        method: "POST",
+        body: JSON.stringify(statistics),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resp) => resp.json())
+        .then((data: ApiResponse<{}>) => {
+          if (!data.ok) {
+            console.error("error: ", data.error);
+          } else {
+            console.log("statistics sent, redirecting to result page");
+            window.location.href = "/multi/result";
+          }
+        })
+        .catch((err) => {
+          console.error("error: ", err);
+        });
+    };
+    sendStatistics();
   }, [finish]);
 
   // Init
@@ -220,35 +276,37 @@ export default function Page() {
       return;
     }
 
-    const gameID = window.sessionStorage.getItem(SessionStoreKeys.GAME_ID);
-    if (!gameID) {
-      // redirect back to lobby if game id is not found
-      console.log("got game id:", gameID);
+    const tmpGameID = window.sessionStorage.getItem(SessionStoreKeys.GAME_ID);
+    console.log("got game id:", tmpGameID);
+
+    // redirect back to lobby if game id is not found
+    if (!tmpGameID) {
       window.location.href = "/multi/lobby";
     }
     // clear game id after first use
-    window.sessionStorage.removeItem(SessionStoreKeys.GAME_ID)
+    gameIDRef.current = Number(tmpGameID);
+    window.sessionStorage.removeItem(SessionStoreKeys.GAME_ID);
 
     updateOtherPlayers({
-      gameID: Number(gameID),
+      gameID: gameIDRef.current,
       setOtherPlayers: setOtherPlayers,
     });
-    updateCountdown({ gameID: Number(gameID), setCountdown: setCountdown });
-    updateWords({ gameID: Number(gameID), setWords: setWords });
+    updateCountdown({ gameID: gameIDRef.current, setCountdown: setCountdown });
+    updateWords({ gameID: gameIDRef.current, setWords: setWords });
 
     // update countdown every second
-    const updateCountdownBG = async () => {
+    const updateCountdownBG = async (gameID: number) => {
       setTimeout(() => {
         updateCountdown({
-          gameID: Number(gameID),
+          gameID: gameID,
           setCountdown: setCountdown,
         }).then((seconds_left) => {
-          seconds_left > 0.0 ? updateCountdownBG() : null;
+          seconds_left > 0.0 ? updateCountdownBG(gameID) : null;
         });
       }, 1000);
     };
-    updateCountdownBG();
-    wsConnect({ gameID: Number(gameID) });
+    updateCountdownBG(gameIDRef.current);
+    wsConnect({ gameID: gameIDRef.current });
 
     return () => {
       ws.current ? ws.current.close(1000, "user left") : "";
@@ -267,6 +325,7 @@ export default function Page() {
         setFinish={setFinish}
         otherPlayers={otherPlayers}
         keystrokes={keystrokes.current}
+        currentPosition={currentPosition}
         setCurrentPosition={setCurrentPosition}
       />
     </>

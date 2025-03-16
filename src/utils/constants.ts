@@ -5,5 +5,7 @@ export enum CookieNames {
 }
 
 export enum SessionStoreKeys {
-  GAME_ID = "GAME_ID"
+  GAME_ID = "GAME_ID",
+  GAME_STATISTICS = "GAME_STATISTICS",
+  GAME_STATISTICS_KEYSTROKES = "GAME_STATISTICS_KEYSTROKES",
 }

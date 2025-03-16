@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, JSX, Fragment, RefObject } from "react";
+import { useState, useEffect, JSX, Fragment, RefObject, useRef } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
@@ -11,6 +11,7 @@ const TypingGame = ({
   setFinish,
   otherPlayers,
   keystrokes,
+  currentPosition,
   setCurrentPosition,
 }: {
   target?: string;
@@ -19,27 +20,34 @@ const TypingGame = ({
   setFinish: Dispatch<SetStateAction<boolean>>;
   otherPlayers: Map<string, GameInfo>;
   keystrokes: Array<Keystroke>;
+  currentPosition: Position;
   setCurrentPosition: Dispatch<SetStateAction<Position>>;
 }) => {
   // TODO:
-  // - Only set event listener when start event is triggered (from server)
-  // - Save all key strokes for statistics
-  // - Set currentPosition on every keystroke
   // - Render all player positions
-  // - setFinish on finish
   const [currentInput, setCurrentInput] = useState("");
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const targetWords = useRef(target.split(" "));
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (finish) return;
 
+    keystrokes.push({
+      ts: new Date().getTime(),
+      char: e.key,
+      currect:
+        e.key ===
+        targetWords.current[currentPosition.wordIndex][
+          currentPosition.charIndex
+        ],
+    });
+
     if (e.key === "Backspace" && e.ctrlKey) {
       e.preventDefault();
       const lastNonSpaceIndex = currentInput.trimEnd().length - 1;
-      const lastSpaceIndex = lastNonSpaceIndex !== -1 ? currentInput.lastIndexOf(
-        " ",
-        lastNonSpaceIndex) : -1
+      const lastSpaceIndex =
+        lastNonSpaceIndex !== -1
+          ? currentInput.lastIndexOf(" ", lastNonSpaceIndex)
+          : -1;
       setCurrentInput(
         lastSpaceIndex === -1
           ? ""
@@ -54,76 +62,79 @@ const TypingGame = ({
   };
 
   useEffect(() => {
-    // Check completion and set current index
-    // NOTE: set finish when the last word is correct instead of the entire input ?
-    if (currentInput === target) {
-      setFinish(true);
-    }
-
     const currWords = currentInput.split(" ");
     const currWordIndex = currWords.length - 1;
     const currCharIndex = currWords[currWordIndex]?.length - 1;
 
-    setCurrentWordIndex(currWordIndex);
-    setCurrentCharIndex(currCharIndex);
-    // TODO: update statistics
+    setCurrentPosition({
+      wordIndex: currWordIndex,
+      charIndex: currCharIndex,
+    });
+
+    // Finish when the last word is correct
+    if (currWords[currWordIndex] === targetWords.current[currWordIndex]) {
+      setFinish(true);
+    }
   }, [currentInput]);
 
   useEffect(() => {
-    // Add event listener
+    // Add event listener on start
+    if (!start) return;
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentInput, finish]);
-
-  if (finish) {
-    return (
-      <div>
-        <h1>Finish !!!</h1>
-      </div>
-    );
-  }
+  }, [start]);
 
   const renderText = (): Array<JSX.Element> => {
     const renderResult: Array<JSX.Element> = [];
-
     const currWords = currentInput.split(" ");
-    const targetWords = target.split(" ");
 
-    targetWords.forEach((word, wordIndex) => {
+    // Each word
+    targetWords.current.forEach((word, wordIndex) => {
       const currChars = currWords[wordIndex]?.split("")
         ? currWords[wordIndex]?.split("")
         : [];
       const targetChars = word.split("");
       const currWordRender: Array<JSX.Element> = [];
 
+      // Each character
       targetChars.forEach((char, charIndex) => {
-        const isFirstChar = currentCharIndex === -1;
-        const isCurrent =
-          wordIndex === currentWordIndex &&
-          (charIndex === currentCharIndex || (charIndex === 0 && isFirstChar));
-        const isBehindCursor =
-          wordIndex === currentWordIndex &&
-          (charIndex === currentCharIndex + 1 ||
+        const isFirstChar = currentPosition.charIndex === -1;
+
+        const isCurrentChar =
+          wordIndex === currentPosition.wordIndex &&
+          (charIndex === currentPosition.charIndex ||
             (charIndex === 0 && isFirstChar));
+
+        // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
+        const isBehindCursor =
+          wordIndex === currentPosition.wordIndex &&
+          (charIndex === currentPosition.charIndex + 1 ||
+            (charIndex === 0 && isFirstChar));
+
         const isCurrect = char === currChars[charIndex];
 
+        // TODO: Render cursors of other players
         currWordRender.push(
           <Fragment key={`char-${wordIndex}-${charIndex}`}>
-            {isCurrent && isFirstChar ? <span className={styles.cursor} /> : ""}
+            {isCurrentChar && isFirstChar ? (
+              <span className={styles.cursor} />
+            ) : (
+              ""
+            )}
             <span
-              className={`${currChars[charIndex]
-                ? isCurrect
-                  ? styles.correct
-                  : styles.incorrect
-                : ""
-                } ${styles.target_text} ${isBehindCursor ? styles.behind_cursor : ""
-                }`}
+              className={`${
+                currChars[charIndex]
+                  ? isCurrect
+                    ? styles.correct
+                    : styles.incorrect
+                  : styles.target_text
+              } ${isBehindCursor ? styles.behind_cursor : ""}`}
             >
               {char}
             </span>
-            {isCurrent && !isFirstChar ? (
+            {isCurrentChar && !isFirstChar ? (
               <span className={styles.cursor} />
             ) : (
               ""
@@ -137,8 +148,8 @@ const TypingGame = ({
         currChars.slice(targetChars.length).forEach((char, charIndex) => {
           const realCharIndex = charIndex + targetChars.length;
           const isCurrent =
-            wordIndex === currentWordIndex &&
-            realCharIndex === currentCharIndex;
+            wordIndex === currentPosition.wordIndex &&
+            realCharIndex === currentPosition.charIndex;
 
           currWordRender.push(
             <Fragment key={`char-${wordIndex}-${realCharIndex}`}>

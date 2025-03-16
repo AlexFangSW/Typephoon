@@ -31,7 +31,7 @@ export enum ErrorCode {
   NOT_A_PARTICIPANT = "NOT_A_PARTICIPANT",
 }
 
-type SuccessResponse<T> = {
+export type SuccessResponse<T> = {
   ok: true
 } & T
 
@@ -81,7 +81,14 @@ export type Position = {
 export type GameInfo = GameUserInfo & Position
 
 export type Keystroke = {
-  ts: Date
+  ts: number
   char: string
   currect: boolean
+}
+
+export type GameStatistics = {
+  game_id: number
+  wpm: number
+  wpm_raw: number
+  acc: number
 }
