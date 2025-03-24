@@ -44,7 +44,7 @@ export async function getProfileHistory(
   }: {
     page: number
     size: number
-}): Promise<ProfileHistory | null> {
+  }): Promise<ProfileHistory | null> {
   const response = await fetch(`/api/profile/history?page=${page}&size=${size}`);
   const data: ProfileHistoryResponse = await response.json();
   if (!data.ok) {

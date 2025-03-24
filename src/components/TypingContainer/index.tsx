@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, JSX, Fragment, useRef } from "react";
+import { useEffect, JSX, Fragment, useRef } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
@@ -53,7 +53,7 @@ const TypingGame = ({
         currect:
           e.key ===
           targetWords.current[currentPosition.wordIndex][
-            currentPosition.charIndex
+          currentPosition.charIndex
           ],
       });
 
@@ -128,13 +128,12 @@ const TypingGame = ({
               ""
             )}
             <span
-              className={`${
-                currChars[charIndex]
+              className={`${currChars[charIndex]
                   ? isCurrect
                     ? styles.correct
                     : styles.incorrect
                   : styles.target_text
-              } ${isBehindCursor ? styles.behind_cursor : ""}`}
+                } ${isBehindCursor ? styles.behind_cursor : ""}`}
             >
               {char}
             </span>

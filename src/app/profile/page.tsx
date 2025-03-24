@@ -5,7 +5,6 @@ import styles from "./profile.module.scss";
 import PurpleButton from "@/components/Buttons/PurpleButton";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import {
-  GameResultWithGameType,
   ProfileGraphItems,
   ProfileHistory,
   ProfileStatistics,
@@ -89,32 +88,47 @@ function HistoryItem({
   date,
   wpm,
   acc,
-  type,
-  id,
+  rank,
 }: {
   date: string;
   wpm: number;
   acc: number;
-  type: string;
-  id: string;
+  rank: number;
 }) {
   return (
     <tr>
       <td>{date}</td>
       <td>{wpm}</td>
       <td>{acc}</td>
-      <td>{type}</td>
+      <td>{rank}</td>
     </tr>
   );
 }
 
-// TODO: Fill in the history items
-//       Structure might need to change (add rank ?)
-//       Args need to be added as well, (page, size?, etc)
-function History({ history }: { history: ProfileHistory | null }) {
+function History({
+  history,
+  pageNum,
+  setPageNum,
+}: {
+  history: ProfileHistory | null,
+  pageNum: number
+  setPageNum: (num: number) => void
+}) {
   if (!history) {
     return null;
   }
+
+  const increasePageNum = () => {
+    setPageNum(pageNum + 1)
+  }
+
+  const decreasePageNum = () => {
+    if (pageNum == 1) {
+      return
+    }
+    setPageNum(pageNum - 1)
+  }
+
   return (
     <div className={styles.history}>
       {/* title */}
@@ -130,16 +144,21 @@ function History({ history }: { history: ProfileHistory | null }) {
           </tr>
         </thead>
         <tbody>
-          {history.map((item) => (
-            <HistoryItem key={item.id} {...item} />
+          {history.data.map((item) => (
+            <HistoryItem key={item.game_id}
+              date={item.finished_at}
+              wpm={item.wpm}
+              acc={item.accuracy}
+              rank={item.rank}
+            />
           ))}
         </tbody>
       </table>
       {/* pagination */}
       <div className={styles.history_pagination}>
-        <PrimaryButton>{"<"}</PrimaryButton>
-        <div>1</div>
-        <PrimaryButton>{">"}</PrimaryButton>
+        {history.has_prev_page ? <PrimaryButton action={decreasePageNum}>{"<"}</PrimaryButton> : ""}
+        <div>{pageNum}</div>
+        {history.has_next_page ? <PrimaryButton action={increasePageNum}>{">"}</PrimaryButton> : ""}
       </div>
     </div>
   );
@@ -150,7 +169,7 @@ export default function Page() {
   const [history, setHistory] = useState<ProfileHistory | null>(null);
   const [graph, setGraph] = useState<ProfileGraphItems | null>(null);
   const [historyPage, setHistoryPage] = useState<number>(1);
-  const [historySize, setHistorySize] = useState<number>(50);
+  const [historySize, setHistorySize] = useState<number>(20);
   const [graphSize, setGraphSize] = useState<number>(10);
 
   useEffect(() => {
@@ -179,7 +198,6 @@ export default function Page() {
 
   return (
     <div className={styles.container}>
-      {/* summary */}
       <Summary
         bestWpm={statistics?.wpm_best ?? 0}
         bestAccuracy={statistics?.acc_best ?? 0}
@@ -189,11 +207,16 @@ export default function Page() {
         averageAccuracy={statistics?.acc_avg_all ?? 0}
       />
 
-      {/* progress over time */}
-      <ProgressOverTime graphItems={graph} setGraphSize={setGraphSize} />
+      <ProgressOverTime
+        graphItems={graph}
+        setGraphSize={setGraphSize}
+      />
 
-      {/* history */}
-      <History history={history} />
+      <History
+        history={history}
+        pageNum={historyPage}
+        setPageNum={setHistoryPage}
+      />
     </div>
   );
 }
