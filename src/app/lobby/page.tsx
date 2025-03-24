@@ -206,7 +206,7 @@ export default function Page() {
 
         case LobbyBGMsgEvent.GAME_START:
           // redirect and start the game
-          window.location.href = "/multi/game";
+          window.location.href = "/game";
           redirect_triggered.current = true
 
         default:

@@ -32,7 +32,7 @@ async function updateWords({
   if (!data.ok) {
     console.error("error: ", data.error);
     if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
-      window.location.href = "/multi/lobby";
+      window.location.href = "/lobby";
     }
     return;
   }
@@ -54,7 +54,7 @@ async function updateOtherPlayers({
   if (!data.ok) {
     console.error("error: ", data.error);
     if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
-      window.location.href = "/multi/lobby";
+      window.location.href = "/lobby";
     }
     return;
   }
@@ -88,7 +88,7 @@ async function updateCountdown({
   if (!data.ok) {
     console.error("error: ", data.error);
     if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
-      window.location.href = "/multi/lobby";
+      window.location.href = "/lobby";
     }
     return 0;
   }
@@ -255,7 +255,7 @@ export default function Page() {
             console.error("error: ", data.error);
           } else {
             console.log("statistics sent, redirecting to result page");
-            window.location.href = "/multi/result";
+            window.location.href = "/result";
           }
         })
         .catch((err) => {
@@ -276,7 +276,7 @@ export default function Page() {
 
     // redirect back to lobby if game id is not found
     if (!tmpGameID) {
-      window.location.href = "/multi/lobby";
+      window.location.href = "/lobby";
     }
     // clear game id after first use
     // NOTE: not sure if this will cause any issues

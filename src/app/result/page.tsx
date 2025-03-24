@@ -60,7 +60,7 @@ export default function Page() {
       <div className={styles.button_container}>
         <PrimaryButton
           action={() => {
-            window.location.href = "/multi/lobby";
+            window.location.href = "/lobby";
           }}
         >
           NEXT GAME
