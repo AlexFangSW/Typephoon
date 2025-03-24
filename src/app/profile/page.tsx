@@ -1,9 +1,21 @@
-'use client'
+"use client";
 
 import GraphDummy from "@/components/Graphs/GraphDummy";
 import styles from "./profile.module.scss";
 import PurpleButton from "@/components/Buttons/PurpleButton";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
+import {
+  GameResultWithGameType,
+  ProfileGraphItems,
+  ProfileHistory,
+  ProfileStatistics,
+} from "@/types";
+import { useEffect, useState } from "react";
+import {
+  getProfileGraph,
+  getProfileHistory,
+  getProfileStatistics,
+} from "./actions";
 
 function Summary({
   bestWpm,
@@ -50,17 +62,24 @@ function Summary({
   );
 }
 
-function ProgressOverTime() {
+function ProgressOverTime({
+  graphItems,
+  setGraphSize,
+}: {
+  graphItems: ProfileGraphItems | null;
+  setGraphSize: (size: number) => void;
+}) {
   return (
     <div className={styles.progress_over_time}>
       <div>PROGRESS OVER TIME</div>
       <div className={styles.progress_over_time_item}>
-        <PurpleButton>DAY</PurpleButton>
-        <PurpleButton>WEEK</PurpleButton>
-        <PurpleButton>MONTH</PurpleButton>
-        <PurpleButton>YEAR</PurpleButton>
-        <PurpleButton>ALL TIME</PurpleButton>
+        <PurpleButton action={() => setGraphSize(10)}>Last 10</PurpleButton>
+        <PurpleButton action={() => setGraphSize(50)}>Last 50</PurpleButton>
+        <PurpleButton action={() => setGraphSize(100)}>Last 100</PurpleButton>
+        <PurpleButton action={() => setGraphSize(500)}>Last 500</PurpleButton>
+        <PurpleButton action={() => setGraphSize(1000)}>Last 1000</PurpleButton>
       </div>
+      {/* TODO: Find a graph component */}
       <GraphDummy />
     </div>
   );
@@ -72,14 +91,12 @@ function HistoryItem({
   acc,
   type,
   id,
-  replay,
 }: {
   date: string;
   wpm: number;
   acc: number;
   type: string;
   id: string;
-  replay: boolean;
 }) {
   return (
     <tr>
@@ -87,63 +104,17 @@ function HistoryItem({
       <td>{wpm}</td>
       <td>{acc}</td>
       <td>{type}</td>
-      <td>{replay && <PurpleButton>REPLAY</PurpleButton>}</td>
     </tr>
   );
 }
 
-type HistoryItemType = {
-  date: string;
-  wpm: number;
-  acc: number;
-  type: string;
-  id: string;
-  replay: boolean;
-};
-
-function History() {
-  const history: HistoryItemType[] = [
-    {
-      date: "2024-01-01",
-      wpm: 111,
-      acc: 111,
-      type: "SOLO",
-      id: "1",
-      replay: true,
-    },
-    {
-      date: "2024-01-02",
-      wpm: 111,
-      acc: 111,
-      type: "TEAM",
-      id: "2",
-      replay: true,
-    },
-    {
-      date: "2024-01-02",
-      wpm: 111,
-      acc: 111,
-      type: "SOLO",
-      id: "3",
-      replay: true,
-    },
-    {
-      date: "2024-01-02",
-      wpm: 111,
-      acc: 111,
-      type: "RANDOM",
-      id: "4",
-      replay: false,
-    },
-    {
-      date: "2024-01-02",
-      wpm: 111,
-      acc: 111,
-      type: "RANDOM",
-      id: "5",
-      replay: false,
-    },
-  ];
+// TODO: Fill in the history items
+//       Structure might need to change (add rank ?)
+//       Args need to be added as well, (page, size?, etc)
+function History({ history }: { history: ProfileHistory | null }) {
+  if (!history) {
+    return null;
+  }
   return (
     <div className={styles.history}>
       {/* title */}
@@ -156,7 +127,6 @@ function History() {
             <th>WPM</th>
             <th>ACC</th>
             <th>TYPE</th>
-            <th>REPLAY</th>
           </tr>
         </thead>
         <tbody>
@@ -176,23 +146,54 @@ function History() {
 }
 
 export default function Page() {
+  const [statistics, setStatistics] = useState<ProfileStatistics | null>(null);
+  const [history, setHistory] = useState<ProfileHistory | null>(null);
+  const [graph, setGraph] = useState<ProfileGraphItems | null>(null);
+  const [historyPage, setHistoryPage] = useState<number>(1);
+  const [historySize, setHistorySize] = useState<number>(50);
+  const [graphSize, setGraphSize] = useState<number>(10);
+
+  useEffect(() => {
+    getProfileStatistics().then((data) => {
+      if (data) {
+        setStatistics(data);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    getProfileHistory({ page: historyPage, size: historySize }).then((data) => {
+      if (data) {
+        setHistory(data);
+      }
+    });
+  }, [historyPage, historySize]);
+
+  useEffect(() => {
+    getProfileGraph(graphSize).then((data) => {
+      if (data) {
+        setGraph(data);
+      }
+    });
+  }, [graphSize]);
+
   return (
     <div className={styles.container}>
       {/* summary */}
       <Summary
-        bestWpm={111}
-        bestAccuracy={111}
-        last10Wpm={111}
-        last10Accuracy={111}
-        averageWpm={111}
-        averageAccuracy={111}
+        bestWpm={statistics?.wpm_best ?? 0}
+        bestAccuracy={statistics?.acc_best ?? 0}
+        last10Wpm={statistics?.wpm_avg_10 ?? 0}
+        last10Accuracy={statistics?.acc_avg_10 ?? 0}
+        averageWpm={statistics?.wpm_avg_all ?? 0}
+        averageAccuracy={statistics?.acc_avg_all ?? 0}
       />
 
       {/* progress over time */}
-      <ProgressOverTime />
+      <ProgressOverTime graphItems={graph} setGraphSize={setGraphSize} />
 
       {/* history */}
-      <History />
+      <History history={history} />
     </div>
   );
 }

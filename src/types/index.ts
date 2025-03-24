@@ -94,3 +94,49 @@ export type GameStatistics = {
 }
 
 export type GameResultResponse = ApiResponse<{ result: GameUserInfo[] }>
+
+export type ProfileStatistics = {
+  total_games: number
+  wpm_best: number
+  acc_best: number
+  wpm_avg_10: number
+  acc_avg_10: number
+  wpm_avg_all: number
+  acc_avg_all: number
+}
+
+export type ProfileStatisticsResponse = ApiResponse<ProfileStatistics>
+
+export enum GameType {
+  SINGLE = 0,
+  MULTI = 1,
+  TEAM = 2,
+  }
+
+export type GameResultWithGameType = {
+  game_type: GameType
+  game_id: number
+  wpm: number
+  wpm_raw: number
+  accuracy: number
+  finished_at: string
+  rank: number
+}
+
+export type GameResultWithGameTypeResponse = ApiResponse<GameResultWithGameType[]>
+
+
+export type ProfileHistory = {
+  total: number
+  has_prev_page: boolean
+  has_next_page: boolean
+  data: GameResultWithGameType[]
+}
+
+export type ProfileHistoryResponse = ApiResponse<ProfileHistory>
+
+export type ProfileGraphItems = {
+  data: GameResultWithGameType[]
+}
+
+export type ProfileGraphResponse = ApiResponse<ProfileGraphItems>
