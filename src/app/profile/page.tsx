@@ -1,6 +1,5 @@
 "use client";
 
-import GraphDummy from "@/components/Graphs/GraphDummy";
 import styles from "./profile.module.scss";
 import PurpleButton from "@/components/Buttons/PurpleButton";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
@@ -15,6 +14,7 @@ import {
   getProfileHistory,
   getProfileStatistics,
 } from "./actions";
+import { Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 function Summary({
   bestWpm,
@@ -61,6 +61,90 @@ function Summary({
   );
 }
 
+
+function ProgressOverTimeChart() {
+  // TODO: remove dummy data
+  const firstDate = new Date()
+  const data: object[] = [];
+
+  for (let i = 0; i < 10; i++) {
+    data.push(
+      {
+        date: (firstDate.setMinutes(firstDate.getMinutes() + i * 2)).toString(),
+        wpm: Math.floor(Math.random() * (300 - 10 + 1) + 10),
+        acc: Math.floor(Math.random() * (99 - 10 + 1) + 10),
+      }
+    )
+  }
+
+  const tickFormatter = (value: string, index: number): string => {
+    console.log(value, index)
+    return `.`
+  }
+
+  const CustomToolTip = (
+    { payload,
+      label,
+      active
+    }: {
+      payload?: any[],
+      label?: number,
+      active?: boolean
+    }) => {
+    if (!payload || !label || !active) {
+      return null
+    }
+    console.log("xxxx", payload)
+    const wpm = payload[0].value
+    const raw_ts = payload[0].payload.date
+    const acc = payload[1].value
+    const ts = new Date(Math.floor(raw_ts)).toISOString()
+    if (active) {
+      return (
+        <div className={`custom-tooltip ${styles.tooltip}`}>
+          <p className="label">{ts}</p>
+          <hr className={`${styles.tooltip_hr}`} />
+          <p className="intro">
+            <li>wpm: {wpm}</li>
+            <li>acc: {acc}</li>
+          </p>
+        </div>
+      );
+    }
+
+    return null;
+  }
+
+  const accColor = "#FFCF50"
+  const wpmColor = "#0EB99B"
+  const primaryWord = "#9BA4B5"
+
+  return (
+    <ResponsiveContainer>
+      <LineChart
+        width={800}
+        height={500}
+        data={data}
+        margin={{
+          top: 10,
+          right: 0,
+          left: 0,
+          bottom: 0,
+        }}
+        className={styles.textColor}
+      >
+        <Line strokeWidth={2.5} yAxisId={"wpm"} type={"monotone"} dataKey={"wpm"} stroke={wpmColor} />
+        <Line strokeWidth={2.5} yAxisId={"acc"} type={"monotone"} dataKey={"acc"} stroke={accColor} />
+        <XAxis tick={{ fill: primaryWord }} tickFormatter={tickFormatter} />
+        <YAxis tick={{ fill: wpmColor }} yAxisId={"wpm"} orientation="right" dataKey={"wpm"} />
+        <YAxis tick={{ fill: accColor }} yAxisId={"acc"} orientation="left" dataKey={"acc"} />
+        <Tooltip content={<CustomToolTip />} />
+        <Legend verticalAlign="top" />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
 function ProgressOverTime({
   graphItems,
   setGraphSize,
@@ -72,14 +156,17 @@ function ProgressOverTime({
     <div className={styles.progress_over_time}>
       <div>PROGRESS OVER TIME</div>
       <div className={styles.progress_over_time_item}>
+        {/* TODO: Highlight selected button */}
         <PurpleButton action={() => setGraphSize(10)}>Last 10</PurpleButton>
         <PurpleButton action={() => setGraphSize(50)}>Last 50</PurpleButton>
         <PurpleButton action={() => setGraphSize(100)}>Last 100</PurpleButton>
         <PurpleButton action={() => setGraphSize(500)}>Last 500</PurpleButton>
         <PurpleButton action={() => setGraphSize(1000)}>Last 1000</PurpleButton>
       </div>
-      {/* TODO: Find a graph component */}
-      <GraphDummy />
+      {/* TODO: input graph Items */}
+      <div className={styles.graph_placeholder}>
+        <ProgressOverTimeChart />
+      </div>
     </div>
   );
 }
@@ -105,6 +192,24 @@ function HistoryItem({
   );
 }
 
+function HistoryPlaceholder() {
+  return <div className={styles.history}>
+    {/* title */}
+    <div>HISTORY</div>
+    {/* records */}
+    <table>
+      <thead>
+        <tr>
+          <th>DATE</th>
+          <th>WPM</th>
+          <th>ACC</th>
+          <th>TYPE</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+}
+
 function History({
   history,
   pageNum,
@@ -115,7 +220,7 @@ function History({
   setPageNum: (num: number) => void
 }) {
   if (!history) {
-    return null;
+    return <HistoryPlaceholder />;
   }
 
   const increasePageNum = () => {

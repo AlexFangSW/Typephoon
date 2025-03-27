@@ -28,5 +28,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile'],
+  // TODO: revert this to '/profile'
+  matcher: ['/profile--'],
 }

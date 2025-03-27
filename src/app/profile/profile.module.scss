@@ -37,7 +37,7 @@
   justify-content: center;
   font-size: 2rem;
   width: 100%;
-  row-gap: 1rem;
+  row-gap: 2rem;
 }
 
 
@@ -54,6 +54,16 @@
   }
 }
 
+.graph_placeholder {
+  font-size: 1.5rem;
+  height: 20rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .history {
   width: 100%;
   display: flex;
@@ -67,8 +77,8 @@
     width: 100%;
 
     th {
-        text-align: left;
-        font-size: 1.5rem;
+      text-align: left;
+      font-size: 1.5rem;
     }
 
     td {
@@ -81,10 +91,10 @@
       }
     }
 
-  tr {
-    box-shadow: 0px 1px 0px 0px var(--primary-words);
-    height: 1.5lh;
-    font-size: 1.5rem;
+    tr {
+      box-shadow: 0px 1px 0px 0px var(--primary-words);
+      height: 1.5lh;
+      font-size: 1.5rem;
     }
   }
 }
@@ -99,4 +109,16 @@
   button {
     font-size: 1rem;
   }
+}
+
+.tooltip {
+  background-color: var(--background-color);
+  border-style: solid;
+  border-width: 0.1rem;
+  border-radius: 0.25rem;
+  padding: 2;
+}
+
+.tooltip_hr {
+  color: var(--primary-words);
 }

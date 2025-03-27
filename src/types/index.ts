@@ -111,7 +111,7 @@ export enum GameType {
   SINGLE = 0,
   MULTI = 1,
   TEAM = 2,
-  }
+}
 
 export type GameResultWithGameType = {
   game_type: GameType
