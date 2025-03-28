@@ -7,6 +7,8 @@ import {
   ProfileGraphItems,
   ProfileHistory,
   ProfileStatistics,
+  GameResultWithGameType,
+  GameType,
 } from "@/types";
 import { useEffect, useState } from "react";
 import {
@@ -14,7 +16,15 @@ import {
   getProfileHistory,
   getProfileStatistics,
 } from "./actions";
-import { Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 function Summary({
   bestWpm,
@@ -62,19 +72,21 @@ function Summary({
 }
 
 
-function ProgressOverTimeChart() {
-  // TODO: remove dummy data
-  const firstDate = new Date()
-  const data: object[] = [];
-
-  for (let i = 0; i < 10; i++) {
-    data.push(
-      {
-        date: (firstDate.setMinutes(firstDate.getMinutes() + i * 2)).toString(),
-        wpm: Math.floor(Math.random() * (300 - 10 + 1) + 10),
-        acc: Math.floor(Math.random() * (99 - 10 + 1) + 10),
-      }
-    )
+function ProgressOverTimeChart({
+  data
+}: {
+  data?: GameResultWithGameType[]
+}) {
+  if (!data) {
+    data = [{
+      game_type: GameType.MULTI,
+      game_id: 0,
+      wpm: 0,
+      wpm_raw: 0,
+      accuracy: 0,
+      finished_at: "",
+      rank: 0,
+    }]
   }
 
   const tickFormatter = (value: string, index: number): string => {
@@ -94,9 +106,8 @@ function ProgressOverTimeChart() {
     if (!payload || !label || !active) {
       return null
     }
-    console.log("xxxx", payload)
     const wpm = payload[0].value
-    const raw_ts = payload[0].payload.date
+    const raw_ts = payload[0].payload.finished_at
     const acc = payload[1].value
     const ts = new Date(Math.floor(raw_ts)).toISOString()
     if (active) {
@@ -134,10 +145,10 @@ function ProgressOverTimeChart() {
         className={styles.textColor}
       >
         <Line strokeWidth={2.5} yAxisId={"wpm"} type={"monotone"} dataKey={"wpm"} stroke={wpmColor} />
-        <Line strokeWidth={2.5} yAxisId={"acc"} type={"monotone"} dataKey={"acc"} stroke={accColor} />
+        <Line strokeWidth={2.5} yAxisId={"acc"} type={"monotone"} dataKey={"accuracy"} stroke={accColor} />
         <XAxis tick={{ fill: primaryWord }} tickFormatter={tickFormatter} />
         <YAxis tick={{ fill: wpmColor }} yAxisId={"wpm"} orientation="right" dataKey={"wpm"} />
-        <YAxis tick={{ fill: accColor }} yAxisId={"acc"} orientation="left" dataKey={"acc"} />
+        <YAxis tick={{ fill: accColor }} yAxisId={"acc"} orientation="left" dataKey={"accuracy"} />
         <Tooltip content={<CustomToolTip />} />
         <Legend verticalAlign="top" />
       </LineChart>
@@ -147,25 +158,44 @@ function ProgressOverTimeChart() {
 
 function ProgressOverTime({
   graphItems,
+  graphSize,
   setGraphSize,
 }: {
-  graphItems: ProfileGraphItems | null;
+  graphItems?: ProfileGraphItems;
+  graphSize: number,
   setGraphSize: (size: number) => void;
 }) {
   return (
     <div className={styles.progress_over_time}>
       <div>PROGRESS OVER TIME</div>
       <div className={styles.progress_over_time_item}>
-        {/* TODO: Highlight selected button */}
-        <PurpleButton action={() => setGraphSize(10)}>Last 10</PurpleButton>
-        <PurpleButton action={() => setGraphSize(50)}>Last 50</PurpleButton>
-        <PurpleButton action={() => setGraphSize(100)}>Last 100</PurpleButton>
-        <PurpleButton action={() => setGraphSize(500)}>Last 500</PurpleButton>
-        <PurpleButton action={() => setGraphSize(1000)}>Last 1000</PurpleButton>
+        {
+          graphSize === 10 ?
+            <PrimaryButton action={() => setGraphSize(10)}>Last 10</PrimaryButton> :
+            <PurpleButton action={() => setGraphSize(10)}>Last 10</PurpleButton>
+        }
+
+        {
+          graphSize === 50 ?
+            <PrimaryButton action={() => setGraphSize(50)}>Last 50</PrimaryButton> :
+            <PurpleButton action={() => setGraphSize(50)}>Last 50</PurpleButton>
+        }
+
+        {
+          graphSize === 100 ?
+            <PrimaryButton action={() => setGraphSize(100)}>Last 100</PrimaryButton> :
+            <PurpleButton action={() => setGraphSize(100)}>Last 100</PurpleButton>
+        }
+
+        {
+          graphSize === 1000 ?
+            <PrimaryButton action={() => setGraphSize(1000)}>Last 1000</PrimaryButton> :
+            <PurpleButton action={() => setGraphSize(1000)}>Last 1000</PurpleButton>
+        }
+
       </div>
-      {/* TODO: input graph Items */}
       <div className={styles.graph_placeholder}>
-        <ProgressOverTimeChart />
+        <ProgressOverTimeChart data={graphItems?.data} />
       </div>
     </div>
   );
@@ -207,6 +237,7 @@ function HistoryPlaceholder() {
         </tr>
       </thead>
     </table>
+    <span>NO DATA</span>
   </div>
 }
 
@@ -215,7 +246,7 @@ function History({
   pageNum,
   setPageNum,
 }: {
-  history: ProfileHistory | null,
+  history?: ProfileHistory,
   pageNum: number
   setPageNum: (num: number) => void
 }) {
@@ -270,9 +301,9 @@ function History({
 }
 
 export default function Page() {
-  const [statistics, setStatistics] = useState<ProfileStatistics | null>(null);
-  const [history, setHistory] = useState<ProfileHistory | null>(null);
-  const [graph, setGraph] = useState<ProfileGraphItems | null>(null);
+  const [statistics, setStatistics] = useState<ProfileStatistics>();
+  const [history, setHistory] = useState<ProfileHistory>();
+  const [graph, setGraph] = useState<ProfileGraphItems>();
   const [historyPage, setHistoryPage] = useState<number>(1);
   const [historySize, setHistorySize] = useState<number>(20);
   const [graphSize, setGraphSize] = useState<number>(10);
@@ -314,6 +345,7 @@ export default function Page() {
 
       <ProgressOverTime
         graphItems={graph}
+        graphSize={graphSize}
         setGraphSize={setGraphSize}
       />
 
