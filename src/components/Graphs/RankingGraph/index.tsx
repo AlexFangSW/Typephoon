@@ -27,11 +27,34 @@ function RankingRow({
   );
 }
 
+function RankingGraphPlaceholder() {
+  return (
+    <div className={styles.graph_container}>
+      <table className={styles.table}>
+        <tbody>
+          <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>WPM</th>
+            <th>ACC</th>
+            <th>Status</th>
+          </tr>
+        </tbody>
+      </table>
+      <span className={styles.placeholder_text}>NO DATA</span>
+    </div>
+  )
+}
+
 export default function RankingGraph({
   gameResult,
 }: {
   gameResult: GameUserInfo[];
 }) {
+  if (gameResult.length === 0) {
+    return <RankingGraphPlaceholder />
+  }
+
   return (
     <div className={styles.graph_container}>
       <table className={styles.table}>

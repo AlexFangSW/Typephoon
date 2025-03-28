@@ -31,13 +31,13 @@ export default function Page() {
 
   useEffect(() => {
     // Get statistics from session storage
-    const statistics: GameStatistics = JSON.parse(
-      localStorage.getItem(SessionStoreKeys.GAME_STATISTICS) || "{}"
-    );
-    if (!statistics) {
+    const game_statistics = localStorage.getItem(SessionStoreKeys.GAME_STATISTICS)
+    if (!game_statistics) {
       console.error("No statistics found");
       return;
     }
+
+    const statistics: GameStatistics = JSON.parse(game_statistics);
 
     setWpm(statistics.wpm);
     setWpmRaw(statistics.wpm_raw);
@@ -56,6 +56,7 @@ export default function Page() {
       <Title title={`WPM: ${wpm} WPM(Raw): ${wpmRaw} ACC: ${acc}`} />
       {/* ranking graph */}
       <RankingGraph gameResult={gameResult} />
+      <span>[ Refresh page (Press F5) to update data ]</span>
       {/* buttons */}
       <div className={styles.button_container}>
         <PrimaryButton
