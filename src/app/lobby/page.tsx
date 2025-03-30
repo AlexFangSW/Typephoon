@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import RedButton from "@/components/Buttons/RedButton";
 import { SessionStoreKeys } from "@/utils/constants";
 import { debounce } from "@/utils/common";
+import { useSearchParams } from "next/navigation";
 
 enum LobbyBGMsgEvent {
   INIT = "INIT",
@@ -13,7 +14,6 @@ enum LobbyBGMsgEvent {
   GET_TOKEN = "GET_TOKEN",
   GAME_START = "GAME_START",
 }
-
 
 enum QueueInType {
   RECONNECT = "reconnect",
@@ -138,11 +138,14 @@ async function updateCountdown({
 }
 
 export default function Page() {
+  const searchParams = useSearchParams();
+  const autoQueueIn = Boolean(searchParams.get("auto_queue_in"));
+
   const ws = useRef<WebSocket>(null);
   const redirect_triggered = useRef<boolean>(false);
   const [countdownBGID, setCountdownBGID] = useState<NodeJS.Timeout>();
   const [players, setPlayers] = useState<LobbyPlayersResponse>();
-  const [isQueuedIn, setIsQueuedIn] = useState<boolean>(false);
+  const [isQueuedIn, setIsQueuedIn] = useState<boolean>(autoQueueIn);
   const [countdown, setCountdown] = useState<number>();
   const [gameID, setGameID] = useState<number>();
   const [tokenKey, setTokenKey] = useState<string>();
@@ -152,7 +155,9 @@ export default function Page() {
 
   const wsConnect = (): WebSocket => {
     if (gameID) {
-      ws.current = new WebSocket(`/api/v1/lobby/queue-in/ws?prev_game_id=${gameID}&queue_in_type=${QueueInType.RECONNECT}`);
+      ws.current = new WebSocket(
+        `/api/v1/lobby/queue-in/ws?prev_game_id=${gameID}&queue_in_type=${QueueInType.RECONNECT}`
+      );
     } else {
       ws.current = new WebSocket(`/api/v1/lobby/queue-in/ws`);
     }
@@ -171,7 +176,7 @@ export default function Page() {
       // got message
       const raw_data = await ev.data;
       const data: LobbyBGMsg = JSON.parse(raw_data);
-      console.log("got message:", data)
+      console.log("got message:", data);
 
       switch (data.event) {
         case LobbyBGMsgEvent.INIT:
@@ -207,7 +212,7 @@ export default function Page() {
         case LobbyBGMsgEvent.GAME_START:
           // redirect and start the game
           window.location.href = "/game";
-          redirect_triggered.current = true
+          redirect_triggered.current = true;
 
         default:
           console.log("unknown ws event", data.event);
@@ -304,7 +309,7 @@ export default function Page() {
               setIsQueuedIn(true);
             }}
           >
-            New Game
+            Queue In
           </PrimaryButton>
         )}
       </div>
