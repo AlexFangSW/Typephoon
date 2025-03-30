@@ -12,16 +12,13 @@
     color: #808080;
     margin-bottom: 10px;
     position: relative;
-    z-index: 10;
+    z-index: 3;
 }
 
 .behind_cursor {
     color: var(--background-color);
-}
-
-.user_input {
-    min-height: 1.2em;
     position: relative;
+    z-index: 3;
 }
 
 .correct {
@@ -42,7 +39,7 @@
     margin-left: 0px;
     vertical-align: middle;
     border-radius: 2px;
-    z-index: 9;
+    z-index: 2;
 }
 
 .cursor_others {
@@ -55,5 +52,5 @@
     margin-left: 1px;
     vertical-align: middle;
     border-radius: 2px;
-    z-index: 8;
+    z-index: 1;
 }

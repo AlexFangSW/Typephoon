@@ -118,12 +118,9 @@ const TypingGame = ({
 
         const isCurrect = char === currChars[charIndex];
 
-        // TODO: Render cursors of other players
-        //        - color needs to be different, less prminent
         currWordRender.push(
           <Fragment key={`char-${wordIndex}-${charIndex}`}>
             {Array.from(otherPlayers.entries()).map(([playerID, player]) => {
-              // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
               const isCurrentPosition =
                 wordIndex === player.wordIndex &&
                 (charIndex === player.charIndex + 1 ||
@@ -148,7 +145,8 @@ const TypingGame = ({
             )}
 
             <span
-              className={`${
+              className={`
+              ${
                 currChars[charIndex]
                   ? isCurrect
                     ? styles.correct
