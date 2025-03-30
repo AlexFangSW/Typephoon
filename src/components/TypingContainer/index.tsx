@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, JSX, Fragment, useRef } from "react";
+import { useEffect, JSX, Fragment } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
@@ -27,23 +27,24 @@ const TypingGame = ({
   currentPosition: Position;
   setCurrentPosition: Dispatch<SetStateAction<Position>>;
 }) => {
-  const targetWords = useRef(target.split(" "));
+  const targetWords = target.split(" ");
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (finish) return;
 
     if (e.key === "Backspace" && e.ctrlKey) {
       e.preventDefault();
-      const lastNonSpaceIndex = currentInput.trimEnd().length - 1;
-      const lastSpaceIndex =
-        lastNonSpaceIndex !== -1
-          ? currentInput.lastIndexOf(" ", lastNonSpaceIndex)
-          : -1;
-      setCurrentInput(
-        lastSpaceIndex === -1
+      setCurrentInput((prev) => {
+        const lastNonSpaceIndex = prev.trimEnd().length - 1;
+        const lastSpaceIndex =
+          lastNonSpaceIndex !== -1
+            ? prev.lastIndexOf(" ", lastNonSpaceIndex)
+            : -1;
+
+        return lastSpaceIndex === -1
           ? ""
-          : currentInput.substring(0, lastSpaceIndex + 1)
-      );
+          : prev.substring(0, lastSpaceIndex + 1);
+      });
     } else if (e.key === "Backspace") {
       setCurrentInput((prev) => prev.slice(0, -1));
     } else if (e.key.length === 1) {
@@ -52,13 +53,10 @@ const TypingGame = ({
         char: e.key,
         currect:
           e.key ===
-          targetWords.current[currentPosition.wordIndex][
-          currentPosition.charIndex
-          ],
+          targetWords[currentPosition.wordIndex][currentPosition.charIndex],
       });
 
-      const newInput = currentInput + e.key;
-      setCurrentInput(newInput);
+      setCurrentInput((prev) => prev + e.key);
     }
   };
 
@@ -66,6 +64,7 @@ const TypingGame = ({
     const currWords = currentInput.split(" ");
     const currWordIndex = currWords.length - 1;
     const currCharIndex = currWords[currWordIndex]?.length - 1;
+    const targetWordIndex = targetWords.length - 1;
 
     setCurrentPosition({
       wordIndex: currWordIndex,
@@ -73,7 +72,10 @@ const TypingGame = ({
     });
 
     // Finish when the last word is correct
-    if (currWords[currWordIndex] === targetWords.current[currWordIndex]) {
+    if (
+      currWords[currWordIndex] === targetWords[targetWordIndex] &&
+      currWordIndex === targetWordIndex
+    ) {
       setFinish(true);
     }
   }, [currentInput]);
@@ -92,7 +94,7 @@ const TypingGame = ({
     const currWords = currentInput.split(" ");
 
     // Each word
-    targetWords.current.forEach((word, wordIndex) => {
+    targetWords.forEach((word, wordIndex) => {
       const currChars = currWords[wordIndex]?.split("")
         ? currWords[wordIndex]?.split("")
         : [];
@@ -117,31 +119,9 @@ const TypingGame = ({
         const isCurrect = char === currChars[charIndex];
 
         // TODO: Render cursors of other players
-        //       - We already have the position of other players
-        //       - Just add a new span with the cursor class
         //        - color needs to be different, less prminent
         currWordRender.push(
           <Fragment key={`char-${wordIndex}-${charIndex}`}>
-            {isCurrentChar && isFirstChar ? (
-              <span className={styles.cursor} />
-            ) : (
-              ""
-            )}
-            <span
-              className={`${currChars[charIndex]
-                  ? isCurrect
-                    ? styles.correct
-                    : styles.incorrect
-                  : styles.target_text
-                } ${isBehindCursor ? styles.behind_cursor : ""}`}
-            >
-              {char}
-            </span>
-            {isCurrentChar && !isFirstChar ? (
-              <span className={styles.cursor} />
-            ) : (
-              ""
-            )}
             {Array.from(otherPlayers.entries()).map(([playerID, player]) => {
               // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
               const isCurrentPosition =
@@ -160,6 +140,28 @@ const TypingGame = ({
                 return;
               }
             })}
+            {isCurrentChar && isFirstChar ? (
+              <span className={styles.cursor} />
+            ) : (
+              ""
+            )}
+
+            <span
+              className={`${
+                currChars[charIndex]
+                  ? isCurrect
+                    ? styles.correct
+                    : styles.incorrect
+                  : styles.target_text
+              } ${isBehindCursor ? styles.behind_cursor : ""}`}
+            >
+              {char}
+            </span>
+            {isCurrentChar && !isFirstChar ? (
+              <span className={styles.cursor} />
+            ) : (
+              ""
+            )}
           </Fragment>
         );
       });
