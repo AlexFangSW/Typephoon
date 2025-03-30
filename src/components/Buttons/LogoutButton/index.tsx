@@ -1,5 +1,10 @@
 "use client";
 import styles from "./LogoutButton.module.scss";
+import Image from "next/image";
+
+function LogoutIcon() {
+  return <Image src="/logout.svg" alt="logout" width={30} height={30} />;
+}
 
 export default function LogoutButton() {
   return (
@@ -14,7 +19,7 @@ export default function LogoutButton() {
           window.location.href = "/";
         }}
       >
-        Logout
+        <LogoutIcon />
       </button>
     </>
   );
