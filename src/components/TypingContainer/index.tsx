@@ -111,7 +111,7 @@ const TypingGame = ({
             (charIndex === 0 && isFirstChar));
 
         // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
-        const isBehindCursor =
+        let isBehindCursor =
           wordIndex === currentPosition.wordIndex &&
           (charIndex === currentPosition.charIndex + 1 ||
             (charIndex === 0 && isFirstChar));
@@ -131,9 +131,10 @@ const TypingGame = ({
                     player.charIndex + 1 >= word.length));
 
               if (isCurrentPosition) {
+                isBehindCursor = true;
                 return (
                   <Fragment key={`apponent-${playerID}`}>
-                    <span className={styles.cursor} />
+                    <span className={styles.cursor_others} />
                   </Fragment>
                 );
               } else {
