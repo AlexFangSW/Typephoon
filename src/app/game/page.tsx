@@ -105,7 +105,6 @@ export default function Page() {
   const [otherPlayers, setOtherPlayers] = useState<Map<string, GameInfo>>(
     new Map<string, GameInfo>()
   );
-  // TODO: set user id
   let gameIDRef = useRef<number>(null);
   const [start, setStart] = useState<boolean>(false);
   let startTime = useRef<Date>(null);
