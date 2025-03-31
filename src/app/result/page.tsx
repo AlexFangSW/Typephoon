@@ -50,6 +50,7 @@ export default function Page() {
     });
   }, []);
 
+  // TODO: round numbers (wpm, acc ... etc)
   return (
     <div className={styles.container}>
       {/* WPM, WPM(Raw), ACC */}
