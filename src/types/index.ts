@@ -64,9 +64,13 @@ export type GameUserInfo = {
   acc?: number;
 };
 
+type OthersMap = {
+  [key: string]: GameUserInfo
+}
+
 export type GamePlayersResponse = ApiResponse<{
   me: GameUserInfo;
-  others: Map<string, GameUserInfo>;
+  others: OthersMap;
 }>
 
 export type GameWordsResponse = ApiResponse<{
@@ -93,7 +97,7 @@ export type GameStatistics = {
   acc: number
 }
 
-export type GameResultResponse = ApiResponse<{ result: GameUserInfo[] }>
+export type GameResultResponse = ApiResponse<{ ranking: GameUserInfo[] }>
 
 export type ProfileStatistics = {
   total_games: number

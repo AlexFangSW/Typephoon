@@ -14,10 +14,10 @@ async function getGameResult({
   gameID: number;
   setGameResult: Dispatch<SetStateAction<GameUserInfo[]>>;
 }) {
-  const response = await fetch(`/api/game/result?game_id=${gameID}`);
+  const response = await fetch(`/api/v1/game/result?game_id=${gameID}`);
   const data: GameResultResponse = await response.json();
   if (data.ok) {
-    setGameResult(data.result);
+    setGameResult(data.ranking);
   } else {
     console.error("Failed to get game result");
   }
@@ -31,7 +31,7 @@ export default function Page() {
 
   useEffect(() => {
     // Get statistics from session storage
-    const game_statistics = localStorage.getItem(SessionStoreKeys.GAME_STATISTICS)
+    const game_statistics = window.sessionStorage.getItem(SessionStoreKeys.GAME_STATISTICS)
     if (!game_statistics) {
       console.error("No statistics found");
       return;

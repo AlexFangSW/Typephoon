@@ -62,9 +62,9 @@ async function updateOtherPlayers({
   console.log("players: ", data);
 
   let otherPlayers: Map<string, GameInfo> = new Map();
-  for (const [key, value] of data.others) {
+  for (const key in data.others) {
     otherPlayers.set(key, {
-      ...value,
+      ...data.others[key],
       wordIndex: 0,
       charIndex: 0,
     });
@@ -105,6 +105,7 @@ export default function Page() {
   const [otherPlayers, setOtherPlayers] = useState<Map<string, GameInfo>>(
     new Map<string, GameInfo>()
   );
+  // TODO: set user id
   let gameIDRef = useRef<number>(null);
   const [start, setStart] = useState<boolean>(false);
   let startTime = useRef<Date>(null);
@@ -171,7 +172,7 @@ export default function Page() {
 
   // On keystroke
   useEffect(() => {
-    if (typeof ws.current === null) {
+    if (typeof ws.current === null || ws.current?.readyState != WebSocket.OPEN) {
       return;
     }
     const msg: OutgoingGameBGMsg = {
@@ -184,6 +185,7 @@ export default function Page() {
 
   // On finish
   useEffect(() => {
+    // TODO: include user id in statistics
     if (!finish || !gameIDRef.current || !startTime.current || !words) {
       console.log(
         "missing data to calculate statistics, finish:",

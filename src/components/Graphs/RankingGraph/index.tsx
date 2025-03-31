@@ -46,6 +46,7 @@ function RankingGraphPlaceholder() {
   )
 }
 
+// TODO: heighlight current user
 export default function RankingGraph({
   gameResult,
 }: {

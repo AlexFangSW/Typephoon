@@ -146,13 +146,12 @@ const TypingGame = ({
 
             <span
               className={`
-              ${
-                currChars[charIndex]
+              ${currChars[charIndex]
                   ? isCurrect
                     ? styles.correct
                     : styles.incorrect
                   : styles.target_text
-              } ${isBehindCursor ? styles.behind_cursor : ""}`}
+                } ${isBehindCursor ? styles.behind_cursor : ""}`}
             >
               {char}
             </span>
