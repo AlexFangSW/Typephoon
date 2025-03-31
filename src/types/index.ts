@@ -99,6 +99,13 @@ export type GameStatistics = {
 
 export type GameResultResponse = ApiResponse<{ ranking: GameUserInfo[] }>
 
+export type ProfileUserInfo = {
+  id: string
+  name: string
+}
+
+export type ProfileUserInfoResponse = ApiResponse<ProfileUserInfo>
+
 export type ProfileStatistics = {
   total_games: number
   wpm_best: number

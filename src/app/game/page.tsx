@@ -184,7 +184,6 @@ export default function Page() {
 
   // On finish
   useEffect(() => {
-    // TODO: include user id in statistics
     if (!finish || !gameIDRef.current || !startTime.current || !words) {
       console.log(
         "missing data to calculate statistics, finish:",

@@ -2,23 +2,25 @@ import styles from "./RankingGraph.module.scss";
 import { GameUserInfo } from "@/types";
 
 function RankingRow({
+  isUser,
   rank,
   username,
   wpm,
   acc,
   status,
 }: {
-  rank?: number;
-  username: string;
-  wpm?: number;
-  acc?: number;
-  status: string;
+  isUser: boolean,
+  rank?: number,
+  username: string,
+  wpm?: number,
+  acc?: number,
+  status: string,
 }) {
   return (
     <>
       <tr>
         <td>{rank ? rank : ""}</td>
-        <td>{username}</td>
+        <td className={`${isUser ? styles.is_current_user : ""}`} >{username}</td>
         <td>{wpm ? wpm : ""}</td>
         <td>{acc ? acc : ""}</td>
         <td>{status}</td>
@@ -46,13 +48,14 @@ function RankingGraphPlaceholder() {
   )
 }
 
-// TODO: heighlight current user
 export default function RankingGraph({
+  userID,
   gameResult,
 }: {
+  userID?: string,
   gameResult: GameUserInfo[];
 }) {
-  if (gameResult.length === 0) {
+  if (gameResult.length === 0 || !userID) {
     return <RankingGraphPlaceholder />
   }
 
@@ -67,16 +70,17 @@ export default function RankingGraph({
             <th>ACC</th>
             <th>Status</th>
           </tr>
-          {gameResult.map((user, index) => (
-            <RankingRow
+          {gameResult.map((user, index) => {
+            return < RankingRow
               key={index}
+              isUser={user.id === userID}
               rank={user.rank}
               username={user.name}
               wpm={user.wpm}
               acc={user.acc}
               status={user.finished ? "FINISHED" : "IN PROGRESS"}
             />
-          ))}
+          })}
         </tbody>
       </table>
     </div>

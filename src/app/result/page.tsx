@@ -3,9 +3,9 @@ import Title from "@/components/Title";
 import styles from "./result.module.scss";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import RankingGraph from "@/components/Graphs/RankingGraph";
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react";
 import { SessionStoreKeys } from "@/utils/constants";
-import { GameStatistics, GameResultResponse, GameUserInfo } from "@/types";
+import { GameStatistics, GameResultResponse, GameUserInfo, ProfileUserInfoResponse, ProfileUserInfo } from "@/types";
 
 async function getGameResult({
   gameID,
@@ -23,11 +23,22 @@ async function getGameResult({
   }
 }
 
+async function getUserInfo(): Promise<ProfileUserInfo | undefined> {
+  const response = await fetch(`/api/v1/profile/user-info`);
+  const data: ProfileUserInfoResponse = await response.json();
+  if (data.ok) {
+    return { id: data.id, name: data.name };
+  } else {
+    console.error("Failed to get user info");
+  }
+}
+
 export default function Page() {
   const [gameResult, setGameResult] = useState<GameUserInfo[]>([]);
-  const [wpm, setWpm] = useState(0);
-  const [wpmRaw, setWpmRaw] = useState(0);
-  const [acc, setAcc] = useState(0);
+  const [wpm, setWpm] = useState("0");
+  const [wpmRaw, setWpmRaw] = useState("0");
+  const [acc, setAcc] = useState("0");
+  let userID = useRef<string>(undefined);
 
   useEffect(() => {
     // Get statistics from session storage
@@ -39,24 +50,29 @@ export default function Page() {
 
     const statistics: GameStatistics = JSON.parse(game_statistics);
 
-    setWpm(statistics.wpm);
-    setWpmRaw(statistics.wpm_raw);
-    setAcc(statistics.acc);
+    setWpm(statistics.wpm.toFixed(1));
+    setWpmRaw(statistics.wpm_raw.toFixed(1));
+    setAcc(statistics.acc.toFixed(1));
 
     // Get game result from server
     getGameResult({
       gameID: statistics.game_id,
       setGameResult: setGameResult,
     });
+
+    // Get user info
+    getUserInfo()
+      .then((data) => {
+        userID.current = data?.id
+      })
   }, []);
 
-  // TODO: round numbers (wpm, acc ... etc)
   return (
     <div className={styles.container}>
       {/* WPM, WPM(Raw), ACC */}
       <Title title={`WPM: ${wpm} WPM(Raw): ${wpmRaw} ACC: ${acc}`} />
       {/* ranking graph */}
-      <RankingGraph gameResult={gameResult} />
+      <RankingGraph gameResult={gameResult} userID={userID.current} />
       <span>[ Refresh page (Press F5) to update data ]</span>
       {/* buttons */}
       <div className={styles.button_container}>
