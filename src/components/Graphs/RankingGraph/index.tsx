@@ -21,8 +21,8 @@ function RankingRow({
       <tr>
         <td>{rank ? rank : ""}</td>
         <td className={`${isUser ? styles.is_current_user : ""}`} >{username}</td>
-        <td>{wpm ? wpm : ""}</td>
-        <td>{acc ? acc : ""}</td>
+        <td>{typeof wpm !== undefined ? wpm?.toFixed(1) : ""}</td>
+        <td>{typeof acc !== undefined ? acc?.toFixed(1) : ""}</td>
         <td>{status}</td>
       </tr>
     </>

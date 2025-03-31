@@ -2,7 +2,7 @@
 import styles from "./LogoutButton.module.scss"
 
 async function logout() {
-  await fetch(`/api/v1/auth/logout`)
+  await fetch(`/api/v1/auth/logout`, { cache: "no-store" })
   window.location.href = "/"
 }
 

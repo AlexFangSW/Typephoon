@@ -14,9 +14,12 @@ async function getGameResult({
   gameID: number;
   setGameResult: Dispatch<SetStateAction<GameUserInfo[]>>;
 }) {
-  const response = await fetch(`/api/v1/game/result?game_id=${gameID}`);
+  const response = await fetch(`/api/v1/game/result?game_id=${gameID}`, {
+    cache: "no-store",
+  });
   const data: GameResultResponse = await response.json();
   if (data.ok) {
+    console.log("got ranking", data.ranking)
     setGameResult(data.ranking);
   } else {
     console.error("Failed to get game result");
@@ -24,7 +27,9 @@ async function getGameResult({
 }
 
 async function getUserInfo(): Promise<ProfileUserInfo | undefined> {
-  const response = await fetch(`/api/v1/profile/user-info`);
+  const response = await fetch(`/api/v1/profile/user-info`, {
+    cache: "no-store",
+  });
   const data: ProfileUserInfoResponse = await response.json();
   if (data.ok) {
     return { id: data.id, name: data.name };
@@ -38,7 +43,7 @@ export default function Page() {
   const [wpm, setWpm] = useState("0");
   const [wpmRaw, setWpmRaw] = useState("0");
   const [acc, setAcc] = useState("0");
-  let userID = useRef<string>(undefined);
+  const [userID, setUserID] = useState<string>();
 
   useEffect(() => {
     // Get statistics from session storage
@@ -49,6 +54,8 @@ export default function Page() {
     }
 
     const statistics: GameStatistics = JSON.parse(game_statistics);
+
+    console.log("got statistics", statistics)
 
     setWpm(statistics.wpm.toFixed(1));
     setWpmRaw(statistics.wpm_raw.toFixed(1));
@@ -62,9 +69,7 @@ export default function Page() {
 
     // Get user info
     getUserInfo()
-      .then((data) => {
-        userID.current = data?.id
-      })
+      .then((data) => setUserID(data?.id))
   }, []);
 
   return (
@@ -72,7 +77,7 @@ export default function Page() {
       {/* WPM, WPM(Raw), ACC */}
       <Title title={`WPM: ${wpm} WPM(Raw): ${wpmRaw} ACC: ${acc}`} />
       {/* ranking graph */}
-      <RankingGraph gameResult={gameResult} userID={userID.current} />
+      <RankingGraph gameResult={gameResult} userID={userID} />
       <span>[ Refresh page (Press F5) to update data ]</span>
       {/* buttons */}
       <div className={styles.button_container}>
