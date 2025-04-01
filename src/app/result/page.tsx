@@ -5,7 +5,13 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import RankingGraph from "@/components/Graphs/RankingGraph";
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react";
 import { SessionStoreKeys } from "@/utils/constants";
-import { GameStatistics, GameResultResponse, GameUserInfo, ProfileUserInfoResponse, ProfileUserInfo } from "@/types";
+import {
+  GameStatistics,
+  GameResultResponse,
+  GameUserInfo,
+  ProfileUserInfoResponse,
+  ProfileUserInfo,
+} from "@/types";
 
 async function getGameResult({
   gameID,
@@ -19,7 +25,7 @@ async function getGameResult({
   });
   const data: GameResultResponse = await response.json();
   if (data.ok) {
-    console.log("got ranking", data.ranking)
+    console.log("got ranking", data.ranking);
     setGameResult(data.ranking);
   } else {
     console.error("Failed to get game result");
@@ -47,7 +53,9 @@ export default function Page() {
 
   useEffect(() => {
     // Get statistics from session storage
-    const game_statistics = window.sessionStorage.getItem(SessionStoreKeys.GAME_STATISTICS)
+    const game_statistics = window.sessionStorage.getItem(
+      SessionStoreKeys.GAME_STATISTICS,
+    );
     if (!game_statistics) {
       console.error("No statistics found");
       return;
@@ -55,7 +63,7 @@ export default function Page() {
 
     const statistics: GameStatistics = JSON.parse(game_statistics);
 
-    console.log("got statistics", statistics)
+    console.log("got statistics", statistics);
 
     setWpm(statistics.wpm.toFixed(1));
     setWpmRaw(statistics.wpm_raw.toFixed(1));
@@ -68,8 +76,7 @@ export default function Page() {
     });
 
     // Get user info
-    getUserInfo()
-      .then((data) => setUserID(data?.id))
+    getUserInfo().then((data) => setUserID(data?.id));
   }, []);
 
   return (

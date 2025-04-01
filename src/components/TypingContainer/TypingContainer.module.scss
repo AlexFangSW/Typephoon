@@ -1,56 +1,56 @@
 .typing_container {
-    font-family: monospace;
-    font-size: 24px;
-    padding: 20px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 20px;
+  font-family: monospace;
+  font-size: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .target_text {
-    color: #808080;
-    margin-bottom: 10px;
-    position: relative;
-    z-index: 3;
+  color: #808080;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 3;
 }
 
 .behind_cursor {
-    color: var(--background-color);
-    position: relative;
-    z-index: 3;
+  color: var(--background-color);
+  position: relative;
+  z-index: 3;
 }
 
 .correct {
-    color: #4ec9b0;
+  color: #4ec9b0;
 }
 
 .incorrect {
-    color: #f14c4c;
+  color: #f14c4c;
 }
 
 .cursor {
-    font-weight: bold;
-    display: inline-block;
-    position: absolute;
-    width: 0.9rem;
-    height: 1.2em;
-    background-color: #ADB2D4;
-    margin-left: 0px;
-    vertical-align: middle;
-    border-radius: 2px;
-    z-index: 2;
+  font-weight: bold;
+  display: inline-block;
+  position: absolute;
+  width: 0.9rem;
+  height: 1.2em;
+  background-color: #adb2d4;
+  margin-left: 0px;
+  vertical-align: middle;
+  border-radius: 2px;
+  z-index: 2;
 }
 
 .cursor_others {
-    font-weight: bold;
-    display: inline-block;
-    position: absolute;
-    width: 0.8rem;
-    height: 1.2em;
-    background-color: var(--untyped-words);
-    margin-left: 1px;
-    vertical-align: middle;
-    border-radius: 2px;
-    z-index: 1;
+  font-weight: bold;
+  display: inline-block;
+  position: absolute;
+  width: 0.8rem;
+  height: 1.2em;
+  background-color: var(--untyped-words);
+  margin-left: 1px;
+  vertical-align: middle;
+  border-radius: 2px;
+  z-index: 1;
 }

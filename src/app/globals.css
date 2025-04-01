@@ -4,11 +4,11 @@
 
 :root {
   /* Colors */
-  --highlight: #0EB99B;
-  --primary-words: #9BA4B5;
-  --untyped-words: #5D626C;
+  --highlight: #0eb99b;
+  --primary-words: #9ba4b5;
+  --untyped-words: #5d626c;
   --yellow: #ebe002;
-  --background-color: #20262E;
+  --background-color: #20262e;
 
   /* Layout height */
   --nav-height: 15vh;
@@ -40,7 +40,6 @@ a {
   cursor: pointer;
 }
 
-
 /* ------------  google button stuff ------------ */
 /* From : https://developers.google.com/identity/branding-guidelines?hl=en#g+signin-social-scopes */
 
@@ -58,7 +57,7 @@ a {
   box-sizing: border-box;
   color: #e3e3e3;
   cursor: pointer;
-  font-family: 'Roboto', arial, sans-serif;
+  font-family: "Roboto", arial, sans-serif;
   font-size: 14px;
   height: 40px;
   letter-spacing: 0.25px;
@@ -67,8 +66,14 @@ a {
   padding: 0 12px;
   position: relative;
   text-align: center;
-  -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
-  transition: background-color .218s, border-color .218s, box-shadow .218s;
+  -webkit-transition:
+    background-color 0.218s,
+    border-color 0.218s,
+    box-shadow 0.218s;
+  transition:
+    background-color 0.218s,
+    border-color 0.218s,
+    box-shadow 0.218s;
   vertical-align: middle;
   white-space: nowrap;
   width: auto;
@@ -101,7 +106,7 @@ a {
 .gsi-material-button .gsi-material-button-contents {
   -webkit-flex-grow: 1;
   flex-grow: 1;
-  font-family: 'Roboto', arial, sans-serif;
+  font-family: "Roboto", arial, sans-serif;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -109,8 +114,8 @@ a {
 }
 
 .gsi-material-button .gsi-material-button-state {
-  -webkit-transition: opacity .218s;
-  transition: opacity .218s;
+  -webkit-transition: opacity 0.218s;
+  transition: opacity 0.218s;
   bottom: 0;
   left: 0;
   opacity: 0;
@@ -144,8 +149,12 @@ a {
 }
 
 .gsi-material-button:not(:disabled):hover {
-  -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
-  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+  -webkit-box-shadow:
+    0 1px 2px 0 rgba(60, 64, 67, 0.3),
+    0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  box-shadow:
+    0 1px 2px 0 rgba(60, 64, 67, 0.3),
+    0 1px 3px 1px rgba(60, 64, 67, 0.15);
 }
 
 .gsi-material-button:not(:disabled):hover .gsi-material-button-state {

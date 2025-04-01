@@ -1,5 +1,5 @@
 import Attribution from "@/components/Attibution";
-import styles from "./attributions.module.scss"
+import styles from "./attributions.module.scss";
 import Title from "@/components/Title";
 
 export default function Page() {

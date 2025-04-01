@@ -71,45 +71,42 @@ function Summary({
   );
 }
 
-
-function ProgressOverTimeChart({
-  data
-}: {
-  data?: GameResultWithGameType[]
-}) {
+function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
   if (!data) {
-    data = [{
-      game_type: GameType.MULTI,
-      game_id: 0,
-      wpm: 0,
-      wpm_raw: 0,
-      accuracy: 0,
-      finished_at: "",
-      rank: 0,
-    }]
+    data = [
+      {
+        game_type: GameType.MULTI,
+        game_id: 0,
+        wpm: 0,
+        wpm_raw: 0,
+        accuracy: 0,
+        finished_at: "",
+        rank: 0,
+      },
+    ];
   }
 
   const tickFormatter = (value: string, index: number): string => {
-    console.log(value, index)
-    return `.`
-  }
+    console.log(value, index);
+    return `.`;
+  };
 
-  const CustomToolTip = (
-    { payload,
-      label,
-      active
-    }: {
-      payload?: any[],
-      label?: number,
-      active?: boolean
-    }) => {
+  const CustomToolTip = ({
+    payload,
+    label,
+    active,
+  }: {
+    payload?: any[];
+    label?: number;
+    active?: boolean;
+  }) => {
     if (!payload || !label || !active) {
-      return null
+      return null;
     }
-    const wpm = payload[0].value
-    const raw_ts = payload[0].payload.finished_at
-    const acc = payload[1].value
-    const ts = new Date(Math.floor(raw_ts)).toISOString()
+    const wpm = payload[0].value;
+    const raw_ts = payload[0].payload.finished_at;
+    const acc = payload[1].value;
+    const ts = new Date(Math.floor(raw_ts)).toISOString();
     if (active) {
       return (
         <div className={`custom-tooltip ${styles.tooltip}`}>
@@ -124,11 +121,11 @@ function ProgressOverTimeChart({
     }
 
     return null;
-  }
+  };
 
-  const accColor = "#FFCF50"
-  const wpmColor = "#0EB99B"
-  const primaryWord = "#9BA4B5"
+  const accColor = "#FFCF50";
+  const wpmColor = "#0EB99B";
+  const primaryWord = "#9BA4B5";
 
   return (
     <ResponsiveContainer>
@@ -144,11 +141,33 @@ function ProgressOverTimeChart({
         }}
         className={styles.textColor}
       >
-        <Line strokeWidth={2.5} yAxisId={"wpm"} type={"monotone"} dataKey={"wpm"} stroke={wpmColor} />
-        <Line strokeWidth={2.5} yAxisId={"acc"} type={"monotone"} dataKey={"accuracy"} stroke={accColor} />
+        <Line
+          strokeWidth={2.5}
+          yAxisId={"wpm"}
+          type={"monotone"}
+          dataKey={"wpm"}
+          stroke={wpmColor}
+        />
+        <Line
+          strokeWidth={2.5}
+          yAxisId={"acc"}
+          type={"monotone"}
+          dataKey={"accuracy"}
+          stroke={accColor}
+        />
         <XAxis tick={{ fill: primaryWord }} tickFormatter={tickFormatter} />
-        <YAxis tick={{ fill: wpmColor }} yAxisId={"wpm"} orientation="right" dataKey={"wpm"} />
-        <YAxis tick={{ fill: accColor }} yAxisId={"acc"} orientation="left" dataKey={"accuracy"} />
+        <YAxis
+          tick={{ fill: wpmColor }}
+          yAxisId={"wpm"}
+          orientation="right"
+          dataKey={"wpm"}
+        />
+        <YAxis
+          tick={{ fill: accColor }}
+          yAxisId={"acc"}
+          orientation="left"
+          dataKey={"accuracy"}
+        />
         <Tooltip content={<CustomToolTip />} />
         <Legend verticalAlign="top" />
       </LineChart>
@@ -162,37 +181,42 @@ function ProgressOverTime({
   setGraphSize,
 }: {
   graphItems?: ProfileGraphItems;
-  graphSize: number,
+  graphSize: number;
   setGraphSize: (size: number) => void;
 }) {
   return (
     <div className={styles.progress_over_time}>
       <div>PROGRESS OVER TIME</div>
       <div className={styles.progress_over_time_item}>
-        {
-          graphSize === 10 ?
-            <PrimaryButton action={() => setGraphSize(10)}>Last 10</PrimaryButton> :
-            <PurpleButton action={() => setGraphSize(10)}>Last 10</PurpleButton>
-        }
+        {graphSize === 10 ? (
+          <PrimaryButton action={() => setGraphSize(10)}>Last 10</PrimaryButton>
+        ) : (
+          <PurpleButton action={() => setGraphSize(10)}>Last 10</PurpleButton>
+        )}
 
-        {
-          graphSize === 50 ?
-            <PrimaryButton action={() => setGraphSize(50)}>Last 50</PrimaryButton> :
-            <PurpleButton action={() => setGraphSize(50)}>Last 50</PurpleButton>
-        }
+        {graphSize === 50 ? (
+          <PrimaryButton action={() => setGraphSize(50)}>Last 50</PrimaryButton>
+        ) : (
+          <PurpleButton action={() => setGraphSize(50)}>Last 50</PurpleButton>
+        )}
 
-        {
-          graphSize === 100 ?
-            <PrimaryButton action={() => setGraphSize(100)}>Last 100</PrimaryButton> :
-            <PurpleButton action={() => setGraphSize(100)}>Last 100</PurpleButton>
-        }
+        {graphSize === 100 ? (
+          <PrimaryButton action={() => setGraphSize(100)}>
+            Last 100
+          </PrimaryButton>
+        ) : (
+          <PurpleButton action={() => setGraphSize(100)}>Last 100</PurpleButton>
+        )}
 
-        {
-          graphSize === 1000 ?
-            <PrimaryButton action={() => setGraphSize(1000)}>Last 1000</PrimaryButton> :
-            <PurpleButton action={() => setGraphSize(1000)}>Last 1000</PurpleButton>
-        }
-
+        {graphSize === 1000 ? (
+          <PrimaryButton action={() => setGraphSize(1000)}>
+            Last 1000
+          </PrimaryButton>
+        ) : (
+          <PurpleButton action={() => setGraphSize(1000)}>
+            Last 1000
+          </PurpleButton>
+        )}
       </div>
       <div className={styles.graph_placeholder}>
         <ProgressOverTimeChart data={graphItems?.data} />
@@ -223,22 +247,24 @@ function HistoryItem({
 }
 
 function HistoryPlaceholder() {
-  return <div className={styles.history}>
-    {/* title */}
-    <div>HISTORY</div>
-    {/* records */}
-    <table>
-      <thead>
-        <tr>
-          <th>DATE</th>
-          <th>WPM</th>
-          <th>ACC</th>
-          <th>TYPE</th>
-        </tr>
-      </thead>
-    </table>
-    <span>NO DATA</span>
-  </div>
+  return (
+    <div className={styles.history}>
+      {/* title */}
+      <div>HISTORY</div>
+      {/* records */}
+      <table>
+        <thead>
+          <tr>
+            <th>DATE</th>
+            <th>WPM</th>
+            <th>ACC</th>
+            <th>TYPE</th>
+          </tr>
+        </thead>
+      </table>
+      <span>NO DATA</span>
+    </div>
+  );
 }
 
 function History({
@@ -246,24 +272,24 @@ function History({
   pageNum,
   setPageNum,
 }: {
-  history?: ProfileHistory,
-  pageNum: number
-  setPageNum: (num: number) => void
+  history?: ProfileHistory;
+  pageNum: number;
+  setPageNum: (num: number) => void;
 }) {
   if (!history) {
     return <HistoryPlaceholder />;
   }
 
   const increasePageNum = () => {
-    setPageNum(pageNum + 1)
-  }
+    setPageNum(pageNum + 1);
+  };
 
   const decreasePageNum = () => {
     if (pageNum == 1) {
-      return
+      return;
     }
-    setPageNum(pageNum - 1)
-  }
+    setPageNum(pageNum - 1);
+  };
 
   return (
     <div className={styles.history}>
@@ -281,7 +307,8 @@ function History({
         </thead>
         <tbody>
           {history.data.map((item) => (
-            <HistoryItem key={item.game_id}
+            <HistoryItem
+              key={item.game_id}
               date={item.finished_at}
               wpm={item.wpm}
               acc={item.accuracy}
@@ -292,9 +319,17 @@ function History({
       </table>
       {/* pagination */}
       <div className={styles.history_pagination}>
-        {history.has_prev_page ? <PrimaryButton action={decreasePageNum}>{"<"}</PrimaryButton> : ""}
+        {history.has_prev_page ? (
+          <PrimaryButton action={decreasePageNum}>{"<"}</PrimaryButton>
+        ) : (
+          ""
+        )}
         <div>{pageNum}</div>
-        {history.has_next_page ? <PrimaryButton action={increasePageNum}>{">"}</PrimaryButton> : ""}
+        {history.has_next_page ? (
+          <PrimaryButton action={increasePageNum}>{">"}</PrimaryButton>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

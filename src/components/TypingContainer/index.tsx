@@ -146,12 +146,13 @@ const TypingGame = ({
 
             <span
               className={`
-              ${currChars[charIndex]
+              ${
+                currChars[charIndex]
                   ? isCurrect
                     ? styles.correct
                     : styles.incorrect
                   : styles.target_text
-                } ${isBehindCursor ? styles.behind_cursor : ""}`}
+              } ${isBehindCursor ? styles.behind_cursor : ""}`}
             >
               {char}
             </span>
@@ -160,7 +161,7 @@ const TypingGame = ({
             ) : (
               ""
             )}
-          </Fragment>
+          </Fragment>,
         );
       });
 
@@ -176,7 +177,7 @@ const TypingGame = ({
             <Fragment key={`char-${wordIndex}-${realCharIndex}`}>
               <span className={styles.incorrect}>{char}</span>
               {isCurrent ? <span className={styles.cursor} /> : ""}
-            </Fragment>
+            </Fragment>,
           );
         });
       }
@@ -184,7 +185,7 @@ const TypingGame = ({
       renderResult.push(
         <Fragment key={`word-${wordIndex}`}>
           <span key={`word'-${wordIndex}`}>{currWordRender}</span>
-        </Fragment>
+        </Fragment>,
       );
     });
 

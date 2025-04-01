@@ -1,7 +1,7 @@
 export enum CookieNames {
   ACCESS_TOKEN = "TP_AT",
   REFRESH_TOKEN = "TP_RT",
-  USERNAME = "USERNAME"
+  USERNAME = "USERNAME",
 }
 
 export enum SessionStoreKeys {

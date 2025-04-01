@@ -103,7 +103,7 @@ export default function Page() {
   const [countdown, setCountdown] = useState<number>();
   const [words, setWords] = useState<string>();
   const [otherPlayers, setOtherPlayers] = useState<Map<string, GameInfo>>(
-    new Map<string, GameInfo>()
+    new Map<string, GameInfo>(),
   );
   let gameIDRef = useRef<number>(null);
   const [start, setStart] = useState<boolean>(false);
@@ -171,7 +171,10 @@ export default function Page() {
 
   // On keystroke
   useEffect(() => {
-    if (typeof ws.current === null || ws.current?.readyState != WebSocket.OPEN) {
+    if (
+      typeof ws.current === null ||
+      ws.current?.readyState != WebSocket.OPEN
+    ) {
       return;
     }
     const msg: OutgoingGameBGMsg = {
@@ -193,7 +196,7 @@ export default function Page() {
         "startTime:",
         startTime.current,
         "words:",
-        words
+        words,
       );
       return;
     }
@@ -203,7 +206,7 @@ export default function Page() {
       (finish_time.getTime() - startTime.current.getTime()) / 1000 / 60;
     const total_keystrokes = keystrokes.current.length;
     const correct_keystrokes = keystrokes.current.filter(
-      (keystroke) => keystroke.currect
+      (keystroke) => keystroke.currect,
     ).length;
 
     // Get uncorrected mistakes
@@ -237,7 +240,7 @@ export default function Page() {
     // Save to storage
     window.sessionStorage.setItem(
       SessionStoreKeys.GAME_STATISTICS,
-      JSON.stringify(statistics)
+      JSON.stringify(statistics),
     );
 
     // Send to server

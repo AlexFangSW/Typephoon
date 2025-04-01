@@ -27,9 +27,11 @@ export async function getProfileStatistics(): Promise<ProfileStatistics | null> 
   };
 }
 
-export async function getProfileGraph(size: number): Promise<ProfileGraphItems | null> {
+export async function getProfileGraph(
+  size: number,
+): Promise<ProfileGraphItems | null> {
   const response = await fetch(`/api/profile/graphs?size=${size}`, {
-    cache: "no-store"
+    cache: "no-store",
   });
   const data: ProfileGraphResponse = await response.json();
   if (!data.ok) {
@@ -41,17 +43,19 @@ export async function getProfileGraph(size: number): Promise<ProfileGraphItems |
   };
 }
 
-export async function getProfileHistory(
-  {
-    page,
-    size,
-  }: {
-    page: number
-    size: number
-  }): Promise<ProfileHistory | null> {
-  const response = await fetch(`/api/profile/history?page=${page}&size=${size}`, {
-    cache: "no-store"
-  });
+export async function getProfileHistory({
+  page,
+  size,
+}: {
+  page: number;
+  size: number;
+}): Promise<ProfileHistory | null> {
+  const response = await fetch(
+    `/api/profile/history?page=${page}&size=${size}`,
+    {
+      cache: "no-store",
+    },
+  );
   const data: ProfileHistoryResponse = await response.json();
   if (!data.ok) {
     console.error(data.error);
@@ -64,4 +68,3 @@ export async function getProfileHistory(
     data: data.data,
   };
 }
-
