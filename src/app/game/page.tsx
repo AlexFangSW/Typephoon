@@ -6,8 +6,7 @@ import { useEffect, Dispatch, SetStateAction, useRef, useState } from "react";
 import {
   GameWordsResponse,
   GameInfo,
-  IncommingGameBGMsg,
-  OutgoingGameBGMsg,
+  GameBGMsg,
   GamePlayersResponse,
   CountdownResponse,
   Keystroke,
@@ -128,7 +127,7 @@ export default function Page() {
     // recive event
     ws.current.onmessage = async (ev) => {
       const raw_data = await ev.data;
-      const data: IncommingGameBGMsg = JSON.parse(raw_data);
+      const data: GameBGMsg = JSON.parse(raw_data);
       console.log("websocket got message: ", data);
       switch (data.event) {
         case GameBGMsgEvent.START:
@@ -173,11 +172,13 @@ export default function Page() {
   useEffect(() => {
     if (
       typeof ws.current === null ||
-      ws.current?.readyState != WebSocket.OPEN
+      ws.current?.readyState != WebSocket.OPEN ||
+      !gameIDRef.current
     ) {
       return;
     }
-    const msg: OutgoingGameBGMsg = {
+    const msg: GameBGMsg = {
+      game_id: gameIDRef.current,
       event: GameBGMsgEvent.KEY_STOKE,
       word_index: currentPosition.wordIndex,
       char_index: currentPosition.charIndex,
