@@ -291,7 +291,10 @@ export default function Page() {
       gameID: gameIDRef.current,
       setOtherPlayers: setOtherPlayers,
     });
-    updateCountdown({ gameID: gameIDRef.current, setCountdown: setCountdown });
+    updateCountdown({
+      gameID: gameIDRef.current,
+      setCountdown: setCountdown,
+    });
     updateWords({ gameID: gameIDRef.current, setWords: setWords });
 
     // update countdown every second
