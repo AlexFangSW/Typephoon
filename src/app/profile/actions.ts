@@ -8,7 +8,7 @@ import {
 } from "@/types";
 
 export async function getProfileStatistics(): Promise<ProfileStatistics | null> {
-  const response = await fetch("/api/profile/statistics", {
+  const response = await fetch("/api/v1/profile/statistics", {
     cache: "no-store",
   });
   const data: ProfileStatisticsResponse = await response.json();
@@ -30,7 +30,7 @@ export async function getProfileStatistics(): Promise<ProfileStatistics | null> 
 export async function getProfileGraph(
   size: number,
 ): Promise<ProfileGraphItems | null> {
-  const response = await fetch(`/api/profile/graphs?size=${size}`, {
+  const response = await fetch(`/api/v1/profile/graph?size=${size}`, {
     cache: "no-store",
   });
   const data: ProfileGraphResponse = await response.json();
@@ -51,7 +51,7 @@ export async function getProfileHistory({
   size: number;
 }): Promise<ProfileHistory | null> {
   const response = await fetch(
-    `/api/profile/history?page=${page}&size=${size}`,
+    `/api/v1/profile/history?page=${page}&size=${size}`,
     {
       cache: "no-store",
     },

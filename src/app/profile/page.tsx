@@ -47,24 +47,24 @@ function Summary({
       <div className={styles.summary_item}>
         <div>BEST</div>
         <div>
-          <div>WPM: {bestWpm}</div>
-          <div>ACC: {bestAccuracy}</div>
+          <div>WPM: {bestWpm.toFixed(1)}</div>
+          <div>ACC: {bestAccuracy.toFixed(1)}</div>
         </div>
       </div>
       {/* Last 10 */}
       <div className={styles.summary_item}>
         <div>LAST 10</div>
         <div>
-          <div>WPM: {last10Wpm}</div>
-          <div>ACC: {last10Accuracy}</div>
+          <div>WPM: {last10Wpm.toFixed(1)}</div>
+          <div>ACC: {last10Accuracy.toFixed(1)}</div>
         </div>
       </div>
       {/* Average */}
       <div className={styles.summary_item}>
         <div>AVERAGE</div>
         <div>
-          <div>WPM: {averageWpm}</div>
-          <div>ACC: {averageAccuracy}</div>
+          <div>WPM: {averageWpm.toFixed(1)}</div>
+          <div>ACC: {averageAccuracy.toFixed(1)}</div>
         </div>
       </div>
     </div>
@@ -239,8 +239,8 @@ function HistoryItem({
   return (
     <tr>
       <td>{date}</td>
-      <td>{wpm}</td>
-      <td>{acc}</td>
+      <td>{wpm.toFixed(1)}</td>
+      <td>{acc.toFixed(1)}</td>
       <td>{rank}</td>
     </tr>
   );
@@ -302,7 +302,7 @@ function History({
             <th>DATE</th>
             <th>WPM</th>
             <th>ACC</th>
-            <th>TYPE</th>
+            <th>RANK</th>
           </tr>
         </thead>
         <tbody>
