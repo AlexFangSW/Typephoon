@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, JSX, Fragment } from "react";
+import React, { useEffect, JSX, Fragment } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
 
 const TypingGame = ({
-  target = "The quick brown fox jumps over the lazy dog",
+  target = "",
   currentInput,
   setCurrentInput,
   start,
@@ -29,7 +29,9 @@ const TypingGame = ({
 }) => {
   const targetWords = target.split(" ");
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown: React.KeyboardEventHandler = (
+    e: React.KeyboardEvent,
+  ): void => {
     if (finish) return;
 
     if (e.key === "Backspace" && e.ctrlKey) {
@@ -41,29 +43,53 @@ const TypingGame = ({
             ? prev.lastIndexOf(" ", lastNonSpaceIndex)
             : -1;
 
-        return lastSpaceIndex === -1
-          ? ""
-          : prev.substring(0, lastSpaceIndex + 1);
+        const newInput =
+          lastSpaceIndex === -1 ? "" : prev.substring(0, lastSpaceIndex + 1);
+        updateCurrentPosition(newInput);
+        return newInput;
       });
     } else if (e.key === "Backspace") {
-      setCurrentInput((prev) => prev.slice(0, -1));
-    } else if (e.key.length === 1) {
-      keystrokes.push({
-        ts: new Date().getTime(),
-        char: e.key,
-        currect:
-          e.key ===
-          targetWords[currentPosition.wordIndex][currentPosition.charIndex],
+      setCurrentInput((prev) => {
+        const newInput = prev.slice(0, -1);
+        updateCurrentPosition(newInput);
+        return newInput;
       });
+    } else if (e.key.length === 1) {
+      setCurrentInput((prev) => {
+        const currWords = prev.split(" ").length;
+        const totalWords = targetWords.length;
+        let newInput = "";
+        let correct = false;
 
-      setCurrentInput((prev) => prev + e.key);
+        if (currWords === totalWords && e.key === " ") {
+          // Ignore extra words
+          newInput = prev;
+        } else {
+          newInput = prev + e.key;
+          const { wordIndex, charIndex } = updateCurrentPosition(newInput);
+          if (e.key === " " || e.key === targetWords[wordIndex][charIndex]) {
+            correct = true;
+          }
+        }
+
+        const keystroke = {
+          ts: new Date().getTime(),
+          char: e.key,
+          currect: correct,
+        };
+        // console.log(keystroke);
+        keystrokes.push(keystroke);
+        return newInput;
+      });
     }
   };
 
-  useEffect(() => {
-    const currWords = currentInput.split(" ");
+  const updateCurrentPosition = (
+    currInpt: string,
+  ): { wordIndex: number; charIndex: number } => {
+    const currWords = currInpt.split(" ");
     const currWordIndex = currWords.length - 1;
-    const currCharIndex = currWords[currWordIndex]?.length - 1;
+    const currCharIndex = currWords[currWordIndex].length - 1;
     const targetWordIndex = targetWords.length - 1;
 
     setCurrentPosition({
@@ -78,16 +104,17 @@ const TypingGame = ({
     ) {
       setFinish(true);
     }
-  }, [currentInput]);
 
-  useEffect(() => {
-    // Add event listener on start
-    if (!start) return;
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+    return {
+      wordIndex: currWordIndex,
+      charIndex: currCharIndex,
     };
-  }, [start]);
+  };
+
+  // Init position
+  useEffect(() => {
+    updateCurrentPosition(currentInput);
+  }, []);
 
   const renderText = (): Array<JSX.Element> => {
     const renderResult: Array<JSX.Element> = [];
@@ -193,7 +220,13 @@ const TypingGame = ({
   };
 
   return (
-    <div key={"typeing-container"} className={styles.typing_container}>
+    <div
+      autoFocus={true}
+      tabIndex={0}
+      key={"typeing-container"}
+      onKeyDown={start ? handleKeyDown : undefined}
+      className={styles.typing_container}
+    >
       {renderText()}
     </div>
   );
