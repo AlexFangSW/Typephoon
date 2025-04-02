@@ -202,40 +202,31 @@ export default function Page() {
       return;
     }
     // Process keystokes, generate statistics
-    const finish_time = new Date();
-    const total_minutes =
-      (finish_time.getTime() - startTime.current.getTime()) / 1000 / 60;
-    const total_keystrokes = keystrokes.current.length;
-    const correct_keystrokes = keystrokes.current.filter(
+    const finishTime = new Date();
+    const totalMinutes =
+      (finishTime.getTime() - startTime.current.getTime()) / 1000 / 60;
+    const totalKeystrokes = keystrokes.current.length;
+    const correctKeystrokes = keystrokes.current.filter(
       (keystroke) => keystroke.currect,
     ).length;
 
-    // Get uncorrected mistakes
-    let uncorrected_mistakes = 0;
-    const input_words = currentInput.split(" ");
-    const target_words = words.split(" ");
-
-    for (let i = 0; i < target_words.length; i++) {
-      // skip if the word is correct
-      if (input_words[i] === target_words[i]) {
-        continue;
-      }
-
-      // count uncorrected mistakes, including extra characters
-      for (let j = 0; j < input_words[i].length; j++) {
-        if (input_words[i][j] === target_words[i][j]) {
-          continue;
-        }
-        uncorrected_mistakes += 1;
+    // Get total correct characters (include space)
+    const inputWords = currentInput.split(" ");
+    const targetWords = words.split(" ");
+    const totalChar = words.length;
+    let totalCorrectChar = targetWords.length - 1;
+    for (let i = 0; i < targetWords.length; i++) {
+      if (inputWords[i] === targetWords[i]) {
+        totalCorrectChar = totalCorrectChar + targetWords[i].length;
       }
     }
 
-    // Equation From: https://www.speedtypingonline.com/typing-equations
+    // Reference: https://monkeytype.com/about
     const statistics: GameStatistics = {
       game_id: gameIDRef.current,
-      wpm: (total_keystrokes / 5 - uncorrected_mistakes) / total_minutes,
-      wpm_raw: total_keystrokes / 5 / total_minutes,
-      acc: (correct_keystrokes / total_keystrokes) * 100,
+      wpm: totalCorrectChar / 5 / totalMinutes,
+      wpm_raw: totalChar / 5 / totalMinutes,
+      acc: (correctKeystrokes / totalKeystrokes) * 100,
     };
 
     // Save to storage

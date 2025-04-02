@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
 
 const TypingGame = ({
-  target = "",
+  target = "Loading...",
   currentInput,
   setCurrentInput,
   start,
