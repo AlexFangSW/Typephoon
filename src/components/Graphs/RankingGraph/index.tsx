@@ -1,3 +1,4 @@
+import { UNDEFINED_RANKING } from "@/utils/constants";
 import styles from "./RankingGraph.module.scss";
 import { GameUserInfo } from "@/types";
 
@@ -19,7 +20,7 @@ function RankingRow({
   return (
     <>
       <tr>
-        <td>{rank ? rank : ""}</td>
+        <td>{rank !== UNDEFINED_RANKING ? rank : ""}</td>
         <td className={`${isUser ? styles.is_current_user : ""}`}>
           {username}
         </td>

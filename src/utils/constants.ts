@@ -8,3 +8,5 @@ export enum SessionStoreKeys {
   GAME_ID = "GAME_ID",
   GAME_STATISTICS = "GAME_STATISTICS",
 }
+
+export const UNDEFINED_RANKING = 99999;
