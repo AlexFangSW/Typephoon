@@ -11,7 +11,7 @@ export default function Page() {
   const keystrokes = useRef<Array<Keystroke>>([]);
   const [currentPosition, setCurrentPosition] = useState<Position>({
     wordIndex: 0,
-    charIndex: 0,
+    charIndex: -1,
   });
 
   return (

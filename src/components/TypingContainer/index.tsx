@@ -1,8 +1,122 @@
 "use client";
-import React, { useEffect, JSX, Fragment } from "react";
+import React, { JSX, Fragment } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
+
+const RenderText = ({
+  currentInput,
+  targetWords,
+  otherPlayers,
+  currentPosition,
+}: {
+  currentInput: string;
+  targetWords: string[];
+  otherPlayers: Map<string, GameInfo>;
+  currentPosition: Position;
+}): Array<JSX.Element> => {
+  const renderResult: Array<JSX.Element> = [];
+  const currWords = currentInput.split(" ");
+
+  // Each word
+  targetWords.forEach((word, wordIndex) => {
+    const currChars = currWords[wordIndex]?.split("")
+      ? currWords[wordIndex]?.split("")
+      : [];
+    const targetChars = word.split("");
+    const currWordRender: Array<JSX.Element> = [];
+
+    // Each character
+    targetChars.forEach((char, charIndex) => {
+      const isFirstChar = currentPosition.charIndex === -1;
+
+      const isCurrentChar =
+        wordIndex === currentPosition.wordIndex &&
+        (charIndex === currentPosition.charIndex ||
+          (charIndex === 0 && isFirstChar));
+
+      // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
+      let isBehindCursor =
+        wordIndex === currentPosition.wordIndex &&
+        (charIndex === currentPosition.charIndex + 1 ||
+          (charIndex === 0 && isFirstChar));
+
+      const isCurrect = char === currChars[charIndex];
+
+      currWordRender.push(
+        <Fragment key={`char-${wordIndex}-${charIndex}`}>
+          {Array.from(otherPlayers.entries()).map(([playerID, player]) => {
+            const isCurrentPosition =
+              wordIndex === player.wordIndex &&
+              (charIndex === player.charIndex + 1 ||
+                (charIndex === word.length - 1 &&
+                  player.charIndex + 1 >= word.length));
+
+            if (isCurrentPosition) {
+              console.log("OTHTTERRR", player);
+              isBehindCursor = true;
+              return (
+                <Fragment key={`apponent-${playerID}`}>
+                  <span className={styles.cursor_others} />
+                </Fragment>
+              );
+            } else {
+              return;
+            }
+          })}
+          {isCurrentChar && isFirstChar ? (
+            <span className={styles.cursor} />
+          ) : (
+            ""
+          )}
+
+          <span
+            className={`
+              ${
+                currChars[charIndex]
+                  ? isCurrect
+                    ? styles.correct
+                    : styles.incorrect
+                  : styles.target_text
+              } ${isBehindCursor ? styles.behind_cursor : ""}`}
+          >
+            {char}
+          </span>
+          {isCurrentChar && !isFirstChar ? (
+            <span className={styles.cursor} />
+          ) : (
+            ""
+          )}
+        </Fragment>,
+      );
+    });
+
+    // Over type
+    if (currChars.length > targetChars.length) {
+      currChars.slice(targetChars.length).forEach((char, charIndex) => {
+        const realCharIndex = charIndex + targetChars.length;
+        const isCurrent =
+          wordIndex === currentPosition.wordIndex &&
+          realCharIndex === currentPosition.charIndex;
+
+        currWordRender.push(
+          <Fragment key={`char-${wordIndex}-${realCharIndex}`}>
+            <span className={styles.incorrect}>{char}</span>
+            {isCurrent ? <span className={styles.cursor} /> : ""}
+          </Fragment>,
+        );
+      });
+    }
+
+    renderResult.push(
+      <Fragment key={`word-${wordIndex}`}>
+        <span key={`word'-${wordIndex}`}>{currWordRender}</span>
+      </Fragment>,
+    );
+  });
+
+  return renderResult;
+};
 
 const TypingGame = ({
   target = "Loading...",
@@ -111,114 +225,6 @@ const TypingGame = ({
     };
   };
 
-  // Init position
-  useEffect(() => {
-    updateCurrentPosition(currentInput);
-  }, []);
-
-  const renderText = (): Array<JSX.Element> => {
-    const renderResult: Array<JSX.Element> = [];
-    const currWords = currentInput.split(" ");
-
-    // Each word
-    targetWords.forEach((word, wordIndex) => {
-      const currChars = currWords[wordIndex]?.split("")
-        ? currWords[wordIndex]?.split("")
-        : [];
-      const targetChars = word.split("");
-      const currWordRender: Array<JSX.Element> = [];
-
-      // Each character
-      targetChars.forEach((char, charIndex) => {
-        const isFirstChar = currentPosition.charIndex === -1;
-
-        const isCurrentChar =
-          wordIndex === currentPosition.wordIndex &&
-          (charIndex === currentPosition.charIndex ||
-            (charIndex === 0 && isFirstChar));
-
-        // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
-        let isBehindCursor =
-          wordIndex === currentPosition.wordIndex &&
-          (charIndex === currentPosition.charIndex + 1 ||
-            (charIndex === 0 && isFirstChar));
-
-        const isCurrect = char === currChars[charIndex];
-
-        currWordRender.push(
-          <Fragment key={`char-${wordIndex}-${charIndex}`}>
-            {Array.from(otherPlayers.entries()).map(([playerID, player]) => {
-              const isCurrentPosition =
-                wordIndex === player.wordIndex &&
-                (charIndex === player.charIndex + 1 ||
-                  (charIndex === word.length - 1 &&
-                    player.charIndex + 1 >= word.length));
-
-              if (isCurrentPosition) {
-                isBehindCursor = true;
-                return (
-                  <Fragment key={`apponent-${playerID}`}>
-                    <span className={styles.cursor_others} />
-                  </Fragment>
-                );
-              } else {
-                return;
-              }
-            })}
-            {isCurrentChar && isFirstChar ? (
-              <span className={styles.cursor} />
-            ) : (
-              ""
-            )}
-
-            <span
-              className={`
-              ${
-                currChars[charIndex]
-                  ? isCurrect
-                    ? styles.correct
-                    : styles.incorrect
-                  : styles.target_text
-              } ${isBehindCursor ? styles.behind_cursor : ""}`}
-            >
-              {char}
-            </span>
-            {isCurrentChar && !isFirstChar ? (
-              <span className={styles.cursor} />
-            ) : (
-              ""
-            )}
-          </Fragment>,
-        );
-      });
-
-      // Over type
-      if (currChars.length > targetChars.length) {
-        currChars.slice(targetChars.length).forEach((char, charIndex) => {
-          const realCharIndex = charIndex + targetChars.length;
-          const isCurrent =
-            wordIndex === currentPosition.wordIndex &&
-            realCharIndex === currentPosition.charIndex;
-
-          currWordRender.push(
-            <Fragment key={`char-${wordIndex}-${realCharIndex}`}>
-              <span className={styles.incorrect}>{char}</span>
-              {isCurrent ? <span className={styles.cursor} /> : ""}
-            </Fragment>,
-          );
-        });
-      }
-
-      renderResult.push(
-        <Fragment key={`word-${wordIndex}`}>
-          <span key={`word'-${wordIndex}`}>{currWordRender}</span>
-        </Fragment>,
-      );
-    });
-
-    return renderResult;
-  };
-
   return (
     <div
       autoFocus={true}
@@ -227,7 +233,12 @@ const TypingGame = ({
       onKeyDown={start ? handleKeyDown : undefined}
       className={styles.typing_container}
     >
-      {renderText()}
+      <RenderText
+        currentInput={currentInput}
+        targetWords={targetWords}
+        otherPlayers={otherPlayers}
+        currentPosition={currentPosition}
+      />
     </div>
   );
 };

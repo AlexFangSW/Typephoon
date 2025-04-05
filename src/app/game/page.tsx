@@ -2,100 +2,17 @@
 import Title from "@/components/Title";
 import TypingGame from "@/components/TypingContainer";
 import { SessionStoreKeys } from "@/utils/constants";
-import { useEffect, Dispatch, SetStateAction, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { updateWords, updateOtherPlayers, updateCountdown } from "./actions";
 import {
-  GameWordsResponse,
   GameInfo,
   GameBGMsg,
-  GamePlayersResponse,
-  CountdownResponse,
   Keystroke,
   Position,
   GameBGMsgEvent,
-  ErrorCode,
   GameStatistics,
   ApiResponse,
 } from "@/types";
-
-async function updateWords({
-  gameID,
-  setWords,
-}: {
-  gameID: number;
-  setWords: Dispatch<SetStateAction<string | undefined>>;
-}) {
-  const resp = await fetch(`/api/v1/game/words?game_id=${gameID}`, {
-    cache: "no-store",
-  });
-  const data: GameWordsResponse = await resp.json();
-  if (!data.ok) {
-    console.error("error: ", data.error);
-    if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
-      window.location.href = "/lobby";
-    }
-    return;
-  }
-  console.log("words: ", data.words);
-  setWords(data.words);
-}
-
-async function updateOtherPlayers({
-  gameID,
-  setOtherPlayers,
-}: {
-  gameID: number;
-  setOtherPlayers: Dispatch<SetStateAction<Map<string, GameInfo>>>;
-}) {
-  const resp = await fetch(`/api/v1/game/players?game_id=${gameID}`, {
-    cache: "no-store",
-  });
-  const data: GamePlayersResponse = await resp.json();
-  if (!data.ok) {
-    console.error("error: ", data.error);
-    if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
-      window.location.href = "/lobby";
-    }
-    return;
-  }
-
-  console.log("players: ", data);
-
-  let otherPlayers: Map<string, GameInfo> = new Map();
-  for (const key in data.others) {
-    otherPlayers.set(key, {
-      ...data.others[key],
-      wordIndex: 0,
-      charIndex: 0,
-    });
-  }
-
-  console.log("set other players", otherPlayers);
-  setOtherPlayers(otherPlayers);
-}
-
-async function updateCountdown({
-  gameID,
-  setCountdown,
-}: {
-  gameID: number;
-  setCountdown: Dispatch<SetStateAction<number | undefined>>;
-}): Promise<number> {
-  const resp = await fetch(`/api/v1/game/countdown?game_id=${gameID}`, {
-    cache: "no-store",
-  });
-  const data: CountdownResponse = await resp.json();
-  if (!data.ok) {
-    console.error("error: ", data.error);
-    if (data.error.code === ErrorCode.GAME_NOT_FOUND) {
-      window.location.href = "/lobby";
-    }
-    return 0;
-  }
-  console.log("got countdown: ", data.seconds_left);
-  const seconds_left = Number(data.seconds_left.toFixed(0));
-  setCountdown(seconds_left);
-  return seconds_left;
-}
 
 export default function Page() {
   const ws = useRef<WebSocket>(null);
@@ -113,7 +30,7 @@ export default function Page() {
   const keystrokes = useRef<Array<Keystroke>>([]);
   const [currentPosition, setCurrentPosition] = useState<Position>({
     wordIndex: 0,
-    charIndex: 0,
+    charIndex: -1,
   });
 
   const wsConnect = ({ gameID }: { gameID: number }) => {
@@ -135,21 +52,27 @@ export default function Page() {
           startTime.current = new Date();
           break;
         case GameBGMsgEvent.KEY_STOKE:
-          if (data.user_id) {
-            let player = otherPlayers.get(data.user_id);
-            if (!player) {
-              return;
+          setOtherPlayers((prev) => {
+            if (typeof data.user_id === "undefined") {
+              return prev;
             }
+
+            const newMap = new Map(prev);
+            let player = prev.get(data.user_id);
+            if (!player) {
+              return prev;
+            }
+
             player.charIndex = data.char_index
               ? data.char_index
               : player.charIndex;
             player.wordIndex = data.word_index
               ? data.word_index
               : player.wordIndex;
+            newMap.set(data.user_id, player);
 
-            otherPlayers.set(data.user_id, player);
-            setOtherPlayers(otherPlayers);
-          }
+            return newMap;
+          });
           break;
         default:
           console.log("unknown event", data.event);
