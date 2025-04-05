@@ -13,6 +13,14 @@ export default function Page() {
     wordIndex: 0,
     charIndex: -1,
   });
+  const otherPlayers = new Map<string, GameInfo>();
+  otherPlayers.set("aaabbb", {
+    id: "aaabbb",
+    name: "aaabbb",
+    rank: 99999,
+    wordIndex: 2,
+    charIndex: -1,
+  });
 
   return (
     <>
@@ -28,7 +36,7 @@ export default function Page() {
           start={true}
           finish={finish}
           setFinish={setFinish}
-          otherPlayers={new Map<string, GameInfo>()}
+          otherPlayers={otherPlayers}
           keystrokes={keystrokes.current}
           currentPosition={currentPosition}
           setCurrentPosition={setCurrentPosition}

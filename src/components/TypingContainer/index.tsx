@@ -23,55 +23,43 @@ const RenderText = ({
     const currChars = currWords[wordIndex]?.split("")
       ? currWords[wordIndex]?.split("")
       : [];
-    const targetChars = word.split("");
+    const targetChars = [...word.split(""), " "];
     const currWordRender: Array<JSX.Element> = [];
 
     // Each character
     targetChars.forEach((char, charIndex) => {
-      const isFirstChar = currentPosition.charIndex === -1;
-
       const isCurrentChar =
         wordIndex === currentPosition.wordIndex &&
-        (charIndex === currentPosition.charIndex ||
-          (charIndex === 0 && isFirstChar));
-
-      // Visually behind cursor. ex: abcd[e]fg. e is behind cursor
-      let isBehindCursor =
-        wordIndex === currentPosition.wordIndex &&
-        (charIndex === currentPosition.charIndex + 1 ||
-          (charIndex === 0 && isFirstChar));
-
+        charIndex === currentPosition.charIndex + 1;
       const isCurrect = char === currChars[charIndex];
+      let isBehindCursor = false;
 
       currWordRender.push(
         <Fragment key={`char-${wordIndex}-${charIndex}`}>
           {Array.from(otherPlayers.entries()).map(([playerID, player]) => {
+            const overTyped =
+              charIndex === word.length - 1 &&
+              player.charIndex + 1 > word.length;
             const isCurrentPosition =
               wordIndex === player.wordIndex &&
-              (charIndex === player.charIndex + 1 ||
-                (charIndex === word.length - 1 &&
-                  player.charIndex + 1 >= word.length));
+              (charIndex === player.charIndex + 1 || overTyped);
 
             if (isCurrentPosition) {
-              console.log("OTHTTERRR", player);
               isBehindCursor = true;
               return (
-                <Fragment key={`apponent-${playerID}`}>
-                  <span className={styles.cursor_others} />
-                </Fragment>
+                <span
+                  key={`apponent-${playerID}`}
+                  className={styles.cursor_others}
+                />
               );
             } else {
               return;
             }
           })}
-          {isCurrentChar && isFirstChar ? (
-            <span className={styles.cursor} />
-          ) : (
-            ""
-          )}
-
-          <span
-            className={`
+          {isCurrentChar ? <span className={styles.cursor} /> : ""}
+          {char !== " " ? (
+            <span
+              className={`
               ${
                 currChars[charIndex]
                   ? isCurrect
@@ -79,11 +67,9 @@ const RenderText = ({
                     : styles.incorrect
                   : styles.target_text
               } ${isBehindCursor ? styles.behind_cursor : ""}`}
-          >
-            {char}
-          </span>
-          {isCurrentChar && !isFirstChar ? (
-            <span className={styles.cursor} />
+            >
+              {char}
+            </span>
           ) : (
             ""
           )}
@@ -92,6 +78,7 @@ const RenderText = ({
     });
 
     // Over type
+    targetChars.pop();
     if (currChars.length > targetChars.length) {
       currChars.slice(targetChars.length).forEach((char, charIndex) => {
         const realCharIndex = charIndex + targetChars.length;
@@ -100,7 +87,7 @@ const RenderText = ({
           realCharIndex === currentPosition.charIndex;
 
         currWordRender.push(
-          <Fragment key={`char-${wordIndex}-${realCharIndex}`}>
+          <Fragment key={`char-${wordIndex}-${realCharIndex + 1}`}>
             <span className={styles.incorrect}>{char}</span>
             {isCurrent ? <span className={styles.cursor} /> : ""}
           </Fragment>,
