@@ -24,10 +24,14 @@
 
 .correct {
   color: #4ec9b0;
+  position: relative;
+  z-index: 3;
 }
 
 .incorrect {
   color: #f14c4c;
+  position: relative;
+  z-index: 3;
 }
 
 .cursor {

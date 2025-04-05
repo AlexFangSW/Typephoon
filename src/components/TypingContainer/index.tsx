@@ -38,8 +38,7 @@ const RenderText = ({
         <Fragment key={`char-${wordIndex}-${charIndex}`}>
           {Array.from(otherPlayers.entries()).map(([playerID, player]) => {
             const overTyped =
-              charIndex === word.length - 1 &&
-              player.charIndex + 1 > word.length;
+              charIndex === word.length && player.charIndex + 1 > word.length;
             const isCurrentPosition =
               wordIndex === player.wordIndex &&
               (charIndex === player.charIndex + 1 || overTyped);

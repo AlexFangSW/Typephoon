@@ -19,7 +19,7 @@ export default function Page() {
     name: "aaabbb",
     rank: 99999,
     wordIndex: 2,
-    charIndex: -1,
+    charIndex: 100,
   });
 
   return (
