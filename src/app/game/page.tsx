@@ -63,12 +63,14 @@ export default function Page() {
               return prev;
             }
 
-            player.charIndex = data.char_index
-              ? data.char_index
-              : player.charIndex;
-            player.wordIndex = data.word_index
-              ? data.word_index
-              : player.wordIndex;
+            player.charIndex =
+              typeof data.char_index !== "undefined"
+                ? data.char_index
+                : player.charIndex;
+            player.wordIndex =
+              typeof data.word_index !== "undefined"
+                ? data.word_index
+                : player.wordIndex;
             newMap.set(data.user_id, player);
 
             return newMap;
