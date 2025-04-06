@@ -1,45 +1,19 @@
 "use client";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import styles from "./lobby.module.scss";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RedButton from "@/components/Buttons/RedButton";
 import { SessionStoreKeys } from "@/utils/constants";
-import { debounce, refreshAccessToken } from "@/utils/common";
+import { authFetch, debounce, refreshAccessToken } from "@/utils/common";
 import { useSearchParams } from "next/navigation";
-
-enum LobbyBGMsgEvent {
-  INIT = "INIT",
-  USER_JOINED = "USER_JOINED",
-  USER_LEFT = "USER_LEFT",
-  GET_TOKEN = "GET_TOKEN",
-  GAME_START = "GAME_START",
-}
-
-enum QueueInType {
-  RECONNECT = "reconnect",
-  NEW = "new",
-}
-
-type LobbyBGMsg = {
-  event: LobbyBGMsgEvent;
-  game_id: number;
-  guest_token_key?: string;
-  user_id?: string;
-};
-
-type LobbyUserInfo = {
-  id: string;
-  name: string;
-};
-
-type LobbyPlayersResponse = {
-  me: LobbyUserInfo;
-  others: LobbyUserInfo[];
-};
-
-type LobbyCountdownResponse = {
-  seconds_left: number;
-};
+import {
+  LobbyUserInfo,
+  LobbyPlayersResponse,
+  LobbyCountdownResponse,
+  LobbyBGMsgEvent,
+  LobbyBGMsg,
+  QueueInType,
+} from "@/types";
 
 function PlayerListItem({
   isUser,
@@ -55,15 +29,13 @@ function PlayerListItem({
   );
 }
 
-function PlayerList({ players }: { players?: LobbyPlayersResponse }) {
-  let me: LobbyUserInfo | null = null;
-  let others: LobbyUserInfo[] = [];
-
-  if (players) {
-    me = players.me;
-    others = players.others;
-  }
-
+function PlayerList({
+  me,
+  others,
+}: {
+  me?: LobbyUserInfo;
+  others: LobbyUserInfo[];
+}) {
   const placeholderCount = 4 - others?.length;
   for (let i = 0; i < placeholderCount; i++) {
     others.push({ id: "", name: "" });
@@ -112,12 +84,14 @@ async function updatePlayerList({
   setPlayers,
 }: {
   gameID: number;
-  setPlayers: Dispatch<SetStateAction<LobbyPlayersResponse | undefined>>;
+  setPlayers: (arg: LobbyPlayersResponse) => void;
 }) {
-  const resp = await fetch(`/api/v1/lobby/players?game_id=${gameID}`, {
-    cache: "no-store",
-  });
-  const data: LobbyPlayersResponse = await resp.json();
+  const data = await authFetch<LobbyPlayersResponse>(
+    `/api/v1/lobby/players?game_id=${gameID}`,
+    {
+      cache: "no-store",
+    },
+  );
   // console.log("players: ", data)
   setPlayers(data);
 }
@@ -127,12 +101,16 @@ async function updateCountdown({
   setCountdown,
 }: {
   gameID: number;
-  setCountdown: Dispatch<SetStateAction<number | undefined>>;
+  setCountdown: (arg: number) => void;
 }) {
   const resp = await fetch(`/api/v1/lobby/countdown?game_id=${gameID}`, {
     cache: "no-store",
   });
   const data: LobbyCountdownResponse = await resp.json();
+  if (!data.ok) {
+    console.log("get countdown error", data.error);
+    return;
+  }
   // console.log("got countdown: ", data.seconds_left)
   setCountdown(Number(data.seconds_left.toFixed(0)));
 }
@@ -297,7 +275,10 @@ export default function Page() {
       <h1 className={styles.lobby_title}>Lobby</h1>
 
       {/* player list */}
-      <PlayerList players={players} />
+      <PlayerList
+        me={players?.ok ? players?.me : undefined}
+        others={players?.ok ? players.others : []}
+      />
 
       {/* countdown */}
       <CountdownText countdown={countdown} isQueuedIn={isQueuedIn} />
