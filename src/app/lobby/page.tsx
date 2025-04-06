@@ -254,7 +254,7 @@ export default function Page() {
       setGameID(undefined);
       ws.current = null;
       if (typeof gameID === "number") {
-        window.location.reload();
+        window.location.href = "/lobby";
       }
 
       return;
