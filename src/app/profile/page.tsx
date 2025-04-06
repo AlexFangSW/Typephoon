@@ -123,7 +123,7 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
 
   const accColor = "#FFCF50";
   const wpmColor = "#0EB99B";
-  const darker = "#151a21";
+  const axisColor = "#9ba4b5";
 
   return (
     <ResponsiveContainer>
@@ -153,23 +153,23 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
           stroke={accColor}
         />
         <XAxis
-          tick={{ fill: darker }}
+          tick={{ fill: axisColor }}
           tickFormatter={tickFormatter}
-          stroke={darker}
+          stroke={axisColor}
         />
         <YAxis
           tick={{ fill: wpmColor }}
           yAxisId={"wpm"}
           orientation="right"
           dataKey={"wpm"}
-          stroke={darker}
+          stroke={axisColor}
         />
         <YAxis
           tick={{ fill: accColor }}
           yAxisId={"acc"}
           orientation="left"
           dataKey={"accuracy"}
-          stroke={darker}
+          stroke={axisColor}
         />
         <Tooltip content={<CustomToolTip />} />
         <Legend verticalAlign="top" />
