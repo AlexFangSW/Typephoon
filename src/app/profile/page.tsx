@@ -25,6 +25,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import DarkButton from "@/components/Buttons/DarkButton";
 
 function Summary({
   bestWpm,
@@ -87,25 +88,22 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
   }
 
   const tickFormatter = (value: string, index: number): string => {
-    console.log(value, index);
-    return `.`;
+    return ``;
   };
 
   const CustomToolTip = ({
     payload,
-    label,
     active,
   }: {
     payload?: any[];
-    label?: number;
     active?: boolean;
   }) => {
     if (!payload || !active) {
       return null;
     }
-    const wpm = payload[0].value;
+    const wpm = payload[0].value.toFixed(1);
     const raw_ts = payload[0].payload.finished_at;
-    const acc = payload[1].value;
+    const acc = payload[1].value.toFixed(1);
     const ts = raw_ts;
     if (active) {
       return (
@@ -125,7 +123,7 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
 
   const accColor = "#FFCF50";
   const wpmColor = "#0EB99B";
-  const primaryWord = "#9BA4B5";
+  const darker = "#151a21";
 
   return (
     <ResponsiveContainer>
@@ -139,7 +137,6 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
           left: 0,
           bottom: 0,
         }}
-        className={styles.textColor}
       >
         <Line
           strokeWidth={2.5}
@@ -155,18 +152,24 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
           dataKey={"accuracy"}
           stroke={accColor}
         />
-        <XAxis tick={{ fill: primaryWord }} tickFormatter={tickFormatter} />
+        <XAxis
+          tick={{ fill: darker }}
+          tickFormatter={tickFormatter}
+          stroke={darker}
+        />
         <YAxis
           tick={{ fill: wpmColor }}
           yAxisId={"wpm"}
           orientation="right"
           dataKey={"wpm"}
+          stroke={darker}
         />
         <YAxis
           tick={{ fill: accColor }}
           yAxisId={"acc"}
           orientation="left"
           dataKey={"accuracy"}
+          stroke={darker}
         />
         <Tooltip content={<CustomToolTip />} />
         <Legend verticalAlign="top" />
@@ -189,33 +192,47 @@ function ProgressOverTime({
       <div>PROGRESS OVER TIME</div>
       <div className={styles.progress_over_time_item}>
         {graphSize === 10 ? (
-          <PrimaryButton action={() => setGraphSize(10)}>Last 10</PrimaryButton>
+          <DarkButton
+            action={() => setGraphSize(10)}
+            className={styles.active_history_button}
+          >
+            Last 10
+          </DarkButton>
         ) : (
-          <PurpleButton action={() => setGraphSize(10)}>Last 10</PurpleButton>
+          <DarkButton action={() => setGraphSize(10)}>Last 10</DarkButton>
         )}
 
         {graphSize === 50 ? (
-          <PrimaryButton action={() => setGraphSize(50)}>Last 50</PrimaryButton>
+          <DarkButton
+            action={() => setGraphSize(50)}
+            className={styles.active_history_button}
+          >
+            Last 50
+          </DarkButton>
         ) : (
-          <PurpleButton action={() => setGraphSize(50)}>Last 50</PurpleButton>
+          <DarkButton action={() => setGraphSize(50)}>Last 50</DarkButton>
         )}
 
         {graphSize === 100 ? (
-          <PrimaryButton action={() => setGraphSize(100)}>
+          <DarkButton
+            action={() => setGraphSize(100)}
+            className={styles.active_history_button}
+          >
             Last 100
-          </PrimaryButton>
+          </DarkButton>
         ) : (
-          <PurpleButton action={() => setGraphSize(100)}>Last 100</PurpleButton>
+          <DarkButton action={() => setGraphSize(100)}>Last 100</DarkButton>
         )}
 
         {graphSize === 1000 ? (
-          <PrimaryButton action={() => setGraphSize(1000)}>
+          <DarkButton
+            action={() => setGraphSize(1000)}
+            className={styles.active_history_button}
+          >
             Last 1000
-          </PrimaryButton>
+          </DarkButton>
         ) : (
-          <PurpleButton action={() => setGraphSize(1000)}>
-            Last 1000
-          </PurpleButton>
+          <DarkButton action={() => setGraphSize(1000)}>Last 1000</DarkButton>
         )}
       </div>
       <div className={styles.graph_placeholder}>
@@ -230,14 +247,16 @@ function HistoryItem({
   wpm,
   acc,
   rank,
+  index,
 }: {
   date: string;
   wpm: number;
   acc: number;
   rank: number;
+  index: number;
 }) {
   return (
-    <tr>
+    <tr className={index % 2 === 0 ? styles.history_item : ""}>
       <td>{date}</td>
       <td>{wpm.toFixed(1)}</td>
       <td>{acc.toFixed(1)}</td>
@@ -306,13 +325,14 @@ function History({
           </tr>
         </thead>
         <tbody>
-          {history.data.map((item) => (
+          {history.data.map((item, index) => (
             <HistoryItem
               key={item.game_id}
               date={item.finished_at}
               wpm={item.wpm}
               acc={item.accuracy}
               rank={item.rank}
+              index={index}
             />
           ))}
         </tbody>
@@ -320,13 +340,13 @@ function History({
       {/* pagination */}
       <div className={styles.history_pagination}>
         {history.has_prev_page ? (
-          <PrimaryButton action={decreasePageNum}>{"<"}</PrimaryButton>
+          <DarkButton action={decreasePageNum}>{"<"}</DarkButton>
         ) : (
           ""
         )}
         <div>{pageNum}</div>
         {history.has_next_page ? (
-          <PrimaryButton action={increasePageNum}>{">"}</PrimaryButton>
+          <DarkButton action={increasePageNum}>{">"}</DarkButton>
         ) : (
           ""
         )}

@@ -17,12 +17,13 @@
 }
 
 .summary_item {
-  border-style: solid;
-  border-width: 2px;
+  /* border-style: solid; */
+  /* border-width: 2px; */
   border-radius: 0.5rem;
-  border-color: var(--highlight);
+  /* border-color: var(--highlight); */
   min-width: 10rem;
   display: flex;
+  background-color: var(--darker);
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -72,30 +73,49 @@
   font-size: 2rem;
   row-gap: 1rem;
 
+
   table {
     width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
 
     th {
       text-align: left;
       font-size: 1.5rem;
+      padding-inline: 1rem;
     }
 
     td {
       font-size: 1.5rem;
       padding-top: 0.5rem;
       padding-bottom: 0.5rem;
+      padding-inline: 1rem;
 
       button {
         font-size: 1rem;
       }
+
+      &:first-child {
+        border-top-left-radius: 0.5rem;
+        border-bottom-left-radius: 0.5rem;
+      }
+
+      &:last-child {
+        border-top-right-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+      }
     }
 
     tr {
-      box-shadow: 0px 1px 0px 0px var(--primary-words);
+      overflow: hidden;
       height: 1.5lh;
       font-size: 1.5rem;
     }
   }
+}
+
+.history_item {
+  background-color: var(--darker);
 }
 
 .history_pagination {
@@ -111,13 +131,16 @@
 }
 
 .tooltip {
-  background-color: var(--background-color);
-  border-style: solid;
-  border-width: 0.1rem;
+  background-color: var(--darker);
   border-radius: 0.25rem;
-  padding: 2;
+  padding-inline: 1rem;
 }
 
 .tooltip_hr {
   color: var(--primary-words);
+}
+
+
+.active_history_button {
+  color: var(--highlight);
 }
