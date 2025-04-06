@@ -100,13 +100,13 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
     label?: number;
     active?: boolean;
   }) => {
-    if (!payload || !label || !active) {
+    if (!payload || !active) {
       return null;
     }
     const wpm = payload[0].value;
     const raw_ts = payload[0].payload.finished_at;
     const acc = payload[1].value;
-    const ts = new Date(Math.floor(raw_ts)).toISOString();
+    const ts = raw_ts;
     if (active) {
       return (
         <div className={`custom-tooltip ${styles.tooltip}`}>
@@ -340,7 +340,7 @@ export default function Page() {
   const [history, setHistory] = useState<ProfileHistory>();
   const [graph, setGraph] = useState<ProfileGraphItems>();
   const [historyPage, setHistoryPage] = useState<number>(1);
-  const [historySize, setHistorySize] = useState<number>(20);
+  const [historySize, _] = useState<number>(20);
   const [graphSize, setGraphSize] = useState<number>(10);
 
   useEffect(() => {
