@@ -4,7 +4,7 @@ import styles from "./lobby.module.scss";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import RedButton from "@/components/Buttons/RedButton";
 import { SessionStoreKeys } from "@/utils/constants";
-import { debounce } from "@/utils/common";
+import { debounce, refreshAccessToken } from "@/utils/common";
 import { useSearchParams } from "next/navigation";
 
 enum LobbyBGMsgEvent {
@@ -222,7 +222,7 @@ export default function Page() {
 
     ws.current.onclose = async () => {
       console.log("websocket closed");
-      if (isQueuedIn) {
+      if (ws.current) {
         // reconnect
         console.log("try ws reconnect");
         ws.current = wsConnect();
@@ -274,6 +274,7 @@ export default function Page() {
       setPlayers(undefined);
       setTokenKey(undefined);
       setGameID(undefined);
+      ws.current = null;
       if (typeof gameID === "number") {
         window.location.reload();
       }
@@ -281,7 +282,9 @@ export default function Page() {
       return;
     }
     console.log("Is queued in", isQueuedIn);
-    ws.current = wsConnect();
+    refreshAccessToken().then(() => {
+      ws.current = wsConnect();
+    });
 
     return () => {
       ws.current ? ws.current.close(1000, "user left") : "";

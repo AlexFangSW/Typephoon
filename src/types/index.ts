@@ -19,6 +19,7 @@ export enum ErrorCode {
   KEY_NOT_FOUND = "KEY_NOT_FOUND",
   REFRESH_TOKEN_MISSMATCH = "REFRESH_TOKEN_MISSMATCH",
   INVALID_TOKEN = "INVALID_TOKEN",
+  TOKEN_EXPIRED = "TOKEN_EXPIRED",
   GAME_NOT_FOUND = "GAME_NOT_FOUND",
   USER_NOT_FOUND = "USER_NOT_FOUND",
   WORDS_NOT_FOUND = "WORDS_NOT_FOUND",
@@ -144,3 +145,37 @@ export type ProfileGraphItems = {
 };
 
 export type ProfileGraphResponse = ApiResponse<ProfileGraphItems>;
+
+export enum LobbyBGMsgEvent {
+  INIT = "INIT",
+  USER_JOINED = "USER_JOINED",
+  USER_LEFT = "USER_LEFT",
+  GET_TOKEN = "GET_TOKEN",
+  GAME_START = "GAME_START",
+}
+
+export enum QueueInType {
+  RECONNECT = "reconnect",
+  NEW = "new",
+}
+
+export type LobbyBGMsg = {
+  event: LobbyBGMsgEvent;
+  game_id: number;
+  guest_token_key?: string;
+  user_id?: string;
+};
+
+export type LobbyUserInfo = {
+  id: string;
+  name: string;
+};
+
+export type LobbyPlayersResponse = ApiResponse<{
+  me: LobbyUserInfo;
+  others: LobbyUserInfo[];
+}>;
+
+export type LobbyCountdownResponse = ApiResponse<{
+  seconds_left: number;
+}>;
