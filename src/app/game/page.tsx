@@ -13,6 +13,7 @@ import {
   GameStatistics,
   ApiResponse,
 } from "@/types";
+import { authFetch } from "@/utils/common";
 
 export default function Page() {
   const ws = useRef<WebSocket>(null);
@@ -162,15 +163,14 @@ export default function Page() {
 
     // Send to server
     const sendStatistics = async () => {
-      await fetch(`/api/v1/game/statistics`, {
+      await authFetch<ApiResponse<{}>>(`/api/v1/game/statistics`, {
         method: "POST",
         body: JSON.stringify(statistics),
         headers: {
           "Content-Type": "application/json",
         },
       })
-        .then((resp) => resp.json())
-        .then((data: ApiResponse<{}>) => {
+        .then((data) => {
           if (!data.ok) {
             console.error("error: ", data.error);
           } else {

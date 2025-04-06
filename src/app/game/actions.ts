@@ -5,6 +5,7 @@ import {
   CountdownResponse,
   ErrorCode,
 } from "@/types";
+import { authFetch } from "@/utils/common";
 
 export async function updateWords({
   gameID,
@@ -35,10 +36,12 @@ export async function updateOtherPlayers({
   gameID: number;
   setOtherPlayers: (arg: Map<string, GameInfo>) => void;
 }) {
-  const resp = await fetch(`/api/v1/game/players?game_id=${gameID}`, {
-    cache: "no-store",
-  });
-  const data: GamePlayersResponse = await resp.json();
+  const data = await authFetch<GamePlayersResponse>(
+    `/api/v1/game/players?game_id=${gameID}`,
+    {
+      cache: "no-store",
+    },
+  );
   if (!data.ok) {
     console.error("error: ", data.error);
     if (data.error.code === ErrorCode.GAME_NOT_FOUND) {

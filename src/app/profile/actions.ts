@@ -6,12 +6,15 @@ import {
   ProfileStatistics,
   ProfileStatisticsResponse,
 } from "@/types";
+import { authFetch } from "@/utils/common";
 
 export async function getProfileStatistics(): Promise<ProfileStatistics | null> {
-  const response = await fetch("/api/v1/profile/statistics", {
-    cache: "no-store",
-  });
-  const data: ProfileStatisticsResponse = await response.json();
+  const data = await authFetch<ProfileStatisticsResponse>(
+    "/api/v1/profile/statistics",
+    {
+      cache: "no-store",
+    },
+  );
   if (!data.ok) {
     console.error(data.error);
     return null;
@@ -30,10 +33,12 @@ export async function getProfileStatistics(): Promise<ProfileStatistics | null> 
 export async function getProfileGraph(
   size: number,
 ): Promise<ProfileGraphItems | null> {
-  const response = await fetch(`/api/v1/profile/graph?size=${size}`, {
-    cache: "no-store",
-  });
-  const data: ProfileGraphResponse = await response.json();
+  const data = await authFetch<ProfileGraphResponse>(
+    `/api/v1/profile/graph?size=${size}`,
+    {
+      cache: "no-store",
+    },
+  );
   if (!data.ok) {
     console.error(data.error);
     return null;
@@ -50,13 +55,12 @@ export async function getProfileHistory({
   page: number;
   size: number;
 }): Promise<ProfileHistory | null> {
-  const response = await fetch(
+  const data = await authFetch<ProfileHistoryResponse>(
     `/api/v1/profile/history?page=${page}&size=${size}`,
     {
       cache: "no-store",
     },
   );
-  const data: ProfileHistoryResponse = await response.json();
   if (!data.ok) {
     console.error(data.error);
     return null;
