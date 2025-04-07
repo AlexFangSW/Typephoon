@@ -1,8 +1,9 @@
 "use client";
-import React, { JSX, Fragment } from "react";
+import React, { JSX, Fragment, useState } from "react";
 import styles from "./TypingContainer.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
+import Image from "next/image";
 
 const RenderText = ({
   currentInput,
@@ -104,6 +105,15 @@ const RenderText = ({
   return renderResult;
 };
 
+const FocusNotifier = () => {
+  return (
+    <div className={styles.focus_notifier}>
+      <span> Click To Focus </span>
+      <Image src="/cursor.svg" alt="cursor" width={20} height={20} />
+    </div>
+  );
+};
+
 const TypingGame = ({
   target = "Loading...",
   currentInput,
@@ -128,6 +138,7 @@ const TypingGame = ({
   setCurrentPosition: Dispatch<SetStateAction<Position>>;
 }) => {
   const targetWords = target.split(" ");
+  const [focus, setFocus] = useState(true);
 
   const handleKeyDown: React.KeyboardEventHandler = (
     e: React.KeyboardEvent,
@@ -218,13 +229,18 @@ const TypingGame = ({
       key={"typeing-container"}
       onKeyDown={start ? handleKeyDown : undefined}
       className={styles.typing_container}
+      onFocus={() => setFocus(true)}
+      onBlur={() => setFocus(false)}
     >
-      <RenderText
-        currentInput={currentInput}
-        targetWords={targetWords}
-        otherPlayers={otherPlayers}
-        currentPosition={currentPosition}
-      />
+      <div className={styles.text_area}>
+        <RenderText
+          currentInput={currentInput}
+          targetWords={targetWords}
+          otherPlayers={otherPlayers}
+          currentPosition={currentPosition}
+        />
+      </div>
+      {focus ? null : <FocusNotifier />}
     </div>
   );
 };
