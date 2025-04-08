@@ -125,6 +125,7 @@ const TypingGame = ({
   keystrokes,
   currentPosition,
   setCurrentPosition,
+  ignore_lose_focus,
 }: {
   target?: string;
   currentInput: string;
@@ -136,6 +137,7 @@ const TypingGame = ({
   keystrokes: Array<Keystroke>;
   currentPosition: Position;
   setCurrentPosition: Dispatch<SetStateAction<Position>>;
+  ignore_lose_focus?: boolean;
 }) => {
   const targetWords = target.split(" ");
   const [focus, setFocus] = useState(true);
@@ -240,7 +242,7 @@ const TypingGame = ({
           currentPosition={currentPosition}
         />
       </div>
-      {focus ? null : <FocusNotifier />}
+      {!focus && !ignore_lose_focus ? <FocusNotifier /> : null}
     </div>
   );
 };
