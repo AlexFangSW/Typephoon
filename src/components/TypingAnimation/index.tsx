@@ -5,9 +5,11 @@ import styles from "./TypingAnimation.module.scss";
 const RenderText = ({
   cursorPosition,
   target,
+  cursorWidth,
 }: {
   cursorPosition: number;
   target: string;
+  cursorWidth: string;
 }): Array<JSX.Element> => {
   const renderResult: Array<JSX.Element> = [];
   const targetWords = target.split(" ");
@@ -25,7 +27,11 @@ const RenderText = ({
 
       currWordRender.push(
         <Fragment key={`char-${wordIndex}-${charIndex}`}>
-          {isCursorPosition ? <span className={styles.cursor} /> : ""}
+          {isCursorPosition ? (
+            <span className={styles.cursor} style={{ width: cursorWidth }} />
+          ) : (
+            ""
+          )}
           {char !== " " ? (
             <span
               className={`
@@ -57,10 +63,16 @@ const TypingAnimation = ({
   text,
   start = true,
   delay = 1000,
+  fontSize = "1rem",
+  cursorWidth = "0.5rem",
+  fontWeight = 900,
 }: {
   text: string;
   start?: boolean;
   delay?: number;
+  fontSize?: string;
+  fontWeight?: number;
+  cursorWidth: string;
 }) => {
   const lastPosition = text.length + 1;
   const [cursorPosition, setCursorPosition] = useState(-1);
@@ -83,9 +95,16 @@ const TypingAnimation = ({
   }, [cursorPosition]);
 
   return (
-    <div className={styles.typing_container}>
+    <div
+      className={styles.typing_container}
+      style={{ fontSize: fontSize, fontWeight: fontWeight }}
+    >
       <div className={styles.text_area}>
-        <RenderText cursorPosition={cursorPosition} target={text} />
+        <RenderText
+          cursorPosition={cursorPosition}
+          target={text}
+          cursorWidth={cursorWidth}
+        />
       </div>
     </div>
   );
