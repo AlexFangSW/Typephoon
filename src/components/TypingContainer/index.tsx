@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
 import Image from "next/image";
 
-const RenderText = ({
+export const RenderText = ({
   currentInput,
   targetWords,
   otherPlayers,
