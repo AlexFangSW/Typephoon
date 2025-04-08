@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import { GameInfo, Keystroke, Position } from "@/types";
 import Image from "next/image";
 
-const RenderText = ({
+export const RenderText = ({
   currentInput,
   targetWords,
   otherPlayers,
@@ -125,7 +125,6 @@ const TypingGame = ({
   keystrokes,
   currentPosition,
   setCurrentPosition,
-  ignore_lose_focus,
 }: {
   target?: string;
   currentInput: string;
@@ -137,7 +136,6 @@ const TypingGame = ({
   keystrokes: Array<Keystroke>;
   currentPosition: Position;
   setCurrentPosition: Dispatch<SetStateAction<Position>>;
-  ignore_lose_focus?: boolean;
 }) => {
   const targetWords = target.split(" ");
   const [focus, setFocus] = useState(true);
@@ -242,7 +240,7 @@ const TypingGame = ({
           currentPosition={currentPosition}
         />
       </div>
-      {!focus && !ignore_lose_focus ? <FocusNotifier /> : null}
+      {focus ? null : <FocusNotifier />}
     </div>
   );
 };
