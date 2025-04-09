@@ -10,7 +10,7 @@ export default function HomePage() {
         <div className={styles.home_page_title}>TYPEPHOON</div>
         <div>
           <TypingAnimation
-            text={"REAL TIME MULTI PLAYER TYPING GAME"}
+            text={"REAL-TIME MULTIPLAYER TYPING GAME"}
             start={true}
             delay={50}
             fontSize="1.5rem"
