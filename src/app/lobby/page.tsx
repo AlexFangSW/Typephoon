@@ -90,7 +90,7 @@ async function updatePlayerList({
     `/api/v1/lobby/players?game_id=${gameID}`,
     {
       cache: "no-store",
-    }
+    },
   );
   // console.log("players: ", data)
   setPlayers(data);
@@ -134,7 +134,7 @@ export default function Page() {
   const wsConnect = (): WebSocket => {
     if (gameID) {
       ws.current = new WebSocket(
-        `/api/v1/lobby/queue-in/ws?prev_game_id=${gameID}&queue_in_type=${QueueInType.RECONNECT}`
+        `/api/v1/lobby/queue-in/ws?prev_game_id=${gameID}&queue_in_type=${QueueInType.RECONNECT}`,
       );
     } else {
       ws.current = new WebSocket(`/api/v1/lobby/queue-in/ws`);
@@ -160,7 +160,7 @@ export default function Page() {
         case LobbyBGMsgEvent.INIT:
           window.sessionStorage.setItem(
             SessionStoreKeys.GAME_ID,
-            data.game_id.toString()
+            data.game_id.toString(),
           );
           setGameID(data.game_id);
           break;
@@ -237,7 +237,7 @@ export default function Page() {
   useEffect(() => {
     if (gameID === undefined || tokenKey === undefined) {
       console.warn(
-        `ignore get token, gameID: ${gameID}, tokenKey: ${tokenKey}`
+        `ignore get token, gameID: ${gameID}, tokenKey: ${tokenKey}`,
       );
       return;
     }
