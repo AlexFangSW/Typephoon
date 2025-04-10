@@ -17,7 +17,7 @@ const RenderText = ({
 
   // Each word
   targetWords.forEach((word, wordIndex) => {
-    const targetChars = [...word.split(""), " "];
+    const targetChars = word.split("");
     const currWordRender: Array<JSX.Element> = [];
 
     // Each character
@@ -66,6 +66,8 @@ const TypingAnimation = ({
   fontSize = "1rem",
   cursorWidth = "0.5rem",
   fontWeight = 900,
+  alignItems = "center",
+  justifyContent = "center",
 }: {
   text: string;
   start?: boolean;
@@ -73,6 +75,8 @@ const TypingAnimation = ({
   fontSize?: string;
   fontWeight?: number;
   cursorWidth: string;
+  alignItems?: string;
+  justifyContent?: string;
 }) => {
   const lastPosition = text.length + 1;
   const [cursorPosition, setCursorPosition] = useState(-1);
@@ -97,7 +101,12 @@ const TypingAnimation = ({
   return (
     <div
       className={styles.typing_container}
-      style={{ fontSize: fontSize, fontWeight: fontWeight }}
+      style={{
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        alignItems: alignItems,
+        justifyContent: justifyContent,
+      }}
     >
       <div className={styles.text_area}>
         <RenderText
