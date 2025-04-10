@@ -1,8 +1,6 @@
 "use client";
-import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import styles from "./lobby.module.scss";
 import { useEffect, useRef, useState } from "react";
-import RedButton from "@/components/Buttons/RedButton";
 import { SessionStoreKeys } from "@/utils/constants";
 import { authFetch, debounce, refreshAccessToken } from "@/utils/common";
 import { useSearchParams } from "next/navigation";
@@ -70,8 +68,8 @@ function CountdownText({
   if (isQueuedIn && typeof countdown === "number") {
     return (
       <div className={styles.countdown}>
-        [ The game will start in{" "}
-        <span className={styles.highlight}>{countdown}</span> seconds ]
+        [ The game will start in
+        <span className={styles.highlight}> {countdown}</span> seconds ]
       </div>
     );
   } else {

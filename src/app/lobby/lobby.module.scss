@@ -7,30 +7,6 @@
   row-gap: 1rem;
 }
 
-.token_container {
-  display: flex;
-  align-items: center;
-  font-size: 1.5rem;
-  column-gap: 1rem;
-  justify-content: center;
-}
-
-.token_label {
-  font-size: 2rem;
-}
-
-.token {
-  overflow-x: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  column-gap: 1rem;
-  padding-left: 1rem;
-  border-radius: 0.5rem;
-  border-style: solid;
-  border-width: 2px;
-}
-
 .table {
   min-width: 80%;
 
@@ -51,6 +27,44 @@
 
     &:last-child {
       box-shadow: none;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    margin: auto;
+    min-height: var(--content-height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 1rem;
+    padding-inline: 1rem;
+  }
+
+  .table {
+    width: 100%;
+    table-layout: fixed;
+
+    border-radius: 0.5rem;
+    border-style: solid;
+    border-width: 2px;
+
+    th,
+    td {
+      text-align: center;
+      overflow-wrap: break-word;
+      padding-inline: 1rem;
+    }
+
+    tr {
+      box-shadow: 0px 1px 0px 0px var(--primary-words);
+      height: 1.5lh;
+      font-size: 1.5rem;
+
+      &:last-child {
+        box-shadow: none;
+      }
     }
   }
 }
@@ -80,7 +94,9 @@
 
 .countdown {
   font-size: 1.5rem;
+  text-align: center;
 }
+
 
 .countdown_hidden {
   font-size: 1.5rem;
