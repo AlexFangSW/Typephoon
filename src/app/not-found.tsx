@@ -8,9 +8,7 @@ export default function NotFound() {
   return (
     <div className={styles.home_page_container}>
       <div>
-        <div className={styles.home_page_title}>
-          <span>404</span>
-        </div>
+        <div className={styles.home_page_title}>404</div>
         <div>
           <TypingAnimation
             text={"PAGE NOT FOUND, HOW DID YOU GET HERE !?"}

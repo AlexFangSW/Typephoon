@@ -8,7 +8,7 @@ export default function HomePage() {
     <div className={styles.home_page_container}>
       <div>
         <div className={styles.home_page_title}>TYPEPHOON</div>
-        <div className={styles.home_page_subtitle}>
+        <div>
           <TypingAnimation
             text={"REAL-TIME MULTIPLAYER TYPING GAME"}
             start={true}
