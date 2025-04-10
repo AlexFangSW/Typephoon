@@ -5,6 +5,8 @@
 :root {
   /* Colors */
   --highlight: #0eb99b;
+  --highlight-glow: rgba(45, 255, 196, 0.09);
+  --red-glow: rgba(255, 0, 0, 0.09);
   --primary-words: #9ba4b5;
   --untyped-words: #5d626c;
   --yellow: #ebe002;
