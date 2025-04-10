@@ -36,7 +36,6 @@ export default function Footer() {
         <AttributeLink />
       </div>
       <div className={styles.section}>
-        <ReleaseVersion version="0.0.1-dev" />
         <GitHubRepo />
       </div>
     </footer>

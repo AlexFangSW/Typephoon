@@ -99,16 +99,16 @@ const TypingAnimation = ({
   }, [cursorPosition]);
 
   return (
-    <div
-      className={styles.typing_container}
-      style={{
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        alignItems: alignItems,
-        justifyContent: justifyContent,
-      }}
-    >
-      <div className={styles.text_area}>
+    <div className={styles.typing_container}>
+      <div
+        className={styles.text_area}
+        style={{
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          alignItems: alignItems,
+          justifyContent: justifyContent,
+        }}
+      >
         <RenderText
           cursorPosition={cursorPosition}
           target={text}
