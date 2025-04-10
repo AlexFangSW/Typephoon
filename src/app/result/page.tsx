@@ -11,6 +11,7 @@ import {
   ProfileUserInfoResponse,
   ProfileUserInfo,
 } from "@/types";
+import DarkButton from "@/components/Buttons/DarkButton";
 
 async function getGameResult({
   gameID,
@@ -100,13 +101,14 @@ export default function Page() {
       <span>[ Refresh page (Press F5) to update data ]</span>
       {/* buttons */}
       <div className={styles.button_container}>
-        <PrimaryButton
+        <DarkButton
           action={() => {
-            window.location.href = "/lobby";
+            window.location.href = "/lobby?auto_queue_in=true";
           }}
+          className={styles.next_game_button}
         >
           NEXT GAME
-        </PrimaryButton>
+        </DarkButton>
       </div>
     </div>
   );
