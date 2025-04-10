@@ -1,5 +1,4 @@
 "use client";
-import Title from "@/components/Title";
 import styles from "./result.module.scss";
 import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import RankingGraph from "@/components/Graphs/RankingGraph";
@@ -44,6 +43,15 @@ async function getUserInfo(): Promise<ProfileUserInfo | undefined> {
   }
 }
 
+function TitleSummary({ title, value }: { title: string; value: string }) {
+  return (
+    <div className={styles.summary_item}>
+      <span className={styles.summary_item_title}>{title}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
+
 export default function Page() {
   const [gameResult, setGameResult] = useState<GameUserInfo[]>([]);
   const [wpm, setWpm] = useState("0");
@@ -82,7 +90,11 @@ export default function Page() {
   return (
     <div className={styles.container}>
       {/* WPM, WPM(Raw), ACC */}
-      <Title title={`WPM: ${wpm} WPM(Raw): ${wpmRaw} ACC: ${acc}`} />
+      <div className={styles.summary}>
+        <TitleSummary title="WPM" value={wpm} />
+        <TitleSummary title="WPM(Raw)" value={wpmRaw} />
+        <TitleSummary title="ACC" value={acc} />
+      </div>
       {/* ranking graph */}
       <RankingGraph gameResult={gameResult} userID={userID} />
       <span>[ Refresh page (Press F5) to update data ]</span>
