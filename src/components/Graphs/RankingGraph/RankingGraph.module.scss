@@ -35,23 +35,39 @@
 }
 
 .table th, .table td {
+  padding-block: 0.5rem;
   padding-inline: 1.5rem ;
   text-align: left;
   white-space: nowrap;
   min-width: max-content;
 }
 
+.table td {
+  &:first-child {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+  }
+
+  &:last-child {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+  }
+}
+
+.table tr:nth-child(even) {
+  background-color: var(--darker);
+}
+
 .table th {
-  border-bottom: 2px solid var(--muted);
   padding-bottom: 0.5rem;
 }
 
-.table tr:first-child {
-  border-style: solid;
-  border-top: 2px solid var(--muted);
-  border-inline: 2px solid var(--muted);
-  border-bottom: 2px solid var(--primary-words);
-}
+// .table tr:first-child {
+//   border-style: solid;
+//   border-top: 2px solid var(--muted);
+//   border-inline: 2px solid var(--muted);
+//   border-bottom: 2px solid var(--primary-words);
+// }
 
 .refresh_button {
   position: absolute;
