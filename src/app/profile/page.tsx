@@ -44,7 +44,7 @@ function Summary({
     <div className={styles.summary}>
       {/* Best  */}
       <div className={styles.summary_item}>
-        <div>BEST</div>
+        <div className={styles.summary_item_title}>BEST</div>
         <div>
           <div>WPM: {bestWpm.toFixed(1)}</div>
           <div>ACC: {bestAccuracy.toFixed(1)}</div>
@@ -52,7 +52,7 @@ function Summary({
       </div>
       {/* Last 10 */}
       <div className={styles.summary_item}>
-        <div>LAST 10</div>
+        <div className={styles.summary_item_title}>LAST 10</div>
         <div>
           <div>WPM: {last10Wpm.toFixed(1)}</div>
           <div>ACC: {last10Accuracy.toFixed(1)}</div>
@@ -60,7 +60,7 @@ function Summary({
       </div>
       {/* Average */}
       <div className={styles.summary_item}>
-        <div>AVERAGE</div>
+        <div className={styles.summary_item_title}>AVERAGE</div>
         <div>
           <div>WPM: {averageWpm.toFixed(1)}</div>
           <div>ACC: {averageAccuracy.toFixed(1)}</div>
@@ -254,7 +254,7 @@ function HistoryItem({
   index: number;
 }) {
   return (
-    <tr className={index % 2 === 0 ? styles.history_item : ""}>
+    <tr>
       <td>{date}</td>
       <td>{wpm.toFixed(1)}</td>
       <td>{acc.toFixed(1)}</td>
@@ -313,38 +313,50 @@ function History({
       {/* title */}
       <div>HISTORY</div>
       {/* records */}
-      <table>
-        <thead>
-          <tr>
-            <th>DATE</th>
-            <th>WPM</th>
-            <th>ACC</th>
-            <th>RANK</th>
-          </tr>
-        </thead>
-        <tbody>
-          {history.data.map((item, index) => (
-            <HistoryItem
-              key={item.game_id}
-              date={item.finished_at}
-              wpm={item.wpm}
-              acc={item.accuracy}
-              rank={item.rank}
-              index={index}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div className={styles.history_table_container}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>WPM</th>
+              <th>ACC</th>
+              <th>RANK</th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.data.map((item, index) => (
+              <HistoryItem
+                key={item.game_id}
+                date={item.finished_at}
+                wpm={item.wpm}
+                acc={item.accuracy}
+                rank={item.rank}
+                index={index}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* pagination */}
       <div className={styles.history_pagination}>
         {history.has_prev_page ? (
-          <DarkButton action={decreasePageNum}>{"<"}</DarkButton>
+          <DarkButton
+            action={decreasePageNum}
+            className={styles.history_pagination_button}
+          >
+            {"<"}
+          </DarkButton>
         ) : (
           ""
         )}
         <div>{pageNum}</div>
         {history.has_next_page ? (
-          <DarkButton action={increasePageNum}>{">"}</DarkButton>
+          <DarkButton
+            action={increasePageNum}
+            className={styles.history_pagination_button}
+          >
+            {">"}
+          </DarkButton>
         ) : (
           ""
         )}
