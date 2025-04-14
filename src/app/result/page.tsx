@@ -63,7 +63,7 @@ export default function Page() {
   useEffect(() => {
     // Get statistics from session storage
     const game_statistics = window.sessionStorage.getItem(
-      SessionStoreKeys.GAME_STATISTICS,
+      SessionStoreKeys.GAME_STATISTICS
     );
     if (!game_statistics) {
       console.error("No statistics found");
@@ -98,7 +98,9 @@ export default function Page() {
       </div>
       {/* ranking graph */}
       <RankingGraph gameResult={gameResult} userID={userID} />
-      <span>[ Refresh page (Press F5) to update data ]</span>
+      <span className={styles.refresh_text}>
+        [ Refresh page (Press F5) to update data ]
+      </span>
       {/* buttons */}
       <div className={styles.button_container}>
         <DarkButton

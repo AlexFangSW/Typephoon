@@ -18,17 +18,13 @@ function RankingRow({
   status: string;
 }) {
   return (
-    <>
-      <tr>
-        <td>{rank !== UNDEFINED_RANKING ? rank : ""}</td>
-        <td className={`${isUser ? styles.is_current_user : ""}`}>
-          {username}
-        </td>
-        <td>{typeof wpm !== undefined ? wpm?.toFixed(1) : ""}</td>
-        <td>{typeof acc !== undefined ? acc?.toFixed(1) : ""}</td>
-        <td>{status}</td>
-      </tr>
-    </>
+    <tr>
+      <td>{rank !== UNDEFINED_RANKING ? rank : ""}</td>
+      <td className={`${isUser ? styles.is_current_user : ""}`}>{username}</td>
+      <td>{wpm !== undefined ? wpm.toFixed(1) : ""}</td>
+      <td>{acc !== undefined ? acc.toFixed(1) : ""}</td>
+      <td>{status}</td>
+    </tr>
   );
 }
 
@@ -44,9 +40,15 @@ function RankingGraphPlaceholder() {
             <th>ACC</th>
             <th>Status</th>
           </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         </tbody>
       </table>
-      <span className={styles.placeholder_text}>NO DATA</span>
     </div>
   );
 }

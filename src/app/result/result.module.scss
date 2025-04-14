@@ -3,6 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  row-gap: 2rem;
 }
 
 .button_container {
@@ -62,4 +63,8 @@
 
 .next_game_button {
   color: var(--highlight);
+}
+
+.refresh_text {
+  text-align: center;
 }
