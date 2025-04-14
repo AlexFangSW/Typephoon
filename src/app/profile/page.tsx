@@ -1,8 +1,6 @@
 "use client";
 
 import styles from "./profile.module.scss";
-import PurpleButton from "@/components/Buttons/PurpleButton";
-import PrimaryButton from "@/components/Buttons/PrimaryButton";
 import {
   ProfileGraphItems,
   ProfileHistory,
@@ -101,9 +99,9 @@ function ProgressOverTimeChart({ data }: { data?: GameResultWithGameType[] }) {
     if (!payload || !active) {
       return null;
     }
-    const wpm = payload[0].value.toFixed(1);
-    const raw_ts = payload[0].payload.finished_at;
-    const acc = payload[1].value.toFixed(1);
+    const wpm = payload[0]?.value.toFixed(1);
+    const raw_ts = payload[0]?.payload.finished_at;
+    const acc = payload[1]?.value.toFixed(1);
     const ts = raw_ts;
     if (active) {
       return (
