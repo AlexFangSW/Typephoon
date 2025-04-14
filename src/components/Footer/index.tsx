@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./Footer.module.scss";
@@ -13,7 +15,7 @@ function ReleaseVersion({ version }: { version: string }) {
 
 function GitHubRepo() {
   return (
-    <Link className={styles.item} href={"/"}>
+    <Link className={styles.item} href={"/source"}>
       <Image src="/github.svg" alt="github" width={20} height={20} />
       source
     </Link>
