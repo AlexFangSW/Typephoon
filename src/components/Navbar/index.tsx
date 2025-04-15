@@ -36,11 +36,13 @@ export default async function Navbar() {
         {/* user profile */}
         <div className={styles.profile}>
           {isLoggedIn ? (
-            <Link href={"/profile"}>
-              <StatisticsIcon />
-              <span className={styles.name}>{username}</span>
+            <>
+              <Link href={"/profile"}>
+                <StatisticsIcon />
+                <span className={styles.name}>{username}</span>
+              </Link>
               <span>|</span>
-            </Link>
+            </>
           ) : (
             ""
           )}

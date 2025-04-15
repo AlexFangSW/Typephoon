@@ -110,9 +110,10 @@
   border-collapse: collapse;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding-block: 0.5rem;
-  padding-inline: 1.5rem ;
+  padding-inline: 1.5rem;
   text-align: left;
   white-space: nowrap;
   min-width: max-content;
@@ -206,4 +207,12 @@
 .history_pagination_button {
   font-size: 2rem;
   font-weight: 900;
+}
+
+.username {
+  font-size: 2rem;
+  font-weight: 900;
+  overflow-wrap: break-word;
+  width: 90vw;
+  text-align: center;
 }

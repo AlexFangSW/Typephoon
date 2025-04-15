@@ -1,4 +1,5 @@
 import { ApiResponse, ErrorCode } from "@/types";
+import { ProfileUserInfoResponse, ProfileUserInfo } from "@/types";
 
 export function debounce<T extends any[], R>(
   callback: (...args: T) => R | Promise<R>,
@@ -54,4 +55,21 @@ export async function authFetch<T extends ApiResponse<{}>>(
       await refreshAccessToken();
       return await fetch(input, init).then((resp) => resp.json());
     });
+}
+
+export async function getUserInfo(): Promise<ProfileUserInfo | null> {
+  const data = await authFetch<ProfileUserInfoResponse>(
+    `/api/v1/profile/user-info`,
+    {
+      cache: "no-store",
+    },
+  );
+  if (!data.ok) {
+    console.error(data.error);
+    return null;
+  }
+  return {
+    id: data.id,
+    name: data.name,
+  };
 }

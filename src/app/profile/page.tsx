@@ -7,6 +7,7 @@ import {
   ProfileStatistics,
   GameResultWithGameType,
   GameType,
+  ProfileUserInfo,
 } from "@/types";
 import { useEffect, useState } from "react";
 import {
@@ -24,6 +25,7 @@ import {
   YAxis,
 } from "recharts";
 import DarkButton from "@/components/Buttons/DarkButton";
+import { getUserInfo } from "@/utils/common";
 
 function Summary({
   bestWpm,
@@ -370,11 +372,20 @@ export default function Page() {
   const [statistics, setStatistics] = useState<ProfileStatistics>();
   const [history, setHistory] = useState<ProfileHistory>();
   const [graph, setGraph] = useState<ProfileGraphItems>();
+  const [userInfo, setUserInfo] = useState<ProfileUserInfo>();
   const [historyPage, setHistoryPage] = useState<number>(1);
   const [historySize, _] = useState<number>(20);
   const [graphSize, setGraphSize] = useState<number>(10);
 
   useEffect(() => {
+    getUserInfo().then((data) => {
+      if (data) {
+        setUserInfo(data);
+      } else {
+        window.location.href = "/login";
+      }
+    });
+
     getProfileStatistics().then((data) => {
       if (data) {
         setStatistics(data);
@@ -400,6 +411,7 @@ export default function Page() {
 
   return (
     <div className={styles.container}>
+      <span className={styles.username}>{userInfo?.name}</span>
       <Summary
         bestWpm={statistics?.wpm_best ?? 0}
         bestAccuracy={statistics?.acc_best ?? 0}
