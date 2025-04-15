@@ -25,10 +25,10 @@ export default async function Navbar() {
     <>
       <div className={styles.container}>
         {/* icon */}
-        <Link href={"/"} className={styles.icon}>
+        <a href={"/"} className={styles.icon}>
           <Image src="/typephoonIcon.png" alt="Icon" width={35} height={35} />
           <div className={styles.name}>TYPEPHOON</div>
-        </Link>
+        </a>
 
         {/* game modes ( currently only multi player mode is available ) */}
         {/* <GameModes /> */}
@@ -37,10 +37,10 @@ export default async function Navbar() {
         <div className={styles.profile}>
           {isLoggedIn ? (
             <>
-              <Link href={"/profile"}>
+              <a href={"/profile"}>
                 <StatisticsIcon />
                 <span className={styles.name}>{username}</span>
-              </Link>
+              </a>
               <span>|</span>
             </>
           ) : (
