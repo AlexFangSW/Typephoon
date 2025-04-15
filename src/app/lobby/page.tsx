@@ -114,14 +114,11 @@ async function updateCountdown({
 }
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const autoQueueIn = Boolean(searchParams.get("auto_queue_in"));
-
   const ws = useRef<WebSocket>(null);
   const redirect_triggered = useRef<boolean>(false);
   const [countdownBGID, setCountdownBGID] = useState<NodeJS.Timeout>();
   const [players, setPlayers] = useState<LobbyPlayersResponse>();
-  const [isQueuedIn, setIsQueuedIn] = useState<boolean>(autoQueueIn);
+  const [isQueuedIn, setIsQueuedIn] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>();
   const [gameID, setGameID] = useState<number>();
   const [tokenKey, setTokenKey] = useState<string>();
@@ -212,6 +209,15 @@ export default function Page() {
 
     return ws.current;
   };
+
+  // check search params
+  useEffect(() => {
+    const searchParams = useSearchParams();
+    const autoQueueIn = Boolean(searchParams.get("auto_queue_in"));
+    if (autoQueueIn) {
+      setIsQueuedIn(true);
+    }
+  }, []);
 
   // countdown background task
   useEffect(() => {
