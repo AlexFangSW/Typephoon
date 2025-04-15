@@ -269,17 +269,18 @@ function HistoryPlaceholder() {
       {/* title */}
       <div>HISTORY</div>
       {/* records */}
-      <table>
-        <thead>
-          <tr>
-            <th>DATE</th>
-            <th>WPM</th>
-            <th>ACC</th>
-            <th>TYPE</th>
-          </tr>
-        </thead>
-      </table>
-      <span>NO DATA</span>
+      <div className={styles.history_table_container}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>WPM</th>
+              <th>ACC</th>
+              <th>RANK</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
   );
 }
