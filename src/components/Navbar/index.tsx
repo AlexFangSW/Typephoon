@@ -49,9 +49,9 @@ export default async function Navbar() {
           {isLoggedIn ? (
             <LogoutButton />
           ) : (
-            <Link href="/login">
+            <a href="/login">
               <UserIcon />
-            </Link>
+            </a>
           )}
         </div>
       </div>
