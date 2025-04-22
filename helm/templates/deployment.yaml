@@ -71,5 +71,7 @@ spec:
           value:  {{ $v | quote }}
         {{- end }}
         {{- end }}
+      {{- if .Values.deployment.pullsecret }}
       imagePullSecrets:
       - name: {{ .Values.deployment.pullsecret }}
+      {{- end }}
