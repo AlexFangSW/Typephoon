@@ -1,0 +1,11 @@
+log:
+  level: DEBUG
+
+entryPoints:
+  web:
+   address: ":9090"
+
+providers:
+  file:
+    filename: "/etc/traefik/dynamic.yml"
+    watch: true
