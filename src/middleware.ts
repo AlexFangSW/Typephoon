@@ -17,7 +17,8 @@ export async function verifyLogin() {
 export async function getUsername() {
   const cookieStore = await cookies();
   const username = cookieStore.get(CookieNames.USERNAME);
-  return username?.value ?? "";
+  const content = username?.value ?? "";
+  return decodeURI(content);
 }
 
 export async function middleware(request: NextRequest) {
