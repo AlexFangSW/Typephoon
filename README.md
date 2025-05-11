@@ -30,12 +30,14 @@ npm i
 ```
 
 ### Start treafik (gateway for local development)
+Update the enviroment variable `FRONTEND_HOST` and `BACKEND_HOST`
+in [compose.yaml](./compose.yaml) to your hosts IP.
 ```
 docker compose up -d
 ```
-> http://localhost:9090, redirects `/api/v1/*` to backend  
-> See how to start backend [here](https://github.com/AlexFangSW/Typephoon_api/blob/master/doc/build.md#development)  
-> You will need to clone the [backend repository](https://github.com/AlexFangSW/Typephoon_api)
+Gateway is served at http://localhost:9090, redirects `/api/v1/*` to backend  
+See how to start backend [here](https://github.com/AlexFangSW/Typephoon_api/blob/master/doc/build.md#start-for-frontend-development)  
+You will need to clone the [backend repository](https://github.com/AlexFangSW/Typephoon_api)
 
 ### Run
 ```
