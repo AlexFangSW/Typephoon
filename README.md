@@ -28,10 +28,15 @@ For project architecture details, please refer to the [Build Section](https://gi
 ```
 npm i
 ```
+
 ### Start treafik (gateway for local development)
 ```
 docker compose up -d
 ```
+> http://localhost:9090, redirects `/api/v1/*` to backend  
+> See how to start backend [here](https://github.com/AlexFangSW/Typephoon_api/blob/master/doc/build.md#development)  
+> You will need to clone the [backend repository](https://github.com/AlexFangSW/Typephoon_api)
+
 ### Run
 ```
 npm run dev
