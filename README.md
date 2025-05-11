@@ -1,6 +1,9 @@
 # Typephoon Frontend
 ![homepage](./doc/pics/homepage.png)
 
+![typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![nextjs](https://img.shields.io/badge/next%20js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)
 ## About
 Typephoon is a real-time multiplayer typing game with a clean, 
 minimalistic interface inspired by [monkeytype](https://monkeytype.com/). 
@@ -25,10 +28,17 @@ For project architecture details, please refer to the [Build Section](https://gi
 ```
 npm i
 ```
+
 ### Start treafik (gateway for local development)
+Update the enviroment variable `FRONTEND_HOST` and `BACKEND_HOST`
+in [compose.yaml](./compose.yaml) to your hosts IP.
 ```
 docker compose up -d
 ```
+Gateway is served at http://localhost:9090, redirects `/api/v1/*` to backend  
+See how to start backend [here](https://github.com/AlexFangSW/Typephoon_api/blob/master/doc/build.md#start-for-frontend-development)  
+You will need to clone the [backend repository](https://github.com/AlexFangSW/Typephoon_api)
+
 ### Run
 ```
 npm run dev
