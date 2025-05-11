@@ -1,6 +1,9 @@
 # Typephoon Frontend
 ![homepage](./doc/pics/homepage.png)
 
+![typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![nextjs](https://img.shields.io/badge/next%20js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)
 ## About
 Typephoon is a real-time multiplayer typing game with a clean, 
 minimalistic interface inspired by [monkeytype](https://monkeytype.com/). 
